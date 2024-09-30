@@ -2,6 +2,6 @@ package Test;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Struct project!");
+        System.out.println("Structed project!");
     }
 }
