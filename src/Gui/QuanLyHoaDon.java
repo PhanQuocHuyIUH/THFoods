@@ -185,8 +185,9 @@ public class QuanLyHoaDon extends JFrame
     {
         QuanLyHoaDon quanLyHoaDon = new QuanLyHoaDon();
         quanLyHoaDon.setTitle("Quản lý hóa đơn");
-        quanLyHoaDon.setSize(800, 600);
+        quanLyHoaDon.setSize(1000, 800);
         quanLyHoaDon.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        quanLyHoaDon.setLocationRelativeTo(null);
         quanLyHoaDon.setVisible(true);
     }
 
