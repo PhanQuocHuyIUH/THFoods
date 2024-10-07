@@ -40,7 +40,7 @@ public class BaoCaoThongKe extends JFrame
         // Nút để vẽ biểu đồ
         JButton btnLoadChart1 = new JButton("Load Chart 1");
         JButton btnLoadChart2 = new JButton("Load Chart 2");
-        JButton btnLoadChart3 = new JButton("Load Chart 3");
+        JButton btnLoadChart3 = new JButton("Doanh thu theo tuần");
 
         // Panel chứa bảng và nút
         JPanel leftPanel = new JPanel();
@@ -141,11 +141,13 @@ public class BaoCaoThongKe extends JFrame
                 {"2024-09-13", 300.00},
                 {"2024-09-14", 700.50},
                 {"2024-09-15", 800.25},
+                {"2024-09-16", 700.50},
+                {"2024-09-17", 800.25},
         };
 
         for (Object[] row : sampleData) {
             model.addRow(row);
-            dataset.addValue((Double) row[1], "Revenue", (String) row[0]);
+            dataset.addValue((Double) row[1], "Doanh thu (Triệu VND)", (String) row[0]);
         }
 
         updateChart();
