@@ -184,7 +184,36 @@ public class QuanLyHoaDon extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+        addSampleData();
+
     }
+
+    public void addSampleData() {
+        // Dữ liệu mẫu cho bảng hóa đơn
+        Object[][] sampleDataTable = {
+                {"HD001", "Nguyễn Văn A", "Lê Thị B", "2024-10-01 14:30", "500.000", "Đã thanh toán"},
+                {"HD002", "Nguyễn Văn B", "Trần Thị C", "2024-10-02 15:45", "300.000", "Chưa thanh toán"},
+                {"HD003", "Nguyễn Văn C", "Phạm Văn D", "2024-10-03 16:10", "700.000", "Đã thanh toán"}
+        };
+
+        // Thêm dữ liệu vào bảng hóa đơn
+        for (Object[] row : sampleDataTable) {
+            modelTable.addRow(row);
+        }
+
+        // Dữ liệu mẫu cho bảng chi tiết hóa đơn
+        Object[][] sampleDataHoaDonMiddle = {
+                {"Bánh mì", "20.000", "2", "40.000", "Không"},
+                {"Cà phê", "30.000", "1", "30.000", "Thêm đường"},
+                {"Phở", "50.000", "1", "50.000", "Không hành"}
+        };
+
+        // Thêm dữ liệu vào bảng chi tiết hóa đơn
+        for (Object[] row : sampleDataHoaDonMiddle) {
+            modelHoaDonMiddle.addRow(row);
+        }
+    }
+
 
     public static void main(String[] args) {
         new QuanLyHoaDon();
