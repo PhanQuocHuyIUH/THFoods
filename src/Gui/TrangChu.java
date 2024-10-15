@@ -31,7 +31,7 @@ public class TrangChu extends JFrame {
         leftPanel.setLayout(new BorderLayout());
 
         // Logo trên phần nút chức năng
-        ImageIcon logoIcon = new ImageIcon("C:\\Users\\Admins\\OneDrive\\Máy tính\\deadline\\java\\THFoods\\src\\img\\logo.png");
+        ImageIcon logoIcon = new ImageIcon("src\\img\\logo.png");
         Image logoImage = logoIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
         JLabel logoLabel = new JLabel(new ImageIcon(logoImage));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -71,7 +71,7 @@ public class TrangChu extends JFrame {
         mainPanel.add(new DatMon(), "DatMon");
         mainPanel.add(new JLabel("Nội dung Quản lý Đặt Bàn", SwingConstants.CENTER), "QuanLyDatBan");
         mainPanel.add(new JLabel("Nội dung Quản lý Bàn", SwingConstants.CENTER), "QuanLyBan");
-        mainPanel.add(new JLabel("Nội dung Quản lý Hóa Đơn", SwingConstants.CENTER), "QuanLyHoaDon");
+        mainPanel.add(new QuanLyHoaDon(), "QuanLyHoaDon");
         mainPanel.add(new QuanLyNhanVien(), "QuanLyNhanVien");
         mainPanel.add(new JLabel("Nội dung Quản lý Phiếu Đặt", SwingConstants.CENTER), "QuanLyPhieuDat");
         mainPanel.add(new JLabel("Nội dung Quản lý Thực Đơn", SwingConstants.CENTER), "QuanLyThucDon");
@@ -117,9 +117,6 @@ public class TrangChu extends JFrame {
 
         // Hiệu ứng hover khi rê chuột
         button.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setBackground(new Color(0, 128, 255, 150)); // Màu nền khi hover (xanh sáng hơn)
-            }
 
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 // Nếu nút không phải là nút được nhấn, màu trở lại bình thường
