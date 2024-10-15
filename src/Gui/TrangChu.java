@@ -11,8 +11,9 @@ public class TrangChu extends JFrame {
 
     public TrangChu() {
         // Cấu hình cho frame
-        setTitle("Trang chủ");
-        setSize(900, 600);
+        setTitle(" Nhà Hàng TH Food");
+        setSize(900, 600); // Có thể giữ dòng này hoặc bỏ nếu không cần thiết
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Đặt chương trình ở chế độ toàn màn hình
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -67,7 +68,7 @@ public class TrangChu extends JFrame {
         mainPanel.setBackground(Color.WHITE); // Màu nền trắng cho main panel
 
         // Thêm các nội dung tương ứng cho mỗi chức năng
-        mainPanel.add(new JLabel("Nội dung Đặt Món", SwingConstants.CENTER), "DatMon");
+        mainPanel.add(new DatMon(), "DatMon");
         mainPanel.add(new JLabel("Nội dung Quản lý Đặt Bàn", SwingConstants.CENTER), "QuanLyDatBan");
         mainPanel.add(new JLabel("Nội dung Quản lý Bàn", SwingConstants.CENTER), "QuanLyBan");
         mainPanel.add(new JLabel("Nội dung Quản lý Hóa Đơn", SwingConstants.CENTER), "QuanLyHoaDon");
@@ -86,7 +87,7 @@ public class TrangChu extends JFrame {
 
         // Tự động đổi màu cho nút ĐẶT MÓN khi chương trình khởi động
         if (firstButton != null) {
-            firstButton.setBackground(new Color(0, 204, 255, 150)); // Đổi màu cho nút ĐẶT MÓN
+            firstButton.setBackground(new Color(0, 0, 255, 150)); // Đổi màu cho nút ĐẶT MÓN
             lastClickedButton = firstButton; // Cập nhật nút được nhấn trước đó
         }
 
@@ -143,7 +144,7 @@ public class TrangChu extends JFrame {
             if (lastClickedButton != null) {
                 lastClickedButton.setBackground(new Color(0, 102, 204, 150)); // Đặt lại màu cho nút trước đó
             }
-            sourceButton.setBackground(new Color(0, 204, 255, 150)); // Đổi màu nút hiện tại
+            sourceButton.setBackground(new Color(0, 0, 255, 150)); // Đổi màu nút hiện tại
             lastClickedButton = sourceButton; // Cập nhật nút được nhấn trước đó
 
             // Chuyển đổi giữa các nội dung dựa trên nút nhấn
