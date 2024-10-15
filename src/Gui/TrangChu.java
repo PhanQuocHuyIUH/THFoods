@@ -30,7 +30,7 @@ public class TrangChu extends JFrame {
         leftPanel.setLayout(new BorderLayout());
 
         // Logo trên phần nút chức năng
-        ImageIcon logoIcon = new ImageIcon("C:\\Users\\Admins\\OneDrive\\Máy tính\\deadline\\java\\THFoods\\src\\img\\logo.png");
+        ImageIcon logoIcon = new ImageIcon("THFoods\\src\\img\\logo.png");
         Image logoImage = logoIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
         JLabel logoLabel = new JLabel(new ImageIcon(logoImage));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -74,7 +74,7 @@ public class TrangChu extends JFrame {
         mainPanel.add(new QuanLyNhanVien(), "QuanLyNhanVien");
         mainPanel.add(new JLabel("Nội dung Quản lý Phiếu Đặt", SwingConstants.CENTER), "QuanLyPhieuDat");
         mainPanel.add(new JLabel("Nội dung Quản lý Thực Đơn", SwingConstants.CENTER), "QuanLyThucDon");
-        mainPanel.add(new JLabel("Nội dung Báo cáo Thống Kê", SwingConstants.CENTER), "BaoCaoThongKe");
+        mainPanel.add(new BaoCaoThongKe(), "BaoCaoThongKe");
 
         // Tạo JSplitPane để chia khu vực bên trái và bên phải
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, mainPanel);
