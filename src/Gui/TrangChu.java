@@ -31,7 +31,7 @@ public class TrangChu extends JFrame {
         leftPanel.setLayout(new BorderLayout());
 
         // Logo trên phần nút chức năng
-        ImageIcon logoIcon = new ImageIcon("THFoods\\src\\img\\logo.png");
+        ImageIcon logoIcon = new ImageIcon("src\\img\\logo.png");
         Image logoImage = logoIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
         JLabel logoLabel = new JLabel(new ImageIcon(logoImage));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);

@@ -119,7 +119,7 @@ public class DatMon extends JPanel {
         panel.setBorder(BorderFactory.createLineBorder(new Color(0, 102, 204), 1)); // Đường viền màu xanh
 
         // Giả định hình ảnh món ăn (có thể thay thế bằng ảnh thực tế)
-        JLabel imageLabel = new JLabel(new ImageIcon("C:\\Users\\Admins\\OneDrive\\Máy tính\\deadline\\java\\THFoods\\src\\img\\Mì Quảng.jpg"));
+        JLabel imageLabel = new JLabel(new ImageIcon("src\\img\\Mì Quảng.jpg"));
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(imageLabel, BorderLayout.CENTER);
 
