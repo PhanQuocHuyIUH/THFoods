@@ -7,10 +7,10 @@ public class TaiKhoan
     private String maTaiKhoan;
     private String tenTaiKhoan;
 
-    public TaiKhoan() {
-    }
+    public TaiKhoan() {}
 
-    public TaiKhoan(String maTaiKhoan, String tenTaiKhoan) {
+    public TaiKhoan(String maTaiKhoan, String tenTaiKhoan)
+    {
         this.maTaiKhoan = maTaiKhoan;
         this.tenTaiKhoan = tenTaiKhoan;
     }
