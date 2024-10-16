@@ -1,5 +1,6 @@
 package Gui;
 
+public class QuanLyDatBan {
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -131,6 +132,4 @@ public class QuanLyDatBan extends JPanel {
         button.setBorder(BorderFactory.createLineBorder(background.darker(), 2)); // Tạo đường viền bo
         button.setPreferredSize(new Dimension(120, 50)); // Tăng kích thước nút
     }
-
-
 }

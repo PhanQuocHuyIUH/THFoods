@@ -1,5 +1,6 @@
 package Gui;
 
+public class DangNhap {
 import DAO.Admin_Dao;
 import DAO.NhanVien_Dao;
 import DB.Database;

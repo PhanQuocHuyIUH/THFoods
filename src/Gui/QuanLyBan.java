@@ -1,5 +1,6 @@
 package Gui;
 
+public class QuanLyBan {
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
