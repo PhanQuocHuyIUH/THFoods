@@ -1,7 +1,5 @@
 package Gui;
 
-
-
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.ButtonGroup;
@@ -321,10 +319,4 @@ public class  QuanLyNhanVien extends JPanel {
         txtEmail.setText("");
         txtNgaySinh.setText("");
     }
-
-
-
-
 }
-
-
