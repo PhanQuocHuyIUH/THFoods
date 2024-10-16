@@ -1,24 +1,26 @@
 package Entity;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
-public class NhanVien extends TaiKhoan
-{
+public class NhanVien {
     private String maNV;
     private String tenNV;
     private String sdt;
     private String email;
-    private String ngaySinh;
+    private LocalDate ngaySinh;
+    private TaiKhoan tenDangNhap;
 
-    public NhanVien() {}
+    public NhanVien() {
+    }
 
-    public NhanVien(String maNV, String tenNV, String sdt, String email, String ngaySinh)
-    {
+    public NhanVien(String maNV, String tenNV, String sdt, String email, LocalDate ngaySinh, TaiKhoan tenDangNhap) {
         this.maNV = maNV;
         this.tenNV = tenNV;
         this.sdt = sdt;
         this.email = email;
         this.ngaySinh = ngaySinh;
+        this.tenDangNhap = tenDangNhap;
     }
 
     public String getMaNV() {
@@ -53,19 +55,26 @@ public class NhanVien extends TaiKhoan
         this.email = email;
     }
 
-    public String getNgaySinh() {
+    public LocalDate getNgaySinh() {
         return ngaySinh;
     }
 
-    public void setNgaySinh(String ngaySinh) {
+    public void setNgaySinh(LocalDate ngaySinh) {
         this.ngaySinh = ngaySinh;
+    }
+
+    public TaiKhoan getTenDangNhap() {
+        return tenDangNhap;
+    }
+
+    public void setTenDangNhap(TaiKhoan tenDangNhap) {
+        this.tenDangNhap = tenDangNhap;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        NhanVien nhanVien = (NhanVien) o;
+        if (!(o instanceof NhanVien nhanVien)) return false;
         return Objects.equals(maNV, nhanVien.maNV);
     }
 
