@@ -1,5 +1,8 @@
 package Gui;
 
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import javax.swing.*;
@@ -55,25 +58,115 @@ public class BaoCaoThongKe extends JPanel
         add(chartPanelContainer, BorderLayout.CENTER);
 
         // Thêm hành động cho nút
-//        btnLoadChart1.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                loadSampleData1(model);
-//            }
-//        });
-//
-//        btnLoadChart2.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                loadSampleData2(model);
-//            }
-//        });
-//
-//        btnLoadChart3.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                loadSampleData3(model);
-//            }
-//        });
+        btnLoadChart1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadSampleData1(model);
+            }
+        });
+
+        btnLoadChart2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadSampleData2(model);
+            }
+        });
+
+        btnLoadChart3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadSampleData3(model);
+            }
+        });
+    }
+
+
+    // Hàm để tải dữ liệu cho Biểu đồ 1
+    private void loadSampleData1(DefaultTableModel model) {
+        model.setRowCount(0); // Xóa dữ liệu cũ
+        dataset.clear(); // Xóa dữ liệu biểu đồ
+
+        Object[][] sampleData = {
+                {"2024-09-01", 351.25},
+                {"2024-09-02", 300.00},
+                {"2024-09-03", 250.50},
+                {"2024-09-04", 400.75},
+                {"2024-09-05", 500.00},
+        };
+
+        for (Object[] row : sampleData) {
+            model.addRow(row);
+            dataset.addValue((Double) row[1], "Revenue", (String) row[0]);
+        }
+
+        updateChart();
+    }
+
+    // Hàm để tải dữ liệu cho Biểu đồ 2
+    private void loadSampleData2(DefaultTableModel model) {
+        model.setRowCount(0);
+        dataset.clear();
+
+        Object[][] sampleData = {
+                {"2024-09-06", 450.00},
+                {"2024-09-07", 300.50},
+                {"2024-09-08", 200.75},
+                {"2024-09-09", 600.00},
+                {"2024-09-10", 700.25},
+        };
+
+        for (Object[] row : sampleData) {
+            model.addRow(row);
+            dataset.addValue((Double) row[1], "Revenue", (String) row[0]);
+        }
+
+        updateChart();
+    }
+
+    // Hàm để tải dữ liệu cho Biểu đồ 3
+    private void loadSampleData3(DefaultTableModel model) {
+        model.setRowCount(0);
+        dataset.clear();
+
+        Object[][] sampleData = {
+                {"2024-09-11", 500.00},
+                {"2024-09-12", 450.50},
+                {"2024-09-13", 300.00},
+                {"2024-09-14", 700.50},
+                {"2024-09-15", 800.25},
+                {"2024-09-16", 700.50},
+                {"2024-09-17", 800.25},
+        };
+
+        for (Object[] row : sampleData) {
+            model.addRow(row);
+            dataset.addValue((Double) row[1], "Doanh thu (Triệu VND)", (String) row[0]);
+        }
+
+        updateChart();
+    }
+
+    // Hàm để cập nhật biểu đồ
+    private void updateChart() {
+        JFreeChart chart = createChart(dataset);
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanelContainer.removeAll(); // Xóa biểu đồ cũ
+        chartPanelContainer.add(chartPanel, BorderLayout.CENTER); // Thêm biểu đồ mới
+        chartPanelContainer.revalidate(); // Cập nhật layout
+        chartPanelContainer.repaint(); // Vẽ lại
+    }
+
+    // Hàm tạo biểu đồ
+    private JFreeChart createChart(DefaultCategoryDataset dataset) {
+        return org.jfree.chart.ChartFactory.createBarChart(
+                "Báo cáo doanh thu", // Title
+                "Date", // X-Axis Label
+                "Doanh thu", // Y-Axis Label
+                dataset, // Dataset
+                PlotOrientation.VERTICAL,
+                true, // Show Legend
+                true, // Use Tooltips
+                false // Show URLs
+        );
     }
 }
