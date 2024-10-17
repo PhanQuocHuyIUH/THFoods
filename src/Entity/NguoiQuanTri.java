@@ -2,19 +2,12 @@ package Entity;
 
 import java.util.Objects;
 
-public class TaiKhoan
+public class NguoiQuanTri
 {
     private String tenDangNhap;
     private String matKhau;
 
-    public TaiKhoan() {}
-
-    public TaiKhoan(String tenDangNhap )
-    {
-        this.tenDangNhap = tenDangNhap;
-    }
-
-    public TaiKhoan(String tenDangNhap, String matKhau)
+    public NguoiQuanTri(String tenDangNhap, String matKhau)
     {
         this.tenDangNhap = tenDangNhap;
         this.matKhau = matKhau;
@@ -40,8 +33,8 @@ public class TaiKhoan
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        TaiKhoan taiKhoan = (TaiKhoan) o;
-        return Objects.equals(tenDangNhap, taiKhoan.tenDangNhap);
+        NguoiQuanTri that = (NguoiQuanTri) o;
+        return Objects.equals(tenDangNhap, that.tenDangNhap);
     }
 
     @Override

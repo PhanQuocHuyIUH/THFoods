@@ -1,6 +1,5 @@
 package Gui;
 
-public class DangNhap {
 import DAO.Admin_Dao;
 import DAO.NhanVien_Dao;
 import DB.Database;
@@ -39,7 +38,7 @@ public class DangNhap extends JFrame implements ActionListener {
 
         // Thêm hình ảnh vào giao diện (bên trái)
         JLabel imageLabel = new JLabel();
-        ImageIcon imageIcon = new ImageIcon("D:\\Project-java\\THFoods\\src\\IMG\\logIn.jpg"); // Đường dẫn tới ảnh
+        ImageIcon imageIcon = new ImageIcon("src\\IMG\\logIn.jpg"); // Đường dẫn tới ảnh
         Image image = imageIcon.getImage();
         Image imageScale = image.getScaledInstance(600, 900, Image.SCALE_SMOOTH); // Thay đổi kích thước ảnh
         ImageIcon scaledIcon = new ImageIcon(imageScale);
@@ -117,8 +116,6 @@ public class DangNhap extends JFrame implements ActionListener {
         // Khi nhấn nút đăng nhập thành công sẽ hiện frame mới và đóng frame cũ đi
         if (obj == loginButton) {
             try {
-
-
                 ArrayList<NguoiQuanTri> admin = admin_dao.getInFor();
                 ArrayList<NhanVien> nhanVien = nhanVien_dao.getInForNV();
                 String userName = userText.getText();
@@ -128,7 +125,7 @@ public class DangNhap extends JFrame implements ActionListener {
                     adminUsers.put(ad.getTenDangNhap(),ad.getMatKhau());
                 }
                 for(NhanVien nv : nhanVien) {
-                    nvUser.put(nv.getMaNV(),nv.getTenDangNhap().getmatKhau());
+                    nvUser.put(nv.getMaNV(),nv.getTenDangNhap().getMatKhau());
                 }
 
                 if(adminUsers.containsKey(userName) && adminUsers.get(userName).equals(convertPassword)) {
@@ -143,8 +140,6 @@ public class DangNhap extends JFrame implements ActionListener {
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
             }
-
-
         }
     }
 }

@@ -15,7 +15,7 @@ public class Database {
     public void connect() throws SQLException {
         String url = "jdbc:sqlserver://localhost:1433;databasename=THFoods;trustServerCertificate=true";
         String user = "sa";
-        String pw = "sapassword";
+        String pw = "abc12345";
         con =  DriverManager.getConnection(url,user,pw);
     }
 

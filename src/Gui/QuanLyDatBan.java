@@ -1,12 +1,13 @@
 package Gui;
 
-public class QuanLyDatBan {
+import java.awt.event.ActionListener;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class QuanLyDatBan extends JPanel {
+public class QuanLyDatBan extends JPanel
+{
     private JPanel mainPanel;
     private final int SO_BAN = 20; // Số lượng bàn (có thể điều chỉnh)
     private boolean[] trangThaiBan; // Trạng thái của mỗi bàn (true: đang dùng, false: còn trống)
