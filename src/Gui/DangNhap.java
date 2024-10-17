@@ -2,9 +2,11 @@ package Gui;
 
 import DAO.Admin_Dao;
 import DAO.NhanVien_Dao;
+import DAO.TaiKhoan_Dao;
 import DB.Database;
 import Entity.NguoiQuanTri;
 import Entity.NhanVien;
+import Entity.TaiKhoan;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +22,7 @@ public class DangNhap extends JFrame implements ActionListener {
     private JTextField userText;
 
     Admin_Dao admin_dao = new Admin_Dao();
-    NhanVien_Dao nhanVien_dao = new NhanVien_Dao();
+    TaiKhoan_Dao taiKhoan_dao = new TaiKhoan_Dao();
 
     private HashMap<String, String> adminUsers = new HashMap<>();
     private HashMap<String, String> nvUser = new HashMap<>();
@@ -117,15 +119,15 @@ public class DangNhap extends JFrame implements ActionListener {
         if (obj == loginButton) {
             try {
                 ArrayList<NguoiQuanTri> admin = admin_dao.getInFor();
-                ArrayList<NhanVien> nhanVien = nhanVien_dao.getInForNV();
+                ArrayList<TaiKhoan> tk = taiKhoan_dao.getAllTK();
                 String userName = userText.getText();
                 char[] password = passwordText.getPassword();
                 String convertPassword = new String(password);
                 for (NguoiQuanTri ad : admin) {
                     adminUsers.put(ad.getTenDangNhap(),ad.getMatKhau());
                 }
-                for(NhanVien nv : nhanVien) {
-                    nvUser.put(nv.getMaNV(),nv.getTenDangNhap().getMatKhau());
+                for(TaiKhoan taiKhoan : tk) {
+                    nvUser.put(taiKhoan.getTenDangNhap(),taiKhoan.getMatKhau());
                 }
 
                 if(adminUsers.containsKey(userName) && adminUsers.get(userName).equals(convertPassword)) {
