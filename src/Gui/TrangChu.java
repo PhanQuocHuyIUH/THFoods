@@ -69,8 +69,8 @@ public class TrangChu extends JFrame {
 
         // Thêm các nội dung tương ứng cho mỗi chức năng
         mainPanel.add(new DatMon(), "DatMon");
-        mainPanel.add(new JLabel("Nội dung Quản lý Đặt Bàn", SwingConstants.CENTER), "QuanLyDatBan");
-        mainPanel.add(new JLabel("Nội dung Quản lý Bàn", SwingConstants.CENTER), "QuanLyBan");
+        mainPanel.add(new QuanLyDatBan(), "QuanLyDatBan");
+        mainPanel.add(new QuanLyBan(), "QuanLyBan");
         mainPanel.add(new QuanLyHoaDon(), "QuanLyHoaDon");
         mainPanel.add(new QuanLyNhanVien(), "QuanLyNhanVien");
         mainPanel.add(new JLabel("Nội dung Quản lý Phiếu Đặt", SwingConstants.CENTER), "QuanLyPhieuDat");
