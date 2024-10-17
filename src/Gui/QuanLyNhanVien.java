@@ -65,7 +65,7 @@ public class  QuanLyNhanVien extends JPanel {
 
         JButton btnImage = new JButton("");
         btnImage.setBackground(new Color(255, 255, 255));
-        btnImage.setIcon(new ImageIcon("D:\\HK1_2024_2025_Nam3\\PhatTrienUngDung\\THFOODS\\THFoods\\src\\img\\nhanvien.png"));
+        btnImage.setIcon(new ImageIcon("src\\img\\nhanvien.png"));
         btnImage.setBounds(10, 86, 283, 394);
         add(btnImage);
 

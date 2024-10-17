@@ -73,7 +73,7 @@ public class QuanLyDatBan extends JPanel
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // Đường viền màu đen dày 2px
 
         // Hình ảnh minh họa cho bàn ăn (sử dụng hình mặc định)
-        JLabel imageLabel = new JLabel(new ImageIcon("src\\img\\datban.png"));
+        JLabel imageLabel = new JLabel(new ImageIcon("src\\img\\datban.jpg"));
         panel.add(imageLabel, BorderLayout.CENTER);
 
         // Nhãn hiển thị mã bàn ăn
