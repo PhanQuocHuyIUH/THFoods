@@ -1,11 +1,13 @@
 package Gui;
 
+import java.awt.event.ActionListener;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class QuanLyDatBan extends JPanel {
+public class QuanLyDatBan extends JPanel
+{
     private JPanel mainPanel;
     private final int SO_BAN = 20; // Số lượng bàn (có thể điều chỉnh)
     private boolean[] trangThaiBan; // Trạng thái của mỗi bàn (true: đang dùng, false: còn trống)
@@ -71,7 +73,7 @@ public class QuanLyDatBan extends JPanel {
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2)); // Đường viền màu đen dày 2px
 
         // Hình ảnh minh họa cho bàn ăn (sử dụng hình mặc định)
-        JLabel imageLabel = new JLabel(new ImageIcon("src\\img\\datban.png"));
+        JLabel imageLabel = new JLabel(new ImageIcon("src\\img\\datban.jpg"));
         panel.add(imageLabel, BorderLayout.CENTER);
 
         // Nhãn hiển thị mã bàn ăn
@@ -131,6 +133,4 @@ public class QuanLyDatBan extends JPanel {
         button.setBorder(BorderFactory.createLineBorder(background.darker(), 2)); // Tạo đường viền bo
         button.setPreferredSize(new Dimension(120, 50)); // Tăng kích thước nút
     }
-
-
 }

@@ -4,31 +4,36 @@ import java.util.Objects;
 
 public class TaiKhoan
 {
-    private String maTaiKhoan;
-    private String tenTaiKhoan;
+    private String tenDangNhap;
+    private String matKhau;
 
-    public TaiKhoan() {
+    public TaiKhoan() {}
+
+    public TaiKhoan(String tenDangNhap )
+    {
+        this.tenDangNhap = tenDangNhap;
     }
 
-    public TaiKhoan(String maTaiKhoan, String tenTaiKhoan) {
-        this.maTaiKhoan = maTaiKhoan;
-        this.tenTaiKhoan = tenTaiKhoan;
+    public TaiKhoan(String tenDangNhap, String matKhau)
+    {
+        this.tenDangNhap = tenDangNhap;
+        this.matKhau = matKhau;
     }
 
-    public String getMaTaiKhoan() {
-        return maTaiKhoan;
+    public String getTenDangNhap() {
+        return tenDangNhap;
     }
 
-    public void setMaTaiKhoan(String maTaiKhoan) {
-        this.maTaiKhoan = maTaiKhoan;
+    public void setTenDangNhap(String tenDangNhap) {
+        this.tenDangNhap = tenDangNhap;
     }
 
-    public String getTenTaiKhoan() {
-        return tenTaiKhoan;
+    public String getMatKhau() {
+        return matKhau;
     }
 
-    public void setTenTaiKhoan(String tenTaiKhoan) {
-        this.tenTaiKhoan = tenTaiKhoan;
+    public void setMatKhau(String matKhau) {
+        this.matKhau = matKhau;
     }
 
     @Override
@@ -36,11 +41,11 @@ public class TaiKhoan
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TaiKhoan taiKhoan = (TaiKhoan) o;
-        return Objects.equals(maTaiKhoan, taiKhoan.maTaiKhoan);
+        return Objects.equals(tenDangNhap, taiKhoan.tenDangNhap);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(maTaiKhoan);
+        return Objects.hashCode(tenDangNhap);
     }
 }
