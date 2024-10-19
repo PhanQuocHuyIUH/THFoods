@@ -11,7 +11,7 @@ public class TrangChu extends JFrame {
 
     public TrangChu() {
         // Cấu hình cho frame
-        setTitle(" Nhà Hàng TH Food");
+        setTitle("Nhà Hàng TH Food");
         setSize(900, 600); // Có thể giữ dòng này hoặc bỏ nếu không cần thiết
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Đặt chương trình ở chế độ toàn màn hình
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -31,21 +31,28 @@ public class TrangChu extends JFrame {
         leftPanel.setLayout(new BorderLayout());
 
         // Logo trên phần nút chức năng
-        ImageIcon logoIcon = new ImageIcon("src\\img\\logo.png");
-        Image logoImage = logoIcon.getImage().getScaledInstance(80, 80, Image.SCALE_SMOOTH);
+        ImageIcon logoIcon = new ImageIcon("src\\img\\logo2.png");
+        Image logoImage = logoIcon.getImage().getScaledInstance(140, 180, Image.SCALE_SMOOTH);
         JLabel logoLabel = new JLabel(new ImageIcon(logoImage));
         logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         leftPanel.add(logoLabel, BorderLayout.NORTH);
 
         // Panel chứa các nút chức năng
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new GridLayout(8, 1, 10, 10)); // Thêm khoảng cách giữa các nút
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS)); // Thay đổi layout thành BoxLayout
         buttonPanel.setOpaque(false); // Tắt nền mặc định của panel
 
         // Tạo 8 nút chức năng với màu nền
-        String[] buttonLabels = {"ĐẶT MÓN", "QUẢN LÝ ĐẶT BÀN", "QUẢN LÝ BÀN", "QUẢN LÝ HÓA ĐƠN",
-                "QUẢN LÝ NHÂN VIÊN", "QUẢN LÝ PHIẾU ĐẶT", "QUẢN LÝ THỰC ĐƠN", "BÁO CÁO THỐNG KÊ"};
-
+        String[] buttonLabels = {
+                "\uD83C\uDF7D ĐẶT MÓN", // 🍽️ (Plate with Cutlery)
+                "\uD83D\uDCC5 ĐẶT BÀN", // 📅 (Calendar)
+                "\u25A4 BÀN ĂN", // 🪑 (Chair)
+                "\uD83D\uDCDD HÓA ĐƠN", // 🧾 (Receipt)
+                "\uD83D\uDC68\u200D NHÂN VIÊN", // 👨‍💼 (Businessman)
+                "\uD83D\uDCDD PHIẾU ĐẶT", // 📝 (Memo)
+                "\uD83C\uDF72 THỰC ĐƠN", // 🍲 (Bowl of Food)
+                "\uD83D\uDCCA THỐNG KÊ" // 📊 (Bar Chart)
+        };
         // Tạo một biến để lưu nút ĐẶT MÓN
         JButton firstButton = null;
 
@@ -54,8 +61,11 @@ public class TrangChu extends JFrame {
             buttonPanel.add(button);
             button.addActionListener(new ButtonClickListener());
 
+            // Thêm khoảng cách giữa các nút
+            buttonPanel.add(Box.createRigidArea(new Dimension(10, 30))); // Thêm khoảng cách 10px giữa các nút
+
             // Lưu nút ĐẶT MÓN
-            if (label.equals("ĐẶT MÓN")) {
+            if (label.equals("\uD83C\uDF7D ĐẶT MÓN")) {
                 firstButton = button;
             }
         }
@@ -66,21 +76,21 @@ public class TrangChu extends JFrame {
         mainPanel = new JPanel(); // Khai báo và khởi tạo mainPanel
         mainPanel.setLayout(new CardLayout());
         mainPanel.setBackground(Color.WHITE); // Màu nền trắng cho main panel
+        mainPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2)); // Đường viền đẹp cho main panel
 
         // Thêm các nội dung tương ứng cho mỗi chức năng
-        mainPanel.add(new DatMon(), "DatMon");
-        mainPanel.add(new QuanLyDatBan(), "QuanLyDatBan");
-        mainPanel.add(new QuanLyBan(), "QuanLyBan");
-        mainPanel.add(new QuanLyHoaDon(), "QuanLyHoaDon");
-        mainPanel.add(new QuanLyNhanVien(), "QuanLyNhanVien");
-        mainPanel.add(new JLabel("Nội dung Quản lý Phiếu Đặt", SwingConstants.CENTER), "QuanLyPhieuDat");
-        mainPanel.add(new JLabel("Nội dung Quản lý Thực Đơn", SwingConstants.CENTER), "QuanLyThucDon");
-        mainPanel.add(new BaoCaoThongKe(), "BaoCaoThongKe");
+        mainPanel.add(new DatMon(), "\uD83C\uDF7D ĐẶT MÓN");
+        mainPanel.add(new QuanLyDatBan(), "\uD83D\uDCC5 ĐẶT BÀN");
+        mainPanel.add(new QuanLyBan(), "\u25A4 BÀN ĂN");
+        mainPanel.add(new QuanLyHoaDon(), "\uD83D\uDCDD HÓA ĐƠN");
+        mainPanel.add(new QuanLyNhanVien(), "\uD83D\uDC68\u200D NHÂN VIÊN");
+        mainPanel.add(new JLabel("Nội dung Quản lý Phiếu Đặt", SwingConstants.CENTER), "\uD83D\uDCDD PHIẾU ĐẶT");
+        mainPanel.add(new JLabel("Nội dung Quản lý Thực Đơn", SwingConstants.CENTER), "\uD83C\uDF72 THỰC ĐƠN");
+        mainPanel.add(new BaoCaoThongKe(), "\uD83D\uDCCA THỐNG KÊ");
 
-        // Tạo JSplitPane để chia khu vực bên trái và bên phải
+        // Tạo JSplitPane để chia khu vực bên trái và bên phải, bỏ đi thanh điều chỉnh kích thước
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, mainPanel);
-        splitPane.setDividerLocation(200);
-        splitPane.setOneTouchExpandable(true); // Thêm thanh kéo
+        splitPane.setDividerLocation(140); // Thay đổi kích thước chia tay
 
         // Thêm splitPane vào frame
         add(splitPane);
@@ -103,15 +113,18 @@ public class TrangChu extends JFrame {
                 // Vẽ hình dạng bo tròn
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setColor(getBackground());
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 25, 25); // Bo góc với bán kính 25
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15); // Bo góc với bán kính 15
                 super.paintComponent(g);
             }
         };
         button.setFocusPainted(false);
-        button.setFont(new Font("Arial", Font.BOLD, 14)); // Đổi sang font Arial
+//        button.setFont(new Font("Arial", Font.BOLD, 12)); // Kích thước font
+        button.setFont(new Font("Arial Unicode MS", Font.PLAIN, 14)); // Font hỗ trợ tốt emoji
         button.setForeground(new Color(255, 255, 255)); // Màu chữ trắng nổi bật
         button.setBackground(new Color(0, 102, 204, 150)); // Màu nền xanh hài hòa với độ trong suốt
-        button.setPreferredSize(new Dimension(100, 60)); // Kích thước nút nhỏ hơn
+        button.setPreferredSize(new Dimension(130, 40)); // Đã điều chỉnh chiều rộng và chiều cao của nút
+        button.setMinimumSize(new Dimension(130, 40)); // Kích thước tối thiểu
+        button.setMaximumSize(new Dimension(130, 40)); // Kích thước tối đa
         button.setBorder(null); // Bỏ viền cho nút
         button.setOpaque(false); // Đặt nút trong suốt
 
@@ -145,32 +158,30 @@ public class TrangChu extends JFrame {
             lastClickedButton = sourceButton; // Cập nhật nút được nhấn trước đó
 
             // Chuyển đổi giữa các nội dung dựa trên nút nhấn
-            switch (command) {
-                case "ĐẶT MÓN":
-                    cl.show(mainPanel, "DatMon");
+            switch (command){
+                case "\uD83C\uDF7D ĐẶT MÓN":
+                    cl.show(mainPanel, "\uD83C\uDF7D ĐẶT MÓN");
                     break;
-                case "QUẢN LÝ ĐẶT BÀN":
-                    cl.show(mainPanel, "QuanLyDatBan");
+                case "\uD83D\uDCC5 ĐẶT BÀN":
+                    cl.show(mainPanel, "\uD83D\uDCC5 ĐẶT BÀN");
                     break;
-                case "QUẢN LÝ BÀN":
-                    cl.show(mainPanel, "QuanLyBan");
+                case "\u25A4 BÀN ĂN":
+                    cl.show(mainPanel, "\u25A4 BÀN ĂN");
                     break;
-                case "QUẢN LÝ HÓA ĐƠN":
-                    cl.show(mainPanel, "QuanLyHoaDon");
+                case "\uD83D\uDCDD HÓA ĐƠN":
+                    cl.show(mainPanel, "\uD83D\uDCDD HÓA ĐƠN");
                     break;
-                case "QUẢN LÝ NHÂN VIÊN":
-                    cl.show(mainPanel, "QuanLyNhanVien");
+                case "\uD83D\uDC68\u200D NHÂN VIÊN":
+                    cl.show(mainPanel, "\uD83D\uDC68\u200D NHÂN VIÊN");
                     break;
-                case "QUẢN LÝ PHIẾU ĐẶT":
-                    cl.show(mainPanel, "QuanLyPhieuDat");
+                case "\uD83D\uDCDD PHIẾU ĐẶT":
+                    cl.show(mainPanel, "\uD83D\uDCDD PHIẾU ĐẶT");
                     break;
-                case "QUẢN LÝ THỰC ĐƠN":
-                    cl.show(mainPanel, "QuanLyThucDon");
+                case "\uD83C\uDF72 THỰC ĐƠN":
+                    cl.show(mainPanel, "\uD83C\uDF72 THỰC ĐƠN");
                     break;
-                case "BÁO CÁO THỐNG KÊ":
-                    cl.show(mainPanel, "BaoCaoThongKe");
-                    break;
-                default:
+                case "\uD83D\uDCCA THỐNG KÊ":
+                    cl.show(mainPanel, "\uD83D\uDCCA THỐNG KÊ");
                     break;
             }
         }

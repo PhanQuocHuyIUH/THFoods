@@ -1,4 +1,5 @@
 package Gui;
+
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.table.DefaultTableModel;
@@ -6,217 +7,321 @@ import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import DAO.MonAn_Dao;
+import DB.Database;
+import Entity.MonAn;
 
 public class DatMon extends JPanel {
     private JTable orderTable;
     private DefaultTableModel tableModel;
     private JComboBox<String> tableComboBox;
     private JLabel totalLabel;
+    private JTextField searchField;
+    private ArrayList<MonAn> menuItems;
+    private HashMap<String, Integer> orderQuantity; // Thêm để theo dõi số lượng món ăn
     private double totalPrice = 0.0;
 
     public DatMon() {
-        setLayout(new BorderLayout());
-
-        // Phần bên trái hiển thị menu món ăn
-        JPanel menuPanel = new JPanel();
-        menuPanel.setLayout(new GridLayout(0, 4, 10, 10)); // 4 món trên 1 hàng
-
-        // Thêm các món ăn vào menu
-        String[] dishNames = {"Phở Bò", "Bún Chả", "Gỏi Cuốn", "Cơm Tấm", "Bánh Mì", "Bánh Xèo",
-                "Hủ Tiếu", "Mì Quảng", "Bánh Cuốn", "Chả Cá", "Xôi Gà", "Lẩu Thái",
-                "Bánh Canh", "Bánh Bèo", "Nem Nướng", "Chè Ba Màu", "Bún Bò Huế",
-                "Lẩu Bò", "Gỏi Xoài", "Cá Kho Tộ", "Gà Rán", "Chân Gà Ngâm Sả Tắc",
-                "Salad Tôm", "Thịt Nướng", "Sushi", "Trà Sữa", "Cà Phê Sữa Đá",
-                "Bánh Trung Thu", "Sò Điệp Nướng Mỡ Hành", "Chả Giò"};
-
-        double[] dishPrices = {50000, 45000, 30000, 40000, 25000, 60000, 55000, 50000, 35000, 75000,
-                20000, 120000, 40000, 30000, 45000, 25000, 55000, 130000, 35000, 80000,
-                70000, 40000, 60000, 80000, 15000, 25000, 30000, 20000, 45000, 55000,
-                30000, 35000};
-
-        String[] dishImages = {"src\\img\\pho_bo.jpg", "bun_cha.png", "goi_cuon.png", "com_tam.png",
-                "banh_mi.png", "banh_xeo.png", "hu_tieu.png", "mi_quang.png",
-                "banh_cuon.png", "cha_ca.png", "xoi_ga.png", "lau_thai.png",
-                "banh_canh.png", "banh_beo.png", "nem_nuong.png", "che_ba_mau.png",
-                "bun_bo_hue.png", "lau_bo.png", "goi_xoai.png", "ca_kho_to.png",
-                "ga_ran.png", "chan_ga_ngam_sa_tac.png", "salad_tom.png", "thit_nuong.png",
-                "sushi.png", "tra_sua.png", "ca_phe_sua_da.png", "banh_trung_thu.png",
-                "so_diep_nuong_mo_hanh.png", "cha_gio.png"};
-
-        for (int i = 0; i < dishNames.length; i++) {
-            JPanel dishPanel = new JPanel();
-            dishPanel.setLayout(new BorderLayout());
-
-            // Tạo hình ảnh món ăn
-            ImageIcon dishIcon = new ImageIcon(dishImages[i]);
-            Image scaledImage = dishIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH); // Giữ tỉ lệ
-            JLabel dishImageLabel = new JLabel(new ImageIcon(scaledImage));
-            dishPanel.add(dishImageLabel, BorderLayout.CENTER);
-
-            // Tạo tên món ăn và đơn giá
-            JLabel dishLabel = new JLabel("<html>" + dishNames[i] + "<br>" + dishPrices[i] + " VND</html>", SwingConstants.CENTER);
-            dishLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12)); // Font chữ đẹp hơn
-            dishPanel.add(dishLabel, BorderLayout.SOUTH);
-
-            // Thêm sự kiện khi nhấn vào món ăn
-            dishPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            dishPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-            int index = i;
-            dishPanel.addMouseListener(new java.awt.event.MouseAdapter() {
-                @Override
-                public void mouseClicked(java.awt.event.MouseEvent evt) {
-                    addDishToOrder(dishNames[index], dishPrices[index]);
-                }
-            });
-
-            menuPanel.add(dishPanel);
+        try {
+            Database.getInstance().connect();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-        // Thêm JScrollPane cho menu món ăn, chỉ kéo theo chiều dọc
-        JScrollPane scrollPane = new JScrollPane(menuPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16); // Tăng tốc độ cuộn
-        add(scrollPane, BorderLayout.CENTER);
+        setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
+
+        // Phần header
+        JPanel headerPanel = createHeaderPanel();
+        add(headerPanel, BorderLayout.NORTH);
+
+        // Phần bên trái hiển thị menu món ăn
+        JPanel menuPanel = createMenuPanel();
+        JScrollPane menuScrollPane = new JScrollPane(menuPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        menuScrollPane.getVerticalScrollBar().setUnitIncrement(16); // Tăng tốc độ cuộn
+        add(menuScrollPane, BorderLayout.CENTER);
 
         // Phần bên phải hiển thị chi tiết đặt món
+        JPanel orderPanel = createOrderPanel();
+        add(orderPanel, BorderLayout.EAST);
+
+        // Tải menu món từ cơ sở dữ liệu
+        loadMenuItems(menuPanel);
+
+        orderQuantity = new HashMap<>(); // Khởi tạo HashMap
+    }
+
+    private JPanel createHeaderPanel() {
+        JPanel headerPanel = new JPanel();
+        headerPanel.setBackground(new Color(0, 102, 204, 150));
+        headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+        // Thêm chữ Menu
+        JLabel menuLabel = new JLabel("MENU   ");
+        menuLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        menuLabel.setForeground(Color.WHITE);
+        headerPanel.add(menuLabel);
+
+        // Thêm các nút phân loại
+        String[] categories = {"Món chính", "Nước uống", "Món ăn nhẹ", "Món tráng miệng", "Hiện tất cả"};
+        for (String category : categories) {
+            JButton categoryButton = createCategoryButton(category);
+            headerPanel.add(categoryButton);
+        }
+
+        // Thêm khoảng trống
+        headerPanel.add(Box.createRigidArea(new Dimension(100, 0)));
+
+        // Thanh tìm kiếm
+        searchField = new JTextField(15);
+        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        headerPanel.add(searchField);
+
+        // Nút tìm kiếm
+        JButton searchButton = createStyledButton("Tìm kiếm", e -> filterMenuItemsBySearch());
+        headerPanel.add(searchButton);
+
+        return headerPanel;
+    }
+
+    private JButton createCategoryButton(String category) {
+        JButton button = createStyledButton(category, e -> filterMenuItemsByCategory(category));
+        button.setBackground(new Color(0, 102, 204, 150));
+        return button;
+    }
+
+    private JPanel createMenuPanel() {
+        JPanel menuPanel = new JPanel();
+        menuPanel.setLayout(new GridLayout(0, 4, 10, 10));
+        menuPanel.setBackground(Color.WHITE);
+        return menuPanel;
+    }
+
+    private JPanel createOrderPanel() {
         JPanel orderPanel = new JPanel();
         orderPanel.setLayout(new BorderLayout());
-        orderPanel.setBackground(new Color(245, 245, 255)); // Màu nền cho phần bên phải
+        orderPanel.setBackground(new Color(245, 245, 255));
 
-        // Bảng hiển thị chi tiết đặt món với màu sắc hài hòa
+        // Bảng hiển thị chi tiết đặt món
         String[] columnNames = {"Tên món", "Đơn giá", "Số lượng", "Thành tiền"};
         tableModel = new DefaultTableModel(columnNames, 0);
         orderTable = new JTable(tableModel);
-        orderTable.setFont(new Font("Segoe UI", Font.PLAIN, 14)); // Font chữ đẹp hơn
-        orderTable.setRowHeight(30);
-        orderTable.setBackground(new Color(230, 240, 255)); // Màu nền của bảng
-        orderTable.setForeground(new Color(50, 50, 50)); // Màu chữ
-        // Đặt màu nền cho các dòng đã chọn
-        orderTable.setSelectionBackground(new Color(100, 150, 255)); // Màu nền khi chọn dòng
-
-        // Đặt màu chữ cho các dòng đã chọn
-        orderTable.setSelectionForeground(Color.WHITE); // Màu chữ khi chọn dòng
-
-        // Đặt màu viền cho các ô trong JTable
-        orderTable.setGridColor(new Color(50, 150, 200)); // Màu viền giữa các ô
-
-        JTableHeader header = orderTable.getTableHeader();
-        header.setBackground(new Color(10, 0, 200));
-        header.setForeground(Color.WHITE); // Đặt màu chữ tiêu đề cột thành trắng
-
-        Font font = new Font("Arial", Font.BOLD, 14);
-        header.setFont(font); // Đặt font chữ cho tiêu đề cột
-
-
-
+        customizeOrderTable();
 
         JScrollPane orderScrollPane = new JScrollPane(orderTable);
         orderPanel.add(orderScrollPane, BorderLayout.CENTER);
 
         // Phần dưới cùng hiển thị tổng tiền và các nút
+        JPanel bottomPanel = createBottomPanel();
+        orderPanel.add(bottomPanel, BorderLayout.NORTH);
+
+        JPanel buttonPanel = createButtonPanel();
+        orderPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        return orderPanel;
+    }
+
+    private void customizeOrderTable() {
+        orderTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        orderTable.setRowHeight(30);
+        orderTable.setBackground(new Color(230, 240, 255));
+        orderTable.setForeground(new Color(50, 50, 50));
+        orderTable.setSelectionBackground(new Color(0, 0, 255, 150));
+        orderTable.setSelectionForeground(Color.WHITE);
+        orderTable.setGridColor(new Color(50, 150, 200));
+
+        JTableHeader header = orderTable.getTableHeader();
+        header.setBackground(new Color(0, 102, 204, 150));
+        header.setForeground(Color.WHITE);
+        header.setFont(new Font("Arial", Font.BOLD, 14));
+    }
+
+    private JPanel createBottomPanel() {
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new GridLayout(2, 2, 10, 10));
-        bottomPanel.setBackground(new Color(245, 245, 255)); // Đồng nhất màu nền
+        bottomPanel.setBackground(new Color(245, 245, 255));
 
-        // ComboBox chọn bàn với giao diện đẹp hơn
+        // ComboBox chọn bàn
         bottomPanel.add(new JLabel("Chọn bàn:"));
-        UIManager.put("ComboBox.background", new ColorUIResource(230, 240, 255));
-        UIManager.put("ComboBox.foreground", new ColorUIResource(50, 50, 50));
         String[] tables = {"Bàn 1", "Bàn 2", "Bàn 3", "Bàn 4", "Bàn 5"};
         tableComboBox = new JComboBox<>(tables);
-        tableComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14)); // Font đẹp hơn
+        tableComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         bottomPanel.add(tableComboBox);
 
         // Hiển thị tổng tiền
         bottomPanel.add(new JLabel("Tổng tiền:"));
         totalLabel = new JLabel("0 VND");
-        totalLabel.setFont(new Font("Segoe UI", Font.BOLD, 16)); // Font chữ lớn cho tổng tiền
+        totalLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         bottomPanel.add(totalLabel);
 
-        // Nút Đặt Món, Hủy và Xóa với màu sắc phù hợp
-        JPanel buttonPanel = new JPanel();
-        JButton orderButton = createStyledButton("Đặt Món", new Color(0, 102, 204));
-        JButton cancelButton = createStyledButton("Hủy", new Color(204, 0, 0));
-        JButton deleteButton = createStyledButton("Xóa", new Color(255, 153, 51));
-
-        buttonPanel.add(orderButton);
-        buttonPanel.add(cancelButton);
-        buttonPanel.add(deleteButton);
-
-        orderPanel.add(bottomPanel, BorderLayout.NORTH);
-        orderPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        add(orderPanel, BorderLayout.EAST);
-
-        // Xử lý sự kiện cho các nút
-        orderButton.addActionListener(e -> placeOrder());
-        cancelButton.addActionListener(e -> cancelOrder());
-        deleteButton.addActionListener(e -> deleteSelectedItem());
+        return bottomPanel;
     }
 
-    // Phương thức thêm món vào giỏ hàng
-    private void addDishToOrder(String dishName, double price) {
-        boolean dishExists = false;
+    private JPanel createButtonPanel() {
+        JPanel buttonPanel = new JPanel();
+        JButton orderButton = createStyledButton("\uD83C\uDF7D Đặt Món", e -> placeOrder());
+        orderButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
+        JButton resetButton = createStyledButton("\u21BA", e -> resetOrder());
+        resetButton.setPreferredSize(new Dimension(60, 60));
+        resetButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 26));
+        resetButton.setBackground(new Color(238, 238, 238));
+        resetButton.setForeground(Color.BLUE);
+        JButton cancelButton = createStyledButton("\u274C Hủy", e -> cancelSelectedItem());
+        cancelButton.setBackground(new Color(255, 0, 0, 150));
+        cancelButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
 
-        // Kiểm tra nếu món đã có trong giỏ hàng
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            if (tableModel.getValueAt(i, 0).equals(dishName)) {
-                int quantity = (int) tableModel.getValueAt(i, 2) + 1;
-                tableModel.setValueAt(quantity, i, 2);
-                tableModel.setValueAt(quantity * price, i, 3);
-                dishExists = true;
-                break;
+        buttonPanel.add(orderButton);
+        buttonPanel.add(resetButton);
+        buttonPanel.add(cancelButton);
+
+        return buttonPanel;
+    }
+
+    private void loadMenuItems(JPanel menuPanel) {
+        try {
+            MonAn_Dao monAnDao = new MonAn_Dao();
+            menuItems = monAnDao.getInForNV(); // Lấy danh sách món ăn từ database
+
+            menuPanel.removeAll(); // Xóa các món ăn cũ
+
+            for (MonAn monAn : menuItems) {
+                addDishToMenuPanel(menuPanel, monAn);
+            }
+            menuPanel.revalidate();
+            menuPanel.repaint();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addDishToMenuPanel(JPanel menuPanel, MonAn monAn) {
+        JPanel dishPanel = new JPanel();
+        dishPanel.setLayout(new BorderLayout());
+
+        // Tạo hình ảnh món ăn
+        String imagePath = "src\\img\\" + monAn.getTenMon().toLowerCase().replace(" ", "_") + ".jpg";
+        ImageIcon dishIcon = new ImageIcon(imagePath);
+        Image scaledImage = dishIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+        JLabel dishImageLabel = new JLabel(new ImageIcon(scaledImage));
+        dishPanel.add(dishImageLabel, BorderLayout.CENTER);
+
+        // Tạo tên món ăn và đơn giá
+        JLabel dishLabel = new JLabel("<html>" + monAn.getTenMon() + "<br>" + monAn.getDonGia() + " VND</html>", SwingConstants.CENTER);
+        dishLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        dishPanel.add(dishLabel, BorderLayout.SOUTH);
+
+        // Thêm sự kiện khi nhấn vào món ăn
+        dishPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        dishPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+        dishPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addDishToOrder(monAn.getTenMon(), monAn.getDonGia());
+            }
+        });
+
+        menuPanel.add(dishPanel);
+    }
+
+    private void filterMenuItemsByCategory(String category) {
+        JPanel menuPanel = (JPanel) ((JScrollPane) getComponent(1)).getViewport().getView();
+        menuPanel.removeAll(); // Xóa các món ăn cũ
+
+        for (MonAn monAn : menuItems) {
+            boolean matchesCategory = category.equals("Hiện tất cả") || monAn.getLoaiMon().equals(category);
+            if (matchesCategory) {
+                addDishToMenuPanel(menuPanel, monAn);
             }
         }
 
-        if (!dishExists) {
-            // Thêm món mới vào giỏ hàng
-            tableModel.addRow(new Object[]{dishName, price, 1, price});
+        menuPanel.revalidate();
+        menuPanel.repaint();
+    }
+
+    private void filterMenuItemsBySearch() {
+        String searchText = searchField.getText().toLowerCase();
+        JPanel menuPanel = (JPanel) ((JScrollPane) getComponent(1)).getViewport().getView();
+        menuPanel.removeAll(); // Xóa các món ăn cũ
+
+        for (MonAn monAn : menuItems) {
+            boolean matchesSearch = monAn.getTenMon().toLowerCase().contains(searchText);
+            if (matchesSearch) {
+                addDishToMenuPanel(menuPanel, monAn);
+            }
         }
 
-        updateTotalPrice();
+        menuPanel.revalidate();
+        menuPanel.repaint();
     }
 
-    // Phương thức cập nhật tổng tiền
-    private void updateTotalPrice() {
-        totalPrice = 0.0;
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            totalPrice += (double) tableModel.getValueAt(i, 3);
-        }
-        totalLabel.setText(String.format("%.0f VND", totalPrice));
-    }
-
-    // Phương thức xử lý đặt món
-    private void placeOrder() {
-        JOptionPane.showMessageDialog(this, "Đặt món thành công! Tổng tiền: " + totalLabel.getText());
-        tableModel.setRowCount(0); // Xóa giỏ hàng
-        updateTotalPrice();
-    }
-
-    // Phương thức xử lý khi nhấn nút Hủy
-    private void cancelOrder() {
-        tableModel.setRowCount(0); // Xóa giỏ hàng
-        updateTotalPrice();
-    }
-
-    // Phương thức xóa món đã chọn trong giỏ hàng
-    private void deleteSelectedItem() {
-        int selectedRow = orderTable.getSelectedRow();
-        if (selectedRow != -1) {
-            tableModel.removeRow(selectedRow);
-            updateTotalPrice();
-        } else {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn món để xóa.");
-        }
-    }
-
-    // Tạo nút với màu sắc
-    private JButton createStyledButton(String text, Color color) {
+    private JButton createStyledButton(String text, ActionListener actionListener) {
         JButton button = new JButton(text);
-        button.setBackground(color);
+        button.setBackground(new Color(0, 102, 204, 150));
         button.setForeground(Color.WHITE);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
-        button.setPreferredSize(new Dimension(100, 40)); // Kích thước nút
+        button.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        button.addActionListener(actionListener);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
         return button;
     }
 
+    private void addDishToOrder(String dishName, double price) {
+        int quantity = orderQuantity.getOrDefault(dishName, 0) + 1; // Tăng số lượng nếu đã có
+        double totalDishPrice = quantity * price;
+        totalPrice += price; // Chỉ cộng thêm giá trị đơn giá vào tổng tiền
+
+        // Cập nhật số lượng và thành tiền
+        orderQuantity.put(dishName, quantity);
+
+        // Kiểm tra xem món ăn đã có trong bảng chưa
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            if (tableModel.getValueAt(i, 0).equals(dishName)) {
+                tableModel.setValueAt(quantity, i, 2); // Cập nhật số lượng
+                tableModel.setValueAt(totalDishPrice, i, 3); // Cập nhật thành tiền
+                totalLabel.setText(totalPrice + " VND"); // Cập nhật tổng tiền
+                return;
+            }
+        }
+
+        // Nếu chưa có, thêm mới vào bảng
+        tableModel.addRow(new Object[]{dishName, price, quantity, totalDishPrice});
+        totalLabel.setText(totalPrice + " VND"); // Cập nhật tổng tiền
+    }
+
+    private void placeOrder() {
+        // Xử lý đặt món ở đây
+        JOptionPane.showMessageDialog(this, "Đặt món thành công!");
+        resetOrder();
+    }
+
+    private void resetOrder() {
+        tableModel.setRowCount(0); // Xóa các món trong bảng
+        orderQuantity.clear(); // Xóa thông tin số lượng món
+        totalPrice = 0.0;
+        totalLabel.setText("0 VND");
+    }
+
+    private void cancelSelectedItem() {
+        int selectedRow = orderTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            double price = (double) tableModel.getValueAt(selectedRow, 3);
+            String dishName = (String) tableModel.getValueAt(selectedRow, 0);
+            totalPrice -= price;
+            totalLabel.setText(totalPrice + " VND");
+            tableModel.removeRow(selectedRow);
+            orderQuantity.remove(dishName); // Xóa món khỏi danh sách theo dõi số lượng
+        }
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Đặt Món");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.setContentPane(new DatMon());
+        frame.setVisible(true);
+    }
 }
