@@ -7,9 +7,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-<<<<<<< HEAD
-    <orderEntry type="library" name="jfreechart-1.0.191" level="project" />
-=======
     <orderEntry type="library" name="jfreechart-1.0.19" level="project" />
     <orderEntry type="module-library" exported="">
       <library>
@@ -30,7 +27,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="mssql-jdbc-12.6.1.jre11" level="project" />
->>>>>>> d38ec0dd2f76cc56ebe520d7ca5e42d3d53c5a28
     <orderEntry type="library" name="jcommon-1.0.23" level="project" />
   </component>
 </module>
