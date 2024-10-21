@@ -1,16 +1,17 @@
 package Entity;
 
+import java.util.Date;
 import java.util.List;
 
 public class HoaDon
 {
     private String maHD;
-    private String ngayTao;
+    private Date ngayTao; // Year(+ 1900) - Month(+1) - Date
     private List<ChiTietHoaDon> chiTietHoaDon;
 
     public HoaDon() {}
 
-    public HoaDon(String maHD, String ngayTao , List<ChiTietHoaDon> chiTietHoaDon)
+    public HoaDon(String maHD, Date ngayTao , List<ChiTietHoaDon> chiTietHoaDon)
     {
         this.maHD = maHD;
         this.ngayTao = ngayTao;
@@ -31,12 +32,12 @@ public class HoaDon
         this.maHD = maHD;
     }
 
-    public String getNgayTao()
+    public Date getNgayTao()
     {
         return ngayTao;
     }
 
-    public void setNgayTao(String ngayTao)
+    public void setNgayTao(Date ngayTao)
     {
         this.ngayTao = ngayTao;
     }

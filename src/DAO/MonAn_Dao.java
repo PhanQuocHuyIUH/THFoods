@@ -36,4 +36,19 @@ public class MonAn_Dao {
         }
         return dsMonAn;
     }
+
+    public double getGiaMonAn(String maMon) throws SQLException {
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "select DonGia from MonAn where MaMon = '" + maMon + "'";
+
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+
+        if (rs.next()) {
+            return rs.getDouble(1);
+        }
+        return 0;
+    }
+
 }

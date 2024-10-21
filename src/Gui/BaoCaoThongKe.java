@@ -1,5 +1,6 @@
 package Gui;
 
+import DB.Database;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
@@ -10,6 +11,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 public class BaoCaoThongKe extends JPanel
 {
@@ -19,6 +21,14 @@ public class BaoCaoThongKe extends JPanel
     private DefaultCategoryDataset dataset;
 
     public BaoCaoThongKe() {
+        // link db
+        try{
+            Database.getInstance().connect();
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         setLayout(new BorderLayout());
 
         // Khởi tạo dataset cho biểu đồ
