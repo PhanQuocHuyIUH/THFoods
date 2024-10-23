@@ -11,9 +11,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import DAO.Ban_Dao;
+import DAO.CTPDM_Dao;
 import DAO.MonAn_Dao;
+import DAO.PhieuDatMon_Dao;
 import DB.Database;
-import Entity.MonAn;
+import Entity.*;
 
 public class DatMon extends JPanel {
     private JTable orderTable;
@@ -24,6 +27,10 @@ public class DatMon extends JPanel {
     private ArrayList<MonAn> menuItems;
     private HashMap<String, Integer> orderQuantity; // Thêm để theo dõi số lượng món ăn
     private double totalPrice = 0.0;
+    private JTextField noteField;
+    private JLabel nvField;
+
+    private ArrayList<Ban> dsBan;
 
     public DatMon() {
         try {
@@ -61,8 +68,8 @@ public class DatMon extends JPanel {
         headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         // Thêm chữ Menu
-        JLabel menuLabel = new JLabel("MENU   ");
-        menuLabel.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        JLabel menuLabel = new JLabel(" \u2630 MENU   ");
+        menuLabel.setFont(new Font("Arial Unicode MS", Font.BOLD, 24));
         menuLabel.setForeground(Color.WHITE);
         headerPanel.add(menuLabel);
 
@@ -74,7 +81,7 @@ public class DatMon extends JPanel {
         }
 
         // Thêm khoảng trống
-        headerPanel.add(Box.createRigidArea(new Dimension(100, 0)));
+        headerPanel.add(Box.createRigidArea(new Dimension(70, 0)));
 
         // Thanh tìm kiếm
         searchField = new JTextField(15);
@@ -82,7 +89,9 @@ public class DatMon extends JPanel {
         headerPanel.add(searchField);
 
         // Nút tìm kiếm
-        JButton searchButton = createStyledButton("Tìm kiếm", e -> filterMenuItemsBySearch());
+        JButton searchButton = createStyledButton("\uD83D\uDD0D Tìm kiếm", e -> filterMenuItemsBySearch());
+        searchButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 14));
+        searchButton.setBackground(new Color(80, 80, 255));
         headerPanel.add(searchButton);
 
         return headerPanel;
@@ -90,7 +99,7 @@ public class DatMon extends JPanel {
 
     private JButton createCategoryButton(String category) {
         JButton button = createStyledButton(category, e -> filterMenuItemsByCategory(category));
-        button.setBackground(new Color(0, 102, 204, 150));
+        button.setBackground(new Color(100, 100, 255));
         return button;
     }
 
@@ -113,12 +122,16 @@ public class DatMon extends JPanel {
         customizeOrderTable();
 
         JScrollPane orderScrollPane = new JScrollPane(orderTable);
-        orderPanel.add(orderScrollPane, BorderLayout.CENTER);
+        orderPanel.add(orderScrollPane, BorderLayout.NORTH);
 
         // Phần dưới cùng hiển thị tổng tiền và các nút
+        // cả hai phần đều ở dưới cùng
         JPanel bottomPanel = createBottomPanel();
-        orderPanel.add(bottomPanel, BorderLayout.NORTH);
+        //đường viền xanh
+        bottomPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(0, 0, 255)));
+        orderPanel.add(bottomPanel, BorderLayout.CENTER);
 
+        // Nút đặt món và nút reset
         JPanel buttonPanel = createButtonPanel();
         orderPanel.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -135,27 +148,73 @@ public class DatMon extends JPanel {
         orderTable.setGridColor(new Color(50, 150, 200));
 
         JTableHeader header = orderTable.getTableHeader();
-        header.setBackground(new Color(0, 102, 204, 150));
+        header.setBackground(new Color(105, 165, 225));
         header.setForeground(Color.WHITE);
         header.setFont(new Font("Arial", Font.BOLD, 14));
     }
 
     private JPanel createBottomPanel() {
         JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new GridLayout(2, 2, 10, 10));
+        bottomPanel.setLayout(new GridLayout(5, 2, 10, 10));
         bottomPanel.setBackground(new Color(245, 245, 255));
 
         // ComboBox chọn bàn
-        bottomPanel.add(new JLabel("Chọn bàn:"));
-        String[] tables = {"Bàn 1", "Bàn 2", "Bàn 3", "Bàn 4", "Bàn 5"};
+        JLabel tableLabel = new JLabel(" \u25A4 Chọn bàn:");
+        tableLabel.setFont(new Font("Chalkduster", Font.BOLD, 14));
+        bottomPanel.add(tableLabel);
+        //lấy danh sách bàn từ Dao
+        try {
+            Ban_Dao banDao = new Ban_Dao();
+            dsBan = banDao.getAllBan();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        String[] tables = new String[dsBan.size()];
+        for (int i = 0; i < dsBan.size(); i++) {
+            tables[i] = dsBan.get(i).getMaBan();
+        }
         tableComboBox = new JComboBox<>(tables);
-        tableComboBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tableComboBox.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        //xanh nhạt
+        tableComboBox.setBackground(new Color(230, 240, 255));
         bottomPanel.add(tableComboBox);
 
+        //ghi chú
+        JLabel noteLabel = new JLabel(" \uD83D\uDCDD Ghi chú:");
+        noteLabel.setFont(new Font("Chalkduster", Font.BOLD, 14));
+        bottomPanel.add(noteLabel);
+        noteField = new JTextField();
+        noteField.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        // xanh nhạt
+        noteField.setBackground(new Color(230, 240, 255));
+        bottomPanel.add(noteField);
+
+        // ngày
+        JLabel dateLabel = new JLabel(" \uD83D\uDCC5 Ngày:");
+        dateLabel.setFont(new Font("Chalkduster", Font.BOLD, 14));
+        bottomPanel.add(dateLabel);
+        //tự động cập nhật ngày
+        JLabel dateField = new JLabel();
+        dateField.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        dateField.setText(java.time.LocalDate.now().toString());
+        bottomPanel.add(dateField);
+
+        //nhân viên (lấy từ đăng nhập)
+        JLabel nvLabel = new JLabel(" \uD83D\uDC68\u200D Nhân viên:");
+        nvLabel.setFont(new Font("Chalkduster", Font.BOLD, 14));
+        bottomPanel.add(nvLabel);
+        nvField = new JLabel();
+//        nvField.setText(DangNhap.tenNhanVien);
+        nvField.setText(DangNhap.nvdn.getTenNV());
+        nvField.setFont(new Font("Chalkboard", Font.PLAIN, 14));
+        bottomPanel.add(nvField);
+
         // Hiển thị tổng tiền
-        bottomPanel.add(new JLabel("Tổng tiền:"));
+        JLabel totalLabelTitle = new JLabel(" Tổng Tiền:");
+        totalLabelTitle.setFont(new Font("Chalkduster", Font.BOLD, 20));
+        bottomPanel.add(totalLabelTitle);
         totalLabel = new JLabel("0 VND");
-        totalLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        totalLabel.setFont(new Font("Chalkduster", Font.BOLD, 20));
         bottomPanel.add(totalLabel);
 
         return bottomPanel;
@@ -163,19 +222,23 @@ public class DatMon extends JPanel {
 
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(245, 245, 255));
         JButton orderButton = createStyledButton("\uD83C\uDF7D Đặt Món", e -> placeOrder());
         orderButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
         JButton resetButton = createStyledButton("\u21BA", e -> resetOrder());
         resetButton.setPreferredSize(new Dimension(60, 60));
         resetButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 26));
-        resetButton.setBackground(new Color(238, 238, 238));
+        resetButton.setBackground(new Color(245, 245, 255));
         resetButton.setForeground(Color.BLUE);
+
         JButton cancelButton = createStyledButton("\u274C Hủy", e -> cancelSelectedItem());
-        cancelButton.setBackground(new Color(255, 0, 0, 150));
+        cancelButton.setBackground(new Color(255, 0, 15));
         cancelButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
 
         buttonPanel.add(orderButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(50, 0)));
         buttonPanel.add(resetButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(50, 0)));
         buttonPanel.add(cancelButton);
 
         return buttonPanel;
@@ -211,7 +274,7 @@ public class DatMon extends JPanel {
 
         // Tạo tên món ăn và đơn giá
         JLabel dishLabel = new JLabel("<html>" + monAn.getTenMon() + "<br>" + monAn.getDonGia() + " VND</html>", SwingConstants.CENTER);
-        dishLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        dishLabel.setFont(new Font("Comic Sans MS", Font.PLAIN, 12));
         dishPanel.add(dishLabel, BorderLayout.SOUTH);
 
         // Thêm sự kiện khi nhấn vào món ăn
@@ -260,7 +323,7 @@ public class DatMon extends JPanel {
 
     private JButton createStyledButton(String text, ActionListener actionListener) {
         JButton button = new JButton(text);
-        button.setBackground(new Color(0, 102, 204, 150));
+        button.setBackground(new Color(105, 165, 225));
         button.setForeground(Color.WHITE);
         button.setFont(new Font("Segoe UI", Font.BOLD, 14));
         button.addActionListener(actionListener);
@@ -293,9 +356,59 @@ public class DatMon extends JPanel {
     }
 
     private void placeOrder() {
-        // Xử lý đặt món ở đây
-        JOptionPane.showMessageDialog(this, "Đặt món thành công!");
-        resetOrder();
+        // Lấy thông tin từ các trường
+        String table = (String) tableComboBox.getSelectedItem();
+        String note = noteField.getText();
+        String date = java.time.LocalDate.now().toString();
+        String nv = nvField.getText();
+        // kiểm tra xem đã chọn món chưa
+        if (tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn món trước khi đặt!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        //kiểm tra trạng thái bàn
+        Ban ban = null;
+        for (Ban b : dsBan) {
+            if (b.getMaBan().equals(table)) {
+                ban = b;
+                break;
+            }
+        }
+        if (ban.getTrangThai().equals("DaDat || DangDung")) {
+            JOptionPane.showMessageDialog(this, "Bàn đã được đặt, vui lòng chọn bàn khác!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        // Thêm phiếu đặt món vào database
+        try {
+            //thêm phiếu đặt món
+            PhieuDatMon phieuDatMon = new PhieuDatMon("PDB" + System.currentTimeMillis(), date, note, ban, DangNhap.nvdn);
+            PhieuDatMon_Dao phieuDatMonDao = new PhieuDatMon_Dao();
+            phieuDatMonDao.addPhieuDatMon(phieuDatMon);
+            //thêm chi tiết phiếu đặt món
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                String tenMon = (String) tableModel.getValueAt(i, 0);
+                int soLuong = (int) tableModel.getValueAt(i, 2);
+                MonAn monAn = null;
+                for (MonAn mon : menuItems) {
+                    if (mon.getTenMon().equals(tenMon)) {
+                        monAn = mon;
+                        break;
+                    }
+                }
+                ChiTietDatMon chiTietDatMon = new ChiTietDatMon(phieuDatMon.getMaPDB(), monAn.getMaMon(), soLuong);
+                CTPDM_Dao ctpdmDao = new CTPDM_Dao();
+                ctpdmDao.addCTPDM(chiTietDatMon);
+            }
+            //cập nhật trạng thái bàn
+            Ban_Dao banDao = new Ban_Dao();
+            Ban banUpdate = new Ban(ban.getMaBan(), TrangThaiBan.DangDung, ban.getSoGhe());
+            banDao.updateTrangThaiBan(banUpdate);
+            JOptionPane.showMessageDialog(this, "Đặt món thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            resetOrder();
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Đặt món thất bại!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void resetOrder() {

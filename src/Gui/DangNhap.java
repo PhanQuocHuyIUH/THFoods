@@ -27,6 +27,9 @@ public class DangNhap extends JFrame implements ActionListener {
 
     private HashMap<String, String> adminUsers = new HashMap<>();
     private HashMap<String, String> nvUser = new HashMap<>();
+
+    //Biến lưu thông tin đăng nhập
+    static NhanVien nvdn = new NhanVien();
     public DangNhap() {
 
         try {
@@ -159,6 +162,16 @@ public class DangNhap extends JFrame implements ActionListener {
                         JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                     }
 
+                    //Lấy tên nhân viên từ tên đăng nhập
+                    NhanVien_Dao nhanVien_dao = new NhanVien_Dao();
+                    ArrayList<NhanVien> nhanViens = nhanVien_dao.getInForNV();
+                    for(NhanVien nv : nhanViens) {
+                        if(nv.getTenDangNhap().getTenDangNhap().equals(userName)) {
+                            nvdn = nv;
+                        }
+                    }
+                    new TrangChu();
+                    this.dispose();
                 }else {
                     JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 }
