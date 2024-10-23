@@ -26,6 +26,9 @@ public class DangNhap extends JFrame implements ActionListener {
 
     private HashMap<String, String> adminUsers = new HashMap<>();
     private HashMap<String, String> nvUser = new HashMap<>();
+
+    //Biến lưu thông tin đăng nhập
+    static NhanVien nvdn = new NhanVien();
     public DangNhap() {
 
         try {
@@ -134,6 +137,14 @@ public class DangNhap extends JFrame implements ActionListener {
                     new QuanLyTaiKhoan();
                     this.dispose();
                 }else if(nvUser.containsKey(userName) && nvUser.get(userName).equals(convertPassword)){
+                    //Lấy tên nhân viên từ tên đăng nhập
+                    NhanVien_Dao nhanVien_dao = new NhanVien_Dao();
+                    ArrayList<NhanVien> nhanViens = nhanVien_dao.getInForNV();
+                    for(NhanVien nv : nhanViens) {
+                        if(nv.getTenDangNhap().getTenDangNhap().equals(userName)) {
+                            nvdn = nv;
+                        }
+                    }
                     new TrangChu();
                     this.dispose();
                 }else {
