@@ -27,8 +27,6 @@ public class TaiKhoan_Dao {
         while (rs.next()){
             String tenDangNhap= rs.getString(1);
             String matKhau= rs.getString(2);
-
-
             dsTK.add(new TaiKhoan(tenDangNhap,matKhau));
         }
         return dsTK;
