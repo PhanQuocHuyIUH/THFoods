@@ -38,7 +38,7 @@ public class QuanLyNhanVien extends JPanel {
     public QuanLyNhanVien() {
         setBackground(new Color(255, 255, 255));
         setForeground(new Color(0, 100, 0));
-        setBounds(0, 50, 1323, 800);
+        setBounds(0, 50, 1372, 800);
         setLayout(null);
 
         JButton btnImage = new JButton("");
@@ -56,7 +56,7 @@ public class QuanLyNhanVien extends JPanel {
         JPanel jp_main = new JPanel();
         jp_main.setBackground(new Color(255, 255, 255));
         jp_main.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(192, 192, 192)));
-        jp_main.setBounds(221, 86, 1086, 300);
+        jp_main.setBounds(221, 86, 1141, 300);
         add(jp_main);
         jp_main.setLayout(null);
 
@@ -72,7 +72,7 @@ public class QuanLyNhanVien extends JPanel {
 
         JLabel lblNgaySinh = new JLabel("Ngày sinh:");
         lblNgaySinh.setFont(new Font("Arial", Font.BOLD, 16));
-        lblNgaySinh.setBounds(556, 22, 96, 37);
+        lblNgaySinh.setBounds(593, 22, 96, 37);
         jp_main.add(lblNgaySinh);
 
         txtMaNV = new JTextField();
@@ -94,7 +94,7 @@ public class QuanLyNhanVien extends JPanel {
         txtNgaySinh = new JTextField();
         txtNgaySinh.setFont(new Font("Arial", Font.PLAIN, 14));
         txtNgaySinh.setColumns(10);
-        txtNgaySinh.setBounds(662, 26, 389, 29);
+        txtNgaySinh.setBounds(727, 27, 389, 29);
         // Cách lề trái cho JTextField
         txtNgaySinh.setMargin(new Insets(5, 5, 5, 0));
         jp_main.add(txtNgaySinh);
@@ -113,13 +113,13 @@ public class QuanLyNhanVien extends JPanel {
 
         JLabel lblEmail = new JLabel("Email:");
         lblEmail.setFont(new Font("Arial", Font.BOLD, 16));
-        lblEmail.setBounds(556, 85, 96, 37);
+        lblEmail.setBounds(593, 81, 96, 37);
         jp_main.add(lblEmail);
 
         txtEmail = new JTextField();
         txtEmail.setFont(new Font("Arial", Font.PLAIN, 14));
         txtEmail.setColumns(10);
-        txtEmail.setBounds(662, 85, 389, 29);
+        txtEmail.setBounds(727, 86, 389, 29);
         txtEmail.setMargin(new Insets(5, 5, 5, 0));
         jp_main.add(txtEmail);
 
@@ -133,12 +133,12 @@ public class QuanLyNhanVien extends JPanel {
                 themNhanVien();
             }
         });
-        btnThem.setFont(new Font("Arial", Font.BOLD, 18));
+        btnThem.setFont(new Font("Chalkduster", Font.BOLD, 18));
         btnThem.setBounds(53, 221, 147, 50);
         jp_main.add(btnThem);
 
         btnXoa = new JButton("XÓA");
-        btnXoa.setBounds(261, 221, 147, 50);
+        btnXoa.setBounds(271, 221, 147, 50);
         btnXoa.setIcon(new ImageIcon("src\\img\\delete.png"));
         btnXoa.setBackground(new Color(255, 255, 255));
         btnXoa.addActionListener(new ActionListener() {
@@ -146,7 +146,7 @@ public class QuanLyNhanVien extends JPanel {
                 xoaNhanVien();
             }
         });
-        btnXoa.setFont(new Font("Arial", Font.BOLD, 18));
+        btnXoa.setFont(new Font("Chalkduster", Font.BOLD, 18));
         jp_main.add(btnXoa);
 
         btnSua = new JButton("SỬA");
@@ -157,8 +157,8 @@ public class QuanLyNhanVien extends JPanel {
         });
         btnSua.setIcon(new ImageIcon("src\\img\\fix.png"));
         btnSua.setBackground(new Color(255, 255, 255));
-        btnSua.setFont(new Font("Arial", Font.BOLD, 18));
-        btnSua.setBounds(471, 221, 147, 50);
+        btnSua.setFont(new Font("Chalkduster", Font.BOLD, 18));
+        btnSua.setBounds(486, 221, 147, 50);
         jp_main.add(btnSua);
 
         btnTim = new JButton("TÌM KIẾM");
@@ -169,8 +169,8 @@ public class QuanLyNhanVien extends JPanel {
 
             }
         });
-        btnTim.setFont(new Font("Arial", Font.BOLD, 18));
-        btnTim.setBounds(672, 221, 147, 50);
+        btnTim.setFont(new Font("Chalkduster", Font.BOLD, 18));
+        btnTim.setBounds(697, 221, 147, 50);
         jp_main.add(btnTim);
 
         btnLuu = new JButton("LƯU");
@@ -180,9 +180,9 @@ public class QuanLyNhanVien extends JPanel {
             }
         });
         btnLuu.setIcon(new ImageIcon("src\\img\\xuatfile.png"));
-        btnLuu.setFont(new Font("Arial", Font.BOLD, 18));
+        btnLuu.setFont(new Font("Chalkduster", Font.BOLD, 18));
         btnLuu.setBackground(Color.WHITE);
-        btnLuu.setBounds(875, 221, 147, 50);
+        btnLuu.setBounds(917, 221, 147, 50);
         jp_main.add(btnLuu);
 
         // Tiêu đề
@@ -219,7 +219,7 @@ public class QuanLyNhanVien extends JPanel {
 
 
         scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(10, 397, 1297, 392);
+        scrollPane.setBounds(10, 397, 1352, 392);
         add(scrollPane);
 
         // Dữ liệu cần thêm
@@ -227,8 +227,19 @@ public class QuanLyNhanVien extends JPanel {
                 {"NV01", "Phan Nhật Tiến", "0912345677", "pnt123@gmail.com", "2004-03-27"},
                 {"NV02", "Phạm Ngọc Hùng", "0912345678", "pnh456@gmail.com", "2004-12-12"},
                 {"NV03", "Nguyễn Văn Tòng", "0912345679", "nvt789@gmail.com", "2004-01-10"},
-                {"NV04", "Nguyễn Đinh Xuân Trường", "0912345680", "ntdx000@gmail.com", "2004-02-20"}
+                {"NV04", "Nguyễn Đinh Xuân Trường", "0912345680", "ntdx000@gmail.com", "2004-02-20"},
+                {"NV05", "Trần Thị Thanh Mai", "0912345681", "ttm123@gmail.com", "2004-04-15"},
+                {"NV06", "Lê Văn Bình", "0912345682", "lvb456@gmail.com", "2004-05-18"},
+                {"NV07", "Ngô Thị Ngọc Lan", "0912345683", "ntnl789@gmail.com", "2004-06-22"},
+                {"NV08", "Bùi Minh Châu", "0912345684", "bmc123@gmail.com", "2004-07-30"},
+                {"NV09", "Đỗ Quốc Bảo", "0912345685", "dqb456@gmail.com", "2004-08-12"},
+                {"NV10", "Hoàng Tấn Đạt", "0912345686", "htd789@gmail.com", "2004-09-25"},
+                {"NV11", "Võ Thanh Phong", "0912345687", "vtp123@gmail.com", "2004-10-16"},
+                {"NV12", "Phạm Hữu Tài", "0912345688", "pht456@gmail.com", "2004-11-21"},
+                {"NV13", "Nguyễn Nhật Quang", "0912345689", "nnq789@gmail.com", "2004-12-31"},
+                {"NV14", "Lý Đình Vũ", "0912345690", "ldv123@gmail.com", "2004-03-14"}
         };
+
 
         // Thêm dữ liệu vào model
         for (Object[] row : data) {
