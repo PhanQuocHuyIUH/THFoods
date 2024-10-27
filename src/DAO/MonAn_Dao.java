@@ -51,4 +51,40 @@ public class MonAn_Dao {
         return 0;
     }
 
+    //lấy món theo tên món
+    public MonAn getMonAnByTenMon(String tenMon) throws SQLException {
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "select * from MonAn where tenMon like N'" + tenMon + "'";
+
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+
+        if (rs.next()) {
+            String maMon = rs.getString(1);
+            String loaiMon = rs.getString(3);
+            double donGia = rs.getDouble(4);
+            String moTa = rs.getString(5);
+
+            return new MonAn(maMon, tenMon, loaiMon, donGia, moTa);
+        }
+        System.out.println("Không tìm thấy món ăn");
+        return null;
+    }
+
+
+    //lấy tên món theo mã món
+    public String getTenMon(String maMon) throws SQLException {
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "select TenMon from MonAn where MaMon = '" + maMon + "'";
+
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+
+        if (rs.next()) {
+            return rs.getString(1);
+        }
+        return null;
+    }
 }

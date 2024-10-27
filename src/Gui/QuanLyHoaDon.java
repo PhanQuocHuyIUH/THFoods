@@ -1,6 +1,9 @@
 package Gui;
+
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,50 +12,55 @@ import java.awt.event.MouseEvent;
 
 public class QuanLyHoaDon extends JPanel {
 
-    private JTable hoaDonTable; // Bảng hiển thị danh sách hóa đơn
-    private JTable chiTietTable; // Bảng hiển thị chi tiết hóa đơn
-    private JTextField searchField; // Ô tìm kiếm mã hóa đơn
-    private JComboBox<String> tableComboBox; // ComboBox để chọn số bàn
+    private JTable hoaDonTable;
+    private JTable chiTietTable;
+    private JTextField searchField;
+    private JComboBox<String> tableComboBox;
 
     public QuanLyHoaDon() {
         setLayout(new BorderLayout());
 
-        // Panel trên cùng chứa các chức năng tìm kiếm và nút, làm rộng hơn
-        JPanel searchPanel = new JPanel();
-        searchPanel.setLayout(new GridLayout(2, 1));
-        searchPanel.setPreferredSize(new Dimension(800, 100));
-        searchPanel.setBackground(Color.LIGHT_GRAY); // Trang trí màu nền
+        // Panel chứa các chức năng tìm kiếm và nút, set màu nền trắng
+        JPanel searchPanel = new JPanel(new BorderLayout());
+        searchPanel.setBackground(Color.WHITE);
 
-        JPanel searchSubPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        // Panel con chứa phần chọn bàn, set màu nền
+        JPanel selectTablePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 15));
+        selectTablePanel.setBackground(new Color(230, 240, 255));
 
-        // Tạo ComboBox để tìm kiếm theo bàn
         tableComboBox = new JComboBox<>(new String[]{"Tất cả", "Bàn 1", "Bàn 2", "Bàn 3", "Bàn 4", "Bàn 5"});
-        searchSubPanel.add(new JLabel("Chọn Bàn:"));
-        searchSubPanel.add(tableComboBox);
+        JLabel ban = new JLabel("Chọn Bàn:");
+        ban.setFont(new Font("Arial Unicode MS", Font.BOLD, 20));
+        selectTablePanel.add(ban);
+        selectTablePanel.add(tableComboBox);
 
-        // Ô tìm kiếm theo mã hóa đơn
-        searchField = new JTextField(15);
-        searchSubPanel.add(new JLabel("Tìm kiếm mã hóa đơn:"));
-        searchSubPanel.add(searchField);
+        // Panel con chứa phần tìm kiếm, set màu nền
+        JPanel searchFieldPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 15));
+        searchFieldPanel.setBackground(new Color(230, 240, 255));
 
-        // Nút tìm kiếm
-        JButton searchButton = new JButton("Tìm Kiếm");
-        searchSubPanel.add(searchButton);
+        searchField = new JTextField(30);
+        JLabel searchLabel = new JLabel("\uD83D\uDD0D Tìm Kiếm"); // Icon cho tìm kiếm
+        searchLabel.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
+        searchFieldPanel.add(searchLabel);
+        searchFieldPanel.add(searchField);
 
-        // Nút làm mới
-        JButton refreshButton = new JButton("Làm Mới");
-        searchSubPanel.add(refreshButton);
+        // Panel con chứa nút làm mới, set màu nền
+        JPanel refreshPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 15));
+        refreshPanel.setBackground(new Color(230, 240, 255));
 
-        // Font và màu sắc cho các nút
-        searchButton.setFont(new Font("Arial", Font.BOLD, 14));
-        searchButton.setBackground(new Color(60, 179, 113)); // Màu xanh lá
-        searchButton.setForeground(Color.WHITE);
-
-        refreshButton.setFont(new Font("Arial", Font.BOLD, 14));
-        refreshButton.setBackground(new Color(30, 144, 255)); // Màu xanh da trời
+        JButton refreshButton = new JButton("\u21BA Làm Mới");
+        refreshButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 20));
+        refreshButton.setBackground(new Color(105, 165, 225));
         refreshButton.setForeground(Color.WHITE);
+        refreshButton.setFocusPainted(false);
+        refreshButton.setBorderPainted(false);
+        refreshPanel.add(refreshButton);
 
-        searchPanel.add(searchSubPanel);
+        // Thêm các panel con vào searchPanel
+        searchPanel.add(selectTablePanel, BorderLayout.WEST);
+        searchPanel.add(searchFieldPanel, BorderLayout.CENTER);
+        searchPanel.add(refreshPanel, BorderLayout.EAST);
+
         add(searchPanel, BorderLayout.NORTH);
 
         // Bảng hiển thị hóa đơn
@@ -61,13 +69,22 @@ public class QuanLyHoaDon extends JPanel {
         ));
         JScrollPane hoaDonScrollPane = new JScrollPane(hoaDonTable);
         hoaDonScrollPane.setPreferredSize(new Dimension(600, 150));
+        hoaDonScrollPane.setBorder(new EmptyBorder(10, 0, 0, 0)); // Cách phần header ra một đoạn
 
         // Trang trí bảng hóa đơn
-        hoaDonTable.setFont(new Font("Arial", Font.PLAIN, 14));
-        hoaDonTable.setRowHeight(25);
-        hoaDonTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
-        hoaDonTable.getTableHeader().setBackground(new Color(70, 130, 180)); // Xanh biển
-        hoaDonTable.getTableHeader().setForeground(Color.WHITE);
+        Font tableFont = new Font("Arial Unicode MS", Font.PLAIN, 14);
+        hoaDonTable.setFont(tableFont);
+        hoaDonTable.setRowHeight(30);
+        hoaDonTable.setBackground(Color.WHITE);
+        hoaDonTable.setForeground(new Color(50, 50, 50));
+        hoaDonTable.setSelectionBackground(new Color(0, 0, 255, 150));
+        hoaDonTable.setSelectionForeground(Color.WHITE);
+        hoaDonTable.setGridColor(new Color(50, 150, 200));
+
+        JTableHeader header = hoaDonTable.getTableHeader();
+        header.setBackground(new Color(105, 165, 225));
+        header.setForeground(Color.WHITE);
+        header.setFont(new Font("Arial", Font.BOLD, 14));
 
         // Bảng chi tiết hóa đơn
         chiTietTable = new JTable(new DefaultTableModel(
@@ -77,15 +94,22 @@ public class QuanLyHoaDon extends JPanel {
         chiTietScrollPane.setPreferredSize(new Dimension(600, 150));
 
         // Trang trí bảng chi tiết hóa đơn
-        chiTietTable.setFont(new Font("Arial", Font.PLAIN, 14));
-        chiTietTable.setRowHeight(25);
-        chiTietTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
-        chiTietTable.getTableHeader().setBackground(new Color(70, 130, 180)); // Xanh biển
-        chiTietTable.getTableHeader().setForeground(Color.WHITE);
+        chiTietTable.setFont(tableFont);
+        chiTietTable.setRowHeight(30);
+        chiTietTable.setBackground(Color.WHITE);
+        chiTietTable.setForeground(new Color(50, 50, 50));
+        chiTietTable.setSelectionBackground(new Color(0, 0, 255, 150));
+        chiTietTable.setSelectionForeground(Color.WHITE);
+        chiTietTable.setGridColor(new Color(50, 150, 200));
+        JTableHeader header1 = chiTietTable.getTableHeader();
+        header1.setBackground(new Color(105, 165, 225));
+        header1.setForeground(Color.WHITE);
+        header1.setFont(new Font("Arial", Font.BOLD, 14));
 
-        // Panel chứa 2 bảng
+        // Panel chứa 2 bảng, set màu nền trắng
         JPanel tablePanel = new JPanel();
         tablePanel.setLayout(new GridLayout(2, 1));
+        tablePanel.setBackground(Color.WHITE);
         tablePanel.add(hoaDonScrollPane);
         tablePanel.add(chiTietScrollPane);
 
@@ -97,14 +121,6 @@ public class QuanLyHoaDon extends JPanel {
         hoaDonModel.addRow(new Object[]{"HD002", "Bàn 2", "13/10/2024", "300.000đ"});
         hoaDonModel.addRow(new Object[]{"HD003", "Bàn 3", "14/10/2024", "450.000đ"});
         hoaDonModel.addRow(new Object[]{"HD004", "Bàn 4", "15/10/2024", "700.000đ"});
-
-        // Xử lý sự kiện tìm kiếm
-        searchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                searchHoaDon();
-            }
-        });
 
         // Xử lý sự kiện làm mới
         refreshButton.addActionListener(new ActionListener() {
@@ -123,67 +139,27 @@ public class QuanLyHoaDon extends JPanel {
         });
     }
 
-    // Giả lập tìm kiếm hóa đơn
-    private void searchHoaDon() {
-        String maHoaDon = searchField.getText();
-        String selectedTable = tableComboBox.getSelectedItem().toString();
-
-        // Ví dụ giả lập thêm dữ liệu vào bảng hóa đơn
-        DefaultTableModel model = (DefaultTableModel) hoaDonTable.getModel();
-        model.setRowCount(0); // Xóa các dòng hiện tại trong bảng
-
-        // Dữ liệu mẫu dựa trên điều kiện tìm kiếm
-        if (selectedTable.equals("Tất cả") && maHoaDon.isEmpty()) {
-            model.addRow(new Object[]{"HD001", "Bàn 1", "12/10/2024", "500.000đ"});
-            model.addRow(new Object[]{"HD002", "Bàn 2", "13/10/2024", "300.000đ"});
-            model.addRow(new Object[]{"HD003", "Bàn 3", "14/10/2024", "450.000đ"});
-            model.addRow(new Object[]{"HD004", "Bàn 4", "15/10/2024", "700.000đ"});
-        } else if (!maHoaDon.isEmpty()) {
-            // Giả lập lọc theo mã hóa đơn
-            model.addRow(new Object[]{"HD001", "Bàn 1", "12/10/2024", "500.000đ"});
-        } else if (!selectedTable.equals("Tất cả")) {
-            // Giả lập lọc theo bàn
-            if (selectedTable.equals("Bàn 1")) {
-                model.addRow(new Object[]{"HD001", "Bàn 1", "12/10/2024", "500.000đ"});
-            }
-        }
-    }
-
-    // Giả lập làm mới bảng hóa đơn
     private void refreshHoaDon() {
         DefaultTableModel model = (DefaultTableModel) hoaDonTable.getModel();
         model.setRowCount(0);
-        // Giả lập thêm lại dữ liệu sau khi làm mới
         model.addRow(new Object[]{"HD001", "Bàn 1", "12/10/2024", "500.000đ"});
         model.addRow(new Object[]{"HD002", "Bàn 2", "13/10/2024", "300.000đ"});
         model.addRow(new Object[]{"HD003", "Bàn 3", "14/10/2024", "450.000đ"});
         model.addRow(new Object[]{"HD004", "Bàn 4", "15/10/2024", "700.000đ"});
-        searchField.setText(""); // Xóa nội dung ô tìm kiếm
-        tableComboBox.setSelectedIndex(0); // Đặt lại lựa chọn bàn
+        searchField.setText("");
+        tableComboBox.setSelectedIndex(0);
     }
 
-    // Hiển thị chi tiết hóa đơn khi nhấn vào bảng hóa đơn
     private void showChiTietHoaDon() {
         int selectedRow = hoaDonTable.getSelectedRow();
         if (selectedRow != -1) {
-            // Lấy mã hóa đơn từ hàng được chọn
             String maHoaDon = (String) hoaDonTable.getValueAt(selectedRow, 0);
-
-            // Giả lập dữ liệu chi tiết hóa đơn
             DefaultTableModel model = (DefaultTableModel) chiTietTable.getModel();
-            model.setRowCount(0); // Xóa các dòng hiện tại trong bảng chi tiết
+            model.setRowCount(0);
             model.addRow(new Object[]{maHoaDon, "Món 1", "2", "100.000đ", "200.000đ"});
             model.addRow(new Object[]{maHoaDon, "Món 2", "1", "150.000đ", "150.000đ"});
         } else {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn hóa đơn để xem chi tiết.");
         }
-    }
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Quản Lý Hóa Đơn");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.add(new QuanLyHoaDon());
-        frame.setVisible(true);
     }
 }

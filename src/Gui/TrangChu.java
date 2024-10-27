@@ -29,6 +29,7 @@ public class TrangChu extends JFrame {
             }
         };
         leftPanel.setLayout(new BorderLayout());
+        leftPanel.setBackground(new Color(255,255,255)); // Màu nền trắng cho leftPanel
 
         // Logo trên phần nút chức năng
         ImageIcon logoIcon = new ImageIcon("src\\img\\logo2.png");
@@ -39,6 +40,7 @@ public class TrangChu extends JFrame {
 
         // Panel chứa các nút chức năng
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(255,255,255));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS)); // Thay đổi layout thành BoxLayout
         buttonPanel.setOpaque(false); // Tắt nền mặc định của panel
 

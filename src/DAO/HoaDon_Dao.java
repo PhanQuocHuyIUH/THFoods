@@ -93,4 +93,24 @@ public class HoaDon_Dao
             throwables.printStackTrace();
         }
     }
+    //Tạo hóa đơn mới
+    public void createHD(HoaDon hd) throws SQLException
+    {
+        //format: "dd-MM-yyyy"
+        Database.getInstance().connect();
+        Connection con = Database.getConnection();
+        String sql = "insert into HoaDon values('" + hd.getMaHD() + "','" + hd.getNgayTao() + "')";
+        Statement statement = con.createStatement();
+        statement.executeUpdate(sql);
+    }
+    //tạo chi tiết hóa đơn
+    public void createCTHD(ChiTietHoaDon cthd) throws SQLException
+    {
+        Database.getInstance().connect();
+        Connection con = Database.getConnection();
+        String sql = "insert into CTHD values('" + cthd.getMaHD() + "','"+ cthd.getMaMon() +"','" + cthd.getSoLuong() + "')";
+        Statement statement = con.createStatement();
+        statement.executeUpdate(sql);
+    }
+
 }
