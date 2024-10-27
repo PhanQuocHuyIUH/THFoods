@@ -1,7 +1,6 @@
 package Gui;
 
 import DAO.HoaDon_Dao;
-import DB.Database;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -46,7 +45,9 @@ public class BaoCaoThongKe extends JPanel {
         reportTypeComboBox = new JComboBox<>(new String[] {
                 "Doanh thu theo loại món ăn",
                 "Doanh thu 7 ngày gần nhất",
-                "Doanh thu theo tháng"
+                "Doanh thu theo tháng",
+                "Các món ăn bán chạy nhất",
+                "Các món ăn bán chậm nhất",
         });
         reportTypeComboBox.setSelectedIndex(0);
 
@@ -87,21 +88,101 @@ public class BaoCaoThongKe extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 String selectedReport = (String) reportTypeComboBox.getSelectedItem();
                 if (selectedReport.equals("Doanh thu theo loại món ăn")) {
-                    loadPieChart();
+                    loadRevenueByDishType();
                 } else if (selectedReport.equals("Doanh thu 7 ngày gần nhất")) {
-                    loadLineChart();
+                    loadRevenueLast7Days();
                 } else if (selectedReport.equals("Doanh thu theo tháng")) {
-                    loadBarChart();
+                    loadRevenueByMonth();
+                } else if (selectedReport.equals("Các món ăn bán chạy nhất")) {
+                    loadBestSellingDishes();
+                } else if (selectedReport.equals("Các món ăn bán chậm nhất")) {
+                    loadWorstSellingDishes();
                 }
             }
         });
 
         // Hiển thị mặc định biểu đồ tròn khi khởi chạy
-        loadPieChart();
+        loadRevenueByDishType();
+    }
+
+    // Hàm tải dữ liệu và hiển thị các món ăn bán chạy nhất (biểu đồ cột)
+    private void loadBestSellingDishes() {
+        hoaDon_dao = new HoaDon_Dao();
+        Map<String, Integer> monAnMap = null;
+        try {
+            monAnMap = hoaDon_dao.getBestSellingDishes();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        barDataset = new DefaultCategoryDataset();
+        for (Map.Entry<String, Integer> entry : monAnMap.entrySet()) {
+            barDataset.addValue(entry.getValue(), "Số lượng", entry.getKey());
+        }
+
+        JFreeChart barChart = ChartFactory.createBarChart(
+                "Các món ăn bán chạy nhất (30 ngày qua)",
+                "Món ăn",
+                "Số lượng",
+                barDataset,
+                PlotOrientation.VERTICAL,
+                true,
+                true,
+                false
+        );
+
+        // Tùy chỉnh màu sắc biểu đồ cột
+        CategoryPlot plot = barChart.getCategoryPlot();
+        BarRenderer renderer = new BarRenderer();
+        renderer.setSeriesPaint(0, Color.GREEN); // Màu xanh lá cho các cột
+        plot.setRenderer(renderer);
+
+        // Cập nhật bảng thông tin
+        updateTable(new String[] {"Món ăn", "Số lượng"}, convertMapToTableData2(monAnMap));
+
+        updateChart(barChart);
+    }
+
+    // Hàm tải dữ liệu và hiển thị các món ăn bán chậm nhất
+    private void loadWorstSellingDishes() {
+        hoaDon_dao = new HoaDon_Dao();
+        Map<String, Integer> monAnMap = null;
+        try {
+            monAnMap = hoaDon_dao.getWorstSellingDishes();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        barDataset = new DefaultCategoryDataset();
+        for (Map.Entry<String, Integer> entry : monAnMap.entrySet()) {
+            barDataset.addValue(entry.getValue(), "Số lượng", entry.getKey());
+        }
+
+        JFreeChart barChart = ChartFactory.createBarChart(
+                "Các món ăn bán chậm nhất (30 ngày qua)",
+                "Món ăn",
+                "Số lượng",
+                barDataset,
+                PlotOrientation.VERTICAL,
+                true,
+                true,
+                false
+        );
+
+        // Tùy chỉnh màu sắc biểu đồ cột
+        CategoryPlot plot = barChart.getCategoryPlot();
+        BarRenderer renderer = new BarRenderer();
+        renderer.setSeriesPaint(0, Color.RED); // Màu đỏ cho các cột
+        plot.setRenderer(renderer);
+
+        // Cập nhật bảng thông tin
+        updateTable(new String[] {"Món ăn", "Số lượng"}, convertMapToTableData2(monAnMap));
+
+        updateChart(barChart);
     }
 
     // Hàm tải dữ liệu và hiển thị biểu đồ tròn (doanh thu theo loại món ăn)
-    private void loadPieChart() {
+    private void loadRevenueByDishType() {
         hoaDon_dao = new HoaDon_Dao();
         Map<String, Double> doanhThuMap = hoaDon_dao.getRevenueByDishType();
 
@@ -132,7 +213,7 @@ public class BaoCaoThongKe extends JPanel {
     }
 
     // Hàm tải dữ liệu và hiển thị biểu đồ đường (doanh thu 7 ngày gần nhất)
-    private void loadLineChart() {
+    private void loadRevenueLast7Days() {
         hoaDon_dao = new HoaDon_Dao();
         lineDataset = new DefaultCategoryDataset();
         Map<String, Double> doanhThuMap = null;
@@ -169,7 +250,7 @@ public class BaoCaoThongKe extends JPanel {
     }
 
     // Hàm tải dữ liệu và hiển thị biểu đồ cột (doanh thu theo tháng)
-    private void loadBarChart() {
+    private void loadRevenueByMonth() {
         hoaDon_dao = new HoaDon_Dao();
         Map<String, Double> doanhThuMap = null;
         try{
@@ -240,6 +321,17 @@ public class BaoCaoThongKe extends JPanel {
         Object[][] data = new Object[map.size()][2];
         int index = 0;
         for (Map.Entry<String, Double> entry : map.entrySet()) {
+            data[index][0] = entry.getKey();
+            data[index][1] = entry.getValue();
+            index++;
+        }
+        return data;
+    }
+
+    private Object[][] convertMapToTableData2(Map<String, Integer> monAnMap) {
+        Object[][] data = new Object[monAnMap.size()][2];
+        int index = 0;
+        for (Map.Entry<String, Integer> entry : monAnMap.entrySet()) {
             data[index][0] = entry.getKey();
             data[index][1] = entry.getValue();
             index++;

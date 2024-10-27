@@ -159,4 +159,96 @@ public class HoaDon_Dao
         Statement statement = con.createStatement();
         statement.executeUpdate(sql);
     }
+
+    // hàm getBestSellingDishes trả về danh sách 6 các món ăn bán chạy nhất trong 30 ngày qua lấy tên món
+    public Map<String, Integer> getBestSellingDishes() throws SQLException {
+        Map<String, Integer> bestSellingDishes = new HashMap<>();
+        List<HoaDon> dsHD = new ArrayList<HoaDon>();
+        try {
+            dsHD = getAllHD();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        for (HoaDon hd : dsHD) {
+            Date ngayTao = new Date(hd.getNgayTao().getYear()+1900, hd.getNgayTao().getMonth()+1, hd.getNgayTao().getDate());
+            Date today = new Date(2024, 10, 16);
+            long diff = today.getTime() - ngayTao.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+            if (diffDays <= 30) {
+                List<ChiTietHoaDon> dsCTHD = hd.getChiTietHoaDon();
+                for (ChiTietHoaDon cthd : dsCTHD) {
+                    String maMon = cthd.getMaMon();
+                    String tenMon = new MonAn_Dao().getTenMon(maMon);
+                    if (bestSellingDishes.containsKey(tenMon)) {
+                        bestSellingDishes.put(tenMon, bestSellingDishes.get(tenMon) + cthd.getSoLuong());
+                    } else {
+                        bestSellingDishes.put(tenMon, cthd.getSoLuong());
+                    }
+                }
+            }
+        }
+
+        Map<String, Integer> sortedBestSellingDishes = new LinkedHashMap<>();
+        bestSellingDishes.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .forEachOrdered(x -> sortedBestSellingDishes.put(x.getKey(), x.getValue()));
+
+        Map<String, Integer> best6SellingDishes = new LinkedHashMap<>();
+        int count = 0;
+        for (Map.Entry<String, Integer> entry : sortedBestSellingDishes.entrySet()) {
+            if (count == 6) {
+                break;
+            }
+            best6SellingDishes.put(entry.getKey(), entry.getValue());
+            count++;
+        }
+
+        return best6SellingDishes;
+    }
+
+    // hàm getWorstSellingDishes trả về danh sách 6 các món ăn bán chậm nhất trong 30 ngày qua lấy tên món
+    public Map<String, Integer> getWorstSellingDishes() throws SQLException {
+        Map<String, Integer> worstSellingDishes = new HashMap<>();
+        List<HoaDon> dsHD = new ArrayList<HoaDon>();
+        try {
+            dsHD = getAllHD();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        for (HoaDon hd : dsHD) {
+            Date ngayTao = new Date(hd.getNgayTao().getYear()+1900, hd.getNgayTao().getMonth()+1, hd.getNgayTao().getDate());
+            Date today = new Date(2024, 10, 16);
+            long diff = today.getTime() - ngayTao.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+            if (diffDays <= 30) {
+                List<ChiTietHoaDon> dsCTHD = hd.getChiTietHoaDon();
+                for (ChiTietHoaDon cthd : dsCTHD) {
+                    String maMon = cthd.getMaMon();
+                    String tenMon = new MonAn_Dao().getTenMon(maMon);
+                    if (worstSellingDishes.containsKey(tenMon)) {
+                        worstSellingDishes.put(tenMon, worstSellingDishes.get(tenMon) + cthd.getSoLuong());
+                    } else {
+                        worstSellingDishes.put(tenMon, cthd.getSoLuong());
+                    }
+                }
+            }
+        }
+
+        Map<String, Integer> sortedWorstSellingDishes = new LinkedHashMap<>();
+        worstSellingDishes.entrySet().stream().sorted(Map.Entry.comparingByValue())
+                .forEachOrdered(x -> sortedWorstSellingDishes.put(x.getKey(), x.getValue()));
+
+        Map<String, Integer> worst6SellingDishes = new LinkedHashMap<>();
+        int count = 0;
+        for (Map.Entry<String, Integer> entry : sortedWorstSellingDishes.entrySet()) {
+            if (count == 6) {
+                break;
+            }
+            worst6SellingDishes.put(entry.getKey(), entry.getValue());
+            count++;
+        }
+
+        return worst6SellingDishes;
+    }
 }
