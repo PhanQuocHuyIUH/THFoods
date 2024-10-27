@@ -115,10 +115,12 @@ public class DangNhap extends JFrame implements ActionListener {
         add(panel);
 
         // Frame
+
         setTitle("THFOODS");
         setSize(600, 400);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
         setVisible(true);
 
         // Đăng kí sự kiện
@@ -161,17 +163,6 @@ public class DangNhap extends JFrame implements ActionListener {
                     }else {
                         JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                     }
-
-                    //Lấy tên nhân viên từ tên đăng nhập
-                    NhanVien_Dao nhanVien_dao = new NhanVien_Dao();
-                    ArrayList<NhanVien> nhanViens = nhanVien_dao.getInForNV();
-                    for(NhanVien nv : nhanViens) {
-                        if(nv.getTenDangNhap().getTenDangNhap().equals(userName)) {
-                            nvdn = nv;
-                        }
-                    }
-                    new TrangChu();
-                    this.dispose();
                 }else {
                     JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 }
