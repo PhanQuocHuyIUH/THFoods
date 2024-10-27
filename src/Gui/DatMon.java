@@ -169,9 +169,16 @@ public class DatMon extends JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        //sort theo mã bàn tăng dần (mã bàn có dạng Bxx) chỉ lấy 2 số cuối để sort
+        dsBan.sort((b1, b2) -> Integer.parseInt(b1.getMaBan().substring(1)) - Integer.parseInt(b2.getMaBan().substring(1)));
         String[] tables = new String[dsBan.size()];
-        for (int i = 0; i < dsBan.size(); i++) {
-            tables[i] = dsBan.get(i).getMaBan();
+        tables[0] = "Bàn ăn";
+        for (int i = 1; i < dsBan.size(); i++) {
+            //nếu bàn đã đặt thì không hiển thị
+            if (dsBan.get(i).getTrangThai() == TrangThaiBan.DaDat) {
+                continue;
+            }
+            tables[i] = dsBan.get(i-1).getMaBan();
         }
         tableComboBox = new JComboBox<>(tables);
         tableComboBox.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
@@ -231,15 +238,15 @@ public class DatMon extends JPanel {
         resetButton.setBackground(new Color(245, 245, 255));
         resetButton.setForeground(Color.BLUE);
 
-        JButton cancelButton = createStyledButton("\u274C Hủy", e -> cancelSelectedItem());
+        JButton cancelButton = createStyledButton("  \u274C Hủy  ", e -> cancelSelectedItem());
         cancelButton.setBackground(new Color(255, 0, 15));
         cancelButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
 
         buttonPanel.add(orderButton);
-        buttonPanel.add(Box.createRigidArea(new Dimension(50, 0)));
-        buttonPanel.add(resetButton);
-        buttonPanel.add(Box.createRigidArea(new Dimension(50, 0)));
+        buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
         buttonPanel.add(cancelButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(30, 0)));
+        buttonPanel.add(resetButton);
 
         return buttonPanel;
     }
@@ -374,7 +381,7 @@ public class DatMon extends JPanel {
                 break;
             }
         }
-        if (ban.getTrangThai().equals("DaDat || DangDung")) {
+        if (ban.getTrangThai().equals("DaDat")) {
             JOptionPane.showMessageDialog(this, "Bàn đã được đặt, vui lòng chọn bàn khác!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -430,11 +437,4 @@ public class DatMon extends JPanel {
         }
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Đặt Món");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600);
-        frame.setContentPane(new DatMon());
-        frame.setVisible(true);
-    }
 }
