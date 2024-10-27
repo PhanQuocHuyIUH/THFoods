@@ -1,5 +1,6 @@
 package Gui;
 
+import DAO.HoaDon_Dao;
 import DB.Database;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -15,13 +16,16 @@ import org.jfree.data.general.DefaultPieDataset;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class BaoCaoThongKe extends JPanel {
 
+    private HoaDon_Dao hoaDon_dao;
     private JPanel chartPanelContainer;
     private DefaultCategoryDataset lineDataset;
     private DefaultCategoryDataset barDataset;
@@ -32,6 +36,7 @@ public class BaoCaoThongKe extends JPanel {
 
     public BaoCaoThongKe() {
         setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
 
         // Panel chứa biểu đồ
         chartPanelContainer = new JPanel();
@@ -39,25 +44,27 @@ public class BaoCaoThongKe extends JPanel {
 
         // Thanh chọn loại báo cáo (ComboBox)
         reportTypeComboBox = new JComboBox<>(new String[] {
-                "Doanh thu theo loại món ăn (Biểu đồ tròn)",
-                "Doanh thu 7 ngày gần nhất (Biểu đồ đường)",
-                "Doanh thu theo tháng (Biểu đồ cột)"
+                "Doanh thu theo loại món ăn",
+                "Doanh thu 7 ngày gần nhất",
+                "Doanh thu theo tháng"
         });
         reportTypeComboBox.setSelectedIndex(0);
 
         // Làm nổi bật ComboBox
-        reportTypeComboBox.setFont(new Font("Arial", Font.BOLD, 16)); // Tăng kích thước và làm đậm font chữ
+        reportTypeComboBox.setFont(new Font("Chalkduster", Font.BOLD, 14)); // Tăng kích thước và làm đậm font chữ
         reportTypeComboBox.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.GRAY, 2),  // Đường viền ngoài
                 new EmptyBorder(10, 10, 10, 10)                   // Tạo khoảng cách xung quanh ComboBox
         ));
         reportTypeComboBox.setMaximumSize(new Dimension(400, 50)); // Tăng kích thước tối đa của ComboBox (độ cao 50 pixel)
         reportTypeComboBox.setPreferredSize(new Dimension(400, 50)); // Tăng kích thước ưu tiên của ComboBox (độ cao 50 pixel)
+        reportTypeComboBox.setBackground(new Color(230, 240, 255));
 
         // Bảng để hiển thị thông tin chi tiết
         tableModel = new DefaultTableModel();
         table = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(table);
+        customizeOrderTable();
 
         // Panel chứa các thành phần giao diện (ComboBox)
         JPanel topPanel = new JPanel();
@@ -79,11 +86,11 @@ public class BaoCaoThongKe extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedReport = (String) reportTypeComboBox.getSelectedItem();
-                if (selectedReport.equals("Doanh thu theo loại món ăn (Biểu đồ tròn)")) {
+                if (selectedReport.equals("Doanh thu theo loại món ăn")) {
                     loadPieChart();
-                } else if (selectedReport.equals("Doanh thu 7 ngày gần nhất (Biểu đồ đường)")) {
+                } else if (selectedReport.equals("Doanh thu 7 ngày gần nhất")) {
                     loadLineChart();
-                } else if (selectedReport.equals("Doanh thu theo tháng (Biểu đồ cột)")) {
+                } else if (selectedReport.equals("Doanh thu theo tháng")) {
                     loadBarChart();
                 }
             }
@@ -93,13 +100,15 @@ public class BaoCaoThongKe extends JPanel {
         loadPieChart();
     }
 
-    // Hàm tải dữ liệu và hiển thị biểu đồ tròn
+    // Hàm tải dữ liệu và hiển thị biểu đồ tròn (doanh thu theo loại món ăn)
     private void loadPieChart() {
+        hoaDon_dao = new HoaDon_Dao();
+        Map<String, Double> doanhThuMap = hoaDon_dao.getRevenueByDishType();
+
         pieDataset = new DefaultPieDataset();
-        pieDataset.setValue("Món chính", 50.0);
-        pieDataset.setValue("Món phụ", 20.0);
-        pieDataset.setValue("Món tráng miệng", 15.0);
-        pieDataset.setValue("Nước uống", 15.0);
+        for (Map.Entry<String, Double> entry : doanhThuMap.entrySet()) {
+            pieDataset.setValue(entry.getKey(), entry.getValue());
+        }
 
         JFreeChart pieChart = ChartFactory.createPieChart(
                 "Doanh thu theo loại món ăn (Hôm nay)",
@@ -117,26 +126,24 @@ public class BaoCaoThongKe extends JPanel {
         plot.setSectionPaint("Nước uống", new Color(75, 192, 192));
 
         // Cập nhật bảng thông tin
-        updateTable(new String[] {"Loại món ăn", "Doanh thu (VND)"}, new Object[][] {
-                {"Món chính", 500000},
-                {"Món phụ", 200000},
-                {"Món tráng miệng", 150000},
-                {"Nước uống", 150000}
-        });
+        updateTable(new String[] {"Loại món ăn", "Doanh thu (VND)"}, convertMapToTableData(doanhThuMap));
 
         updateChart(pieChart);
     }
 
-    // Hàm tải dữ liệu và hiển thị biểu đồ đường
+    // Hàm tải dữ liệu và hiển thị biểu đồ đường (doanh thu 7 ngày gần nhất)
     private void loadLineChart() {
+        hoaDon_dao = new HoaDon_Dao();
         lineDataset = new DefaultCategoryDataset();
-        lineDataset.addValue(100, "Doanh thu", "2024-10-14");
-        lineDataset.addValue(200, "Doanh thu", "2024-10-15");
-        lineDataset.addValue(300, "Doanh thu", "2024-10-16");
-        lineDataset.addValue(250, "Doanh thu", "2024-10-17");
-        lineDataset.addValue(350, "Doanh thu", "2024-10-18");
-        lineDataset.addValue(400, "Doanh thu", "2024-10-19");
-        lineDataset.addValue(500, "Doanh thu", "2024-10-20");
+        Map<String, Double> doanhThuMap = null;
+        try {
+            doanhThuMap = hoaDon_dao.getRevenueLast7Days();
+            for (Map.Entry<String, Double> entry : doanhThuMap.entrySet()) {
+                lineDataset.addValue(entry.getValue(), "Doanh thu", entry.getKey());
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
 
         JFreeChart lineChart = ChartFactory.createLineChart(
                 "Doanh thu 7 ngày gần nhất",
@@ -156,27 +163,25 @@ public class BaoCaoThongKe extends JPanel {
         plot.setRenderer(renderer);
 
         // Cập nhật bảng thông tin
-        updateTable(new String[] {"Ngày", "Doanh thu (VND)"}, new Object[][] {
-                {"2024-10-14", 100000},
-                {"2024-10-15", 200000},
-                {"2024-10-16", 300000},
-                {"2024-10-17", 250000},
-                {"2024-10-18", 350000},
-                {"2024-10-19", 400000},
-                {"2024-10-20", 500000}
-        });
+        updateTable(new String[] {"Ngày", "Doanh thu (VND)"}, convertMapToTableData(doanhThuMap));
 
         updateChart(lineChart);
     }
 
-    // Hàm tải dữ liệu và hiển thị biểu đồ cột
+    // Hàm tải dữ liệu và hiển thị biểu đồ cột (doanh thu theo tháng)
     private void loadBarChart() {
+        hoaDon_dao = new HoaDon_Dao();
+        Map<String, Double> doanhThuMap = null;
+        try{
+            doanhThuMap = hoaDon_dao.getRevenueByMonth();
+        }
+        catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
         barDataset = new DefaultCategoryDataset();
-        barDataset.addValue(5000, "Doanh thu", "Tháng 1");
-        barDataset.addValue(7000, "Doanh thu", "Tháng 2");
-        barDataset.addValue(8000, "Doanh thu", "Tháng 3");
-        barDataset.addValue(6000, "Doanh thu", "Tháng 4");
-        barDataset.addValue(9000, "Doanh thu", "Tháng 5");
+        for (Map.Entry<String, Double> entry : doanhThuMap.entrySet()) {
+            barDataset.addValue(entry.getValue(), "Doanh thu", entry.getKey());
+        }
 
         JFreeChart barChart = ChartFactory.createBarChart(
                 "Doanh thu theo tháng",
@@ -196,13 +201,7 @@ public class BaoCaoThongKe extends JPanel {
         plot.setRenderer(renderer);
 
         // Cập nhật bảng thông tin
-        updateTable(new String[] {"Tháng", "Doanh thu (VND)"}, new Object[][] {
-                {"Tháng 1", 5000000},
-                {"Tháng 2", 7000000},
-                {"Tháng 3", 8000000},
-                {"Tháng 4", 6000000},
-                {"Tháng 5", 9000000}
-        });
+        updateTable(new String[] {"Tháng", "Doanh thu (VND)"}, convertMapToTableData(doanhThuMap));
 
         updateChart(barChart);
     }
@@ -218,6 +217,34 @@ public class BaoCaoThongKe extends JPanel {
     // Hàm cập nhật bảng thông tin
     private void updateTable(String[] columnNames, Object[][] data) {
         tableModel.setDataVector(data, columnNames);
+    }
+
+    private void customizeOrderTable() {
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        table.setRowHeight(30);
+        table.setBackground(new Color(230, 240, 255));
+        table.setForeground(new Color(50, 50, 50));
+        table.setSelectionBackground(new Color(0, 0, 255, 150));
+        table.setSelectionForeground(Color.WHITE);
+        table.setGridColor(new Color(50, 150, 200));
+        table.setDefaultEditor(Object.class, null);
+
+
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(new Color(105, 165, 225));
+        header.setForeground(Color.WHITE);
+        header.setFont(new Font("Arial", Font.BOLD, 14));
+    }
+
+    private Object[][] convertMapToTableData(Map<String, Double> map) {
+        Object[][] data = new Object[map.size()][2];
+        int index = 0;
+        for (Map.Entry<String, Double> entry : map.entrySet()) {
+            data[index][0] = entry.getKey();
+            data[index][1] = entry.getValue();
+            index++;
+        }
+        return data;
     }
 
 }

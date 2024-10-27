@@ -4,13 +4,9 @@ import DB.Database;
 import Entity.ChiTietHoaDon;
 import Entity.HoaDon;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
+import java.sql.*;
+import java.util.*;
 import java.util.Date;
-import java.util.List;
 
 public class HoaDon_Dao
 {
@@ -58,39 +54,109 @@ public class HoaDon_Dao
         return ThanhTien;
     }
 
-    public List<HoaDon> getDSHDToday() throws SQLException
-    {
+    // Hàm lấy doanh thu theo loại món ăn (PieChart)
+    public Map<String, Double> getRevenueByDishType()  {
+        Map<String, Double> revenueByDishType = new HashMap<>();
         List<HoaDon> dsHD = new ArrayList<HoaDon>();
-        Database.getInstance().connect();
-        Connection con = Database.getConnection();
-        Date today = new Date(2024, 10, 16);
-        String todayStr = today.getYear() + "-" + (today.getMonth()) + "-" + (today.getDate());
-        String sql = "select * from HoaDon where ngayTao like '" + todayStr + "'";
-
-        Statement statement = con.createStatement();
-        ResultSet rs = statement.executeQuery(sql);
-
-        while (rs.next())
-        {
-            String maHD = rs.getString(1);
-            Date ngayTao = rs.getDate(2);
-            List<ChiTietHoaDon> dsCTHD = new ChiTietHoaDon_Dao().getCTHDByMaHD(maHD);
-
-            dsHD.add(new HoaDon(maHD, ngayTao, dsCTHD));
-        }
-        return dsHD;
-    }
-
-    public static void main(String[] args) {
         try {
-            List<HoaDon> dsHD = new HoaDon_Dao().getDSHDToday();
-            for (HoaDon hd : dsHD) {
-                double tt = new HoaDon_Dao().getTongTienHD(hd);
-                System.out.println("MaHD: " + hd.getMaHD() + " NgayTao: " + hd.getNgayTao() + " SoCTHD: "
-                        + hd.getChiTietHoaDon().size() + " TongTien: " + tt);
-            }
+            dsHD = getAllHD();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
+
+        for (HoaDon hd : dsHD) {
+            List<ChiTietHoaDon> dsCTHD = hd.getChiTietHoaDon();
+            for (ChiTietHoaDon cthd : dsCTHD) {
+                String maMon = cthd.getMaMon();
+                double giaMon = 0;
+                try {
+                    giaMon = new MonAn_Dao().getGiaMonAn(maMon);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+                String loaiMon = "";
+                try {
+                    loaiMon = new MonAn_Dao().getLoaiMonAn(maMon);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+                if (revenueByDishType.containsKey(loaiMon)) {
+                    revenueByDishType.put(loaiMon, revenueByDishType.get(loaiMon) + giaMon * cthd.getSoLuong());
+                } else {
+                    revenueByDishType.put(loaiMon, giaMon * cthd.getSoLuong());
+                }
+            }
+        }
+        return revenueByDishType;
+    }
+
+    // Hàm lấy doanh thu trong 7 ngày gần nhất (LineChart)
+    public Map<String, Double> getRevenueLast7Days() throws SQLException {
+        Map<String, Double> revenueLast7Days = new HashMap<>();
+        List<HoaDon> dsHD = new ArrayList<HoaDon>();
+        try {
+            dsHD = getAllHD();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        for (HoaDon hd : dsHD) {
+            Date ngayTao = new Date(hd.getNgayTao().getYear()+1900, hd.getNgayTao().getMonth()+1, hd.getNgayTao().getDate());
+            Date today = new Date(2024, 10, 16);
+            long diff = today.getTime() - ngayTao.getTime();
+            long diffDays = diff / (24 * 60 * 60 * 1000);
+            if (diffDays <= 7) {
+                String date = (ngayTao.getYear()) + "-" + (ngayTao.getMonth()) + "-" + ngayTao.getDate();
+                if (revenueLast7Days.containsKey(date)) {
+                    revenueLast7Days.put(date, revenueLast7Days.get(date) + getTongTienHD(hd));
+                } else {
+                    revenueLast7Days.put(date, getTongTienHD(hd));
+                }
+            }
+        }
+
+        return revenueLast7Days;
+    }
+
+    // Hàm lấy doanh thu theo tháng (BarChart)
+    public Map<String, Double> getRevenueByMonth() throws SQLException {
+        Map<String, Double> revenueByMonth = new HashMap<>();
+        List<HoaDon> dsHD = new ArrayList<HoaDon>();
+        try {
+            dsHD = getAllHD();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        for (HoaDon hd : dsHD) {
+            Date ngayTao = hd.getNgayTao();
+            String month = (ngayTao.getYear()+1900) + "-" + (ngayTao.getMonth()+1);
+            if (revenueByMonth.containsKey(month)) {
+                revenueByMonth.put(month, revenueByMonth.get(month) + getTongTienHD(hd));
+            } else {
+                revenueByMonth.put(month, getTongTienHD(hd));
+            }
+        }
+
+        return revenueByMonth;
+
+        // Chỉ lấy 6 tháng gần nhất theo thời gian thực
+//        Map<String, Double> revenueByMonthLast6 = new HashMap<>();
+//        List<String> keys = new ArrayList<>(revenueByMonth.keySet());
+//        Collections.sort(keys);
+//        for (int i = keys.size() - 1; i >= keys.size() - 6; i--) {
+//            revenueByMonthLast6.put(keys.get(i), revenueByMonth.get(keys.get(i)));
+//        }
+//
+//        return revenueByMonthLast6;
+    }
+
+    public void createHD(HoaDon hd) throws SQLException
+    {
+        Database.getInstance().connect();
+        Connection con = Database.getConnection();
+        String sql = "insert into HoaDon values('" + hd.getMaHD() + "','" + hd.getNgayTao() + "')";
+        Statement statement = con.createStatement();
+        statement.executeUpdate(sql);
     }
 }
