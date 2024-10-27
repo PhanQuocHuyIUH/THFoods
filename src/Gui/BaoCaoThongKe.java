@@ -134,7 +134,7 @@ public class BaoCaoThongKe extends JPanel {
         // Tùy chỉnh màu sắc biểu đồ cột
         CategoryPlot plot = barChart.getCategoryPlot();
         BarRenderer renderer = new BarRenderer();
-        renderer.setSeriesPaint(0, Color.GREEN); // Màu xanh lá cho các cột
+        renderer.setSeriesPaint(0, new Color(0, 102, 204));
         plot.setRenderer(renderer);
 
         // Cập nhật bảng thông tin
@@ -172,7 +172,7 @@ public class BaoCaoThongKe extends JPanel {
         // Tùy chỉnh màu sắc biểu đồ cột
         CategoryPlot plot = barChart.getCategoryPlot();
         BarRenderer renderer = new BarRenderer();
-        renderer.setSeriesPaint(0, Color.RED); // Màu đỏ cho các cột
+        renderer.setSeriesPaint(0, new Color(0, 102, 204));
         plot.setRenderer(renderer);
 
         // Cập nhật bảng thông tin
@@ -240,7 +240,7 @@ public class BaoCaoThongKe extends JPanel {
         // Tùy chỉnh màu sắc biểu đồ đường
         CategoryPlot plot = lineChart.getCategoryPlot();
         LineAndShapeRenderer renderer = new LineAndShapeRenderer();
-        renderer.setSeriesPaint(0, Color.BLUE);  // Màu xanh dương cho đường biểu đồ
+        renderer.setSeriesPaint(0, new Color(0, 102, 204, 150));
         plot.setRenderer(renderer);
 
         // Cập nhật bảng thông tin
@@ -278,7 +278,7 @@ public class BaoCaoThongKe extends JPanel {
         // Tùy chỉnh màu sắc biểu đồ cột
         CategoryPlot plot = barChart.getCategoryPlot();
         BarRenderer renderer = new BarRenderer();
-        renderer.setSeriesPaint(0, Color.ORANGE); // Màu cam cho các cột
+        renderer.setSeriesPaint(0, new Color(0, 102, 204));
         plot.setRenderer(renderer);
 
         // Cập nhật bảng thông tin
