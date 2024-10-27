@@ -51,4 +51,48 @@ public class MonAn_Dao {
         return 0;
     }
 
+    //lấy mã món theo tên món
+    public String getMaMon(String tenMon) throws SQLException {
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "select MaMon from MonAn where TenMon = '" + tenMon + "'";
+
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+
+        if (rs.next()) {
+            return rs.getString(1);
+        }
+        return null;
+    }
+
+    //lấy tên món theo mã món
+    public String getTenMon(String maMon) throws SQLException {
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "select TenMon from MonAn where MaMon = '" + maMon + "'";
+
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+
+        if (rs.next()) {
+            return rs.getString(1);
+        }
+        return null;
+    }
+
+    public String getLoaiMonAn(String maMon) throws SQLException {
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "select LoaiMon from MonAn where MaMon = '" + maMon + "'";
+
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+
+        if (rs.next()) {
+            return rs.getString(1);
+        }
+        return null;
+    }
+
 }
