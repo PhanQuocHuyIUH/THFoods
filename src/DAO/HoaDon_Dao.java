@@ -159,6 +159,15 @@ public class HoaDon_Dao
         Statement statement = con.createStatement();
         statement.executeUpdate(sql);
     }
+    //tạo chi tiết hóa đơn
+    public void createCTHD(ChiTietHoaDon cthd) throws SQLException
+    {
+        Database.getInstance().connect();
+        Connection con = Database.getConnection();
+        String sql = "insert into CTHD values('" + cthd.getMaHD() + "','"+ cthd.getMaMon() +"','" + cthd.getSoLuong() + "')";
+        Statement statement = con.createStatement();
+        statement.executeUpdate(sql);
+    }
 
     // hàm getBestSellingDishes trả về danh sách 6 các món ăn bán chạy nhất trong 30 ngày qua lấy tên món
     public Map<String, Integer> getBestSellingDishes() throws SQLException {

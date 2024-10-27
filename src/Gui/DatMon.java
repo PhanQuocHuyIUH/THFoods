@@ -64,13 +64,13 @@ public class DatMon extends JPanel {
 
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel();
-        headerPanel.setBackground(new Color(0, 102, 204, 150));
+        headerPanel.setBackground(new Color(230, 240, 255));
         headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         // Thêm chữ Menu
         JLabel menuLabel = new JLabel(" \u2630 MENU   ");
         menuLabel.setFont(new Font("Arial Unicode MS", Font.BOLD, 24));
-        menuLabel.setForeground(Color.WHITE);
+        menuLabel.setForeground(new Color(105, 165, 225));
         headerPanel.add(menuLabel);
 
         // Thêm các nút phân loại
@@ -99,7 +99,7 @@ public class DatMon extends JPanel {
 
     private JButton createCategoryButton(String category) {
         JButton button = createStyledButton(category, e -> filterMenuItemsByCategory(category));
-        button.setBackground(new Color(100, 100, 255));
+        button.setBackground(new Color(105, 165, 225));
         return button;
     }
 
@@ -156,7 +156,7 @@ public class DatMon extends JPanel {
     private JPanel createBottomPanel() {
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new GridLayout(5, 2, 10, 10));
-        bottomPanel.setBackground(new Color(245, 245, 255));
+        bottomPanel.setBackground(new Color(255, 255, 255));
 
         // ComboBox chọn bàn
         JLabel tableLabel = new JLabel(" \u25A4 Chọn bàn:");
@@ -218,9 +218,12 @@ public class DatMon extends JPanel {
 
         // Hiển thị tổng tiền
         JLabel totalLabelTitle = new JLabel(" Tổng Tiền:");
-        totalLabelTitle.setFont(new Font("Chalkduster", Font.BOLD, 20));
+        totalLabelTitle = new JLabel("\uD83D\uDCB0 Tổng tiền :");
+        totalLabelTitle.setFont(new Font("Arial Unicode MS", Font.BOLD, 20));
+        totalLabelTitle.setForeground(new Color(0, 102, 204));
         bottomPanel.add(totalLabelTitle);
         totalLabel = new JLabel("0 VND");
+        totalLabel.setForeground(new Color(0, 102, 204));
         totalLabel.setFont(new Font("Chalkduster", Font.BOLD, 20));
         bottomPanel.add(totalLabel);
 
@@ -228,14 +231,14 @@ public class DatMon extends JPanel {
     }
 
     private JPanel createButtonPanel() {
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(new Color(245, 245, 255));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setBackground(new Color(255, 255, 255));
         JButton orderButton = createStyledButton("\uD83C\uDF7D Đặt Món", e -> placeOrder());
         orderButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
         JButton resetButton = createStyledButton("\u21BA", e -> resetOrder());
         resetButton.setPreferredSize(new Dimension(60, 60));
         resetButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 26));
-        resetButton.setBackground(new Color(245, 245, 255));
+        resetButton.setBackground(new Color(255, 255, 255));
         resetButton.setForeground(Color.BLUE);
 
         JButton cancelButton = createStyledButton("  \u274C Hủy  ", e -> cancelSelectedItem());
@@ -243,10 +246,10 @@ public class DatMon extends JPanel {
         cancelButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
 
         buttonPanel.add(orderButton);
-        buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        buttonPanel.add(cancelButton);
-        buttonPanel.add(Box.createRigidArea(new Dimension(30, 0)));
+        buttonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
         buttonPanel.add(resetButton);
+        buttonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+        buttonPanel.add(cancelButton);
 
         return buttonPanel;
     }
@@ -380,10 +383,6 @@ public class DatMon extends JPanel {
                 ban = b;
                 break;
             }
-        }
-        if (ban.getTrangThai().equals("DaDat")) {
-            JOptionPane.showMessageDialog(this, "Bàn đã được đặt, vui lòng chọn bàn khác!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-            return;
         }
         // Thêm phiếu đặt món vào database
         try {
