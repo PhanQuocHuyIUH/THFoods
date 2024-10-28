@@ -230,7 +230,7 @@ public class QuanLyPhieuDat extends JPanel {
                 hoaDonDao.createCTHD(cthd);
             }
             //lấy mã bàn từ text bàn
-            String maBan = lblBan.getText().substring(5);
+            String maBan = lblBan.getText();
             //Lấy danh sách mã phiếu theo mã bàn
             ArrayList<String> dsPhieu = banDao.getDSPhieu(maBan);
             System.out.println(dsPhieu);

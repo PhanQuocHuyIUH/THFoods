@@ -2,22 +2,33 @@ package Entity;
 
 import java.util.Objects;
 
-public class NguoiQuanLy extends TaiKhoan
+public class NguoiQuanLy
 {
     private String maQL;
     private String tenQL;
     private String sdt;
     private String email;
+    private TaiKhoan tenDangNhap;
 
     public NguoiQuanLy() {}
 
-    public NguoiQuanLy(String maQL, String tenQL, String sdt, String email)
+    public NguoiQuanLy(String maQL, String tenQL, String sdt, String email, TaiKhoan tenDangNhap)
     {
         this.maQL = maQL;
         this.tenQL = tenQL;
         this.sdt = sdt;
         this.email = email;
+        this.tenDangNhap = tenDangNhap;
     }
+
+    public TaiKhoan getTenDangNhap() {
+        return tenDangNhap;
+    }
+
+    public void settenDangNhap(TaiKhoan tenDangNhap) {
+        this.tenDangNhap = tenDangNhap;
+    }
+
 
     public String getMaQL()
     {

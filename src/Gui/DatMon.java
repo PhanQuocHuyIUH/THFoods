@@ -211,8 +211,11 @@ public class DatMon extends JPanel {
         nvLabel.setFont(new Font("Chalkduster", Font.BOLD, 14));
         bottomPanel.add(nvLabel);
         nvField = new JLabel();
-//        nvField.setText(DangNhap.tenNhanVien);
-        nvField.setText(DangNhap.nvdn.getTenNV());
+        if(DangNhap.nvdn != null){
+            nvField.setText(DangNhap.nvdn.getTenNV());
+        }else {
+            nvField.setText(DangNhap.qldn.getTenQL());
+        }
         nvField.setFont(new Font("Chalkboard", Font.PLAIN, 14));
         bottomPanel.add(nvField);
 

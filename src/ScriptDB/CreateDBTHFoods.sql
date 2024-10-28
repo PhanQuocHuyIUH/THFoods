@@ -99,5 +99,6 @@ CREATE TABLE DonDatBan (
     soGhe INT,
 	ghiChu NVARCHAR(MAX),
     maBan VARCHAR(15) FOREIGN KEY REFERENCES Ban(maBan)
+    khachHang NVARCHAR(30),
 );
 

@@ -96,8 +96,8 @@ public class TrangChuNV extends JFrame {
         mainPanel.add(new QuanLyBan(), "\u25A4 BÀN ĂN");
         mainPanel.add(new QuanLyHoaDon(), "\uD83D\uDCDD HÓA ĐƠN");
         mainPanel.add(new QuanLyNhanVien(), "\uD83D\uDC68\u200D NHÂN VIÊN");
-        mainPanel.add(new JLabel("Nội dung Quản lý Phiếu Đặt", SwingConstants.CENTER), "\uD83D\uDCDD PHIẾU ĐẶT");
-        mainPanel.add(new JLabel("Nội dung Quản lý Thực Đơn", SwingConstants.CENTER), "\uD83C\uDF72 THỰC ĐƠN");
+        mainPanel.add(new QuanLyPhieuDat(), "\uD83D\uDCDD PHIẾU ĐẶT");
+        mainPanel.add(new QuanLyThucDon(), "\uD83C\uDF72 THỰC ĐƠN");
         mainPanel.add(new BaoCaoThongKe(), "\uD83D\uDCCA THỐNG KÊ");
 
         // Tạo JSplitPane để chia khu vực bên trái và bên phải, bỏ đi thanh điều chỉnh kích thước
