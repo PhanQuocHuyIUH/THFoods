@@ -94,13 +94,13 @@ INSERT INTO MonAn (maMon, tenMon, loaiMon, donGia, moTa) VALUES
 ('M11', N'Salad trộn', N'Món ăn nhẹ', 30000, N'Salad rau củ, sốt mè rang'),
 ('M12', N'Bánh flan', N'Món tráng miệng', 30000, N'Bánh flan mềm mịn, ngọt thanh'),
 ('M13', N'Mì xào bò', N'Món chính', 50000, N'Mì xào bò với rau củ tươi'),
-('M14', N'Trá sữa trân châu', N'Nước uống', 35000, N'Trá sữa vị truyền thống, thêm trân châu dai dai'),
+('M14', N'Trà sữa trân châu', N'Nước uống', 35000, N'Trá sữa vị truyền thống, thêm trân châu dai dai'),
 ('M15', N'Chả giò', N'Món ăn nhẹ', 40000, N'Chả giò giòn tan, nhân thịt nấm'),
 ('M16', N'Rau câu dừa', N'Món tráng miệng', 15000, N'Rau câu dừa mát lạnh, thơm ngon'),
 ('M17', N'Lẩu gà', N'Món chính', 120000, N'Lẩu gà nấm, nước dùng thanh ngọt'),
 ('M18', N'Nước chanh tươi', N'Nước uống', 15000, N'Nước chanh tươi, ít đường'),
 ('M19', N'Bánh xèo', N'Món ăn nhẹ', 45000, N'Bánh xèo giòn, ăn kèm rau sống'),
-('M20', N'Kem sô cô la', N'Món tráng miệng', 25000, N'Kem sô cô la đậm vị, tan chảy trong miệng'),
+('M20', N'Kem chocolate', N'Món tráng miệng', 25000, N'Kem sô cô la đậm vị, tan chảy trong miệng'),
 ('M21', N'Bún chả Hà Nội', N'Món chính', 70000, N'Bún chả thơm ngon, hương vị truyền thống Hà Nội'),
 ('M22', N'Sữa đậu nành', N'Nước uống', 10000, N'Sữa đậu nành nguyên chất, bổ dưỡng'),
 ('M23', N'Xôi gà', N'Món ăn nhẹ', 35000, N'Xôi gà dẻo thơm, ăn kèm hành phi'),
@@ -268,12 +268,12 @@ INSERT INTO CTHD (maHD, maMon, soLuong) VALUES
 ('HD20', 'M41', 1);
 
 -- Thêm dữ liệu vào bảng Đơn đặt bàn
-INSERT INTO DonDatBan (maDDB, ngayDatBan, soGhe, ghiChu, maBan) VALUES 
-('DDB1', '2024-10-17', 2, N'Bàn gần cửa sổ, 18-19h đến' , 'B3'),
-('DDB2', '2024-10-17', 10, N'Bàn rộng 12h đến' , 'B20'),
-('DDB3', '2024-10-17', 4, N'10h đến' , 'B5'),
-('DDB4', '2024-10-17', 4, N'20h đến' , 'B6'),
-('DDB5', '2024-10-17', 4, N'19h đến' , 'B7');
+INSERT INTO DonDatBan (maDDB, ngayDatBan, soGhe, ghiChu, maBan, khachHang, sdt) VALUES
+('DDB1', '2024-10-17', 2, N'Bàn gần cửa sổ, 18-19h đến' , 'B3', N'Trần Thị B', '012345681'),
+('DDB2', '2024-10-17', 10, N'Bàn rộng 12h đến' , 'B20', N'Nguyễn Thị D', '012345695'),
+('DDB3', '2024-10-17', 4, N'10h đến' , 'B5', N'Nguyễn Văn A', '012345688'),
+('DDB4', '2024-10-17', 4, N'20h đến' , 'B6', N'Lê Văn C', '012345694'),
+('DDB5', '2024-10-17', 4, N'19h đến' , 'B7', N'Trần Thị B', '012345697');
 
 
 select * from TaiKhoan
