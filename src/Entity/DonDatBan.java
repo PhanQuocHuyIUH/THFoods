@@ -9,16 +9,18 @@ public class DonDatBan
     private int soGhe;
     private String ghiChu;
     private Ban maBan;
+    private String khachHang;
 
     public DonDatBan() {}
 
-    public DonDatBan(String maDDB, String ngayDatBan, int soGhe, String ghiChu, Ban maBan)
+    public DonDatBan(String maDDB, String ngayDatBan, int soGhe, String ghiChu, Ban maBan, String khachHang)
     {
         this.maDDB = maDDB;
         this.ngayDatBan = ngayDatBan;
         this.soGhe = soGhe;
         this.ghiChu = ghiChu;
         this.maBan = maBan;
+        this.khachHang = khachHang;
     }
 
     public String getMaDDB()
@@ -69,6 +71,16 @@ public class DonDatBan
     public void setMaBan(Ban maBan)
     {
         this.maBan = maBan;
+    }
+
+    public String getKhachHang()
+    {
+        return khachHang;
+    }
+
+    public void setKhachHang(String khachHang)
+    {
+        this.khachHang = khachHang;
     }
 
     @Override
