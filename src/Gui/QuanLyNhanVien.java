@@ -133,13 +133,13 @@ public class QuanLyNhanVien extends JPanel {
         //nút thêm
         btnThem = new JButton("THÊM");
         btnThem.setIcon(new ImageIcon("src\\img\\add.png"));
-        btnThem.setBackground(new Color(0, 0, 255, 150));
+        btnThem.setBackground(new Color(105, 165, 225));
         btnThem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 themNhanVien();
             }
         });
-        btnThem.setFont(new Font("Arial Unicode MS", Font.BOLD, 14));
+        btnThem.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnThem.setBounds(117, 209, 105, 34);
         btnThem.setForeground(new Color(255, 255, 255));
         jp_main.add(btnThem);
@@ -148,13 +148,13 @@ public class QuanLyNhanVien extends JPanel {
         btnXoa.setForeground(new Color(255, 255, 255));
         btnXoa.setBounds(330, 209, 105, 34);
         btnXoa.setIcon(new ImageIcon("src\\img\\delete.png"));
-        btnXoa.setBackground(new Color(0, 0, 255, 150));
+        btnXoa.setBackground(new Color(105, 165, 225));
         btnXoa.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 xoaNhanVien();
             }
         });
-        btnXoa.setFont(new Font("Arial Unicode MS", Font.BOLD, 14));
+        btnXoa.setFont(new Font("Segoe UI", Font.BOLD, 14));
         jp_main.add(btnXoa);
 
         btnSua = new JButton("SỬA");
@@ -165,21 +165,21 @@ public class QuanLyNhanVien extends JPanel {
             }
         });
         btnSua.setIcon(new ImageIcon("src\\img\\fix.png"));
-        btnSua.setBackground(new Color(0, 0, 255, 150));
-        btnSua.setFont(new Font("Arial Unicode MS", Font.BOLD, 14));
+        btnSua.setBackground(new Color(105, 165, 225));
+        btnSua.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnSua.setBounds(541, 209, 105, 34);
         jp_main.add(btnSua);
 
         btnTim = new JButton("TÌM");
         btnTim.setForeground(new Color(255, 255, 255));
         btnTim.setIcon(new ImageIcon("src\\img\\find.png"));
-        btnTim.setBackground(new Color(0, 0, 255, 150));
+        btnTim.setBackground(new Color(105, 165, 225));
         btnTim.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
             }
         });
-        btnTim.setFont(new Font("Arial Unicode MS", Font.BOLD, 14));
+        btnTim.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnTim.setBounds(756, 209, 105, 34);
         jp_main.add(btnTim);
 
@@ -191,8 +191,8 @@ public class QuanLyNhanVien extends JPanel {
             }
         });
         btnLuu.setIcon(new ImageIcon("src\\img\\xuatfile.png"));
-        btnLuu.setFont(new Font("Arial Unicode MS", Font.BOLD, 14));
-        btnLuu.setBackground(new Color(0, 0, 255, 150));
+        btnLuu.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnLuu.setBackground(new Color(105, 165, 225));
         btnLuu.setBounds(950, 209, 105, 34);
         jp_main.add(btnLuu);
 
