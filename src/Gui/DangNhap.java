@@ -224,6 +224,8 @@ public class DangNhap extends JFrame implements ActionListener {
                     } else {
                         JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                     }
+                }else {
+                    JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
