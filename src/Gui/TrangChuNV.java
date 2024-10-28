@@ -9,6 +9,9 @@ public class TrangChuNV extends JFrame {
     private JPanel mainPanel; // Đưa mainPanel thành thuộc tính của lớp
     private JButton lastClickedButton; // Nút được nhấn trước đó
 
+    private QuanLyPhieuDat qlpd;
+    private DatMon dm;
+
     public TrangChuNV() {
         // Cấu hình cho frame
         setTitle("Nhà Hàng TH Food");
@@ -91,12 +94,12 @@ public class TrangChuNV extends JFrame {
         mainPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2)); // Đường viền đẹp cho main panel
 
         // Thêm các nội dung tương ứng cho mỗi chức năng
-        mainPanel.add(new DatMon(), "\uD83C\uDF7D ĐẶT MÓN");
+        mainPanel.add(dm = new DatMon(), "\uD83C\uDF7D ĐẶT MÓN");
         mainPanel.add(new QuanLyDatBan(), "\uD83D\uDCC5 ĐẶT BÀN");
         mainPanel.add(new QuanLyBan(), "\u25A4 BÀN ĂN");
         mainPanel.add(new QuanLyHoaDon(), "\uD83D\uDCDD HÓA ĐƠN");
         mainPanel.add(new QuanLyNhanVien(), "\uD83D\uDC68\u200D NHÂN VIÊN");
-        mainPanel.add(new QuanLyPhieuDat(), "\uD83D\uDCDD PHIẾU ĐẶT");
+        mainPanel.add(qlpd = new QuanLyPhieuDat(), "\uD83D\uDCDD PHIẾU ĐẶT");
         mainPanel.add(new QuanLyThucDon(), "\uD83C\uDF72 THỰC ĐƠN");
         mainPanel.add(new BaoCaoThongKe(), "\uD83D\uDCCA THỐNG KÊ");
 
@@ -201,6 +204,7 @@ public class TrangChuNV extends JFrame {
             // Chuyển đổi giữa các nội dung dựa trên nút nhấn
             switch (command) {
                 case "\uD83C\uDF7D ĐẶT MÓN":
+
                     cl.show(mainPanel, "\uD83C\uDF7D ĐẶT MÓN");
                     break;
                 case "\uD83D\uDCC5 ĐẶT BÀN":
@@ -219,6 +223,7 @@ public class TrangChuNV extends JFrame {
                     break;
                 case "\uD83D\uDCDD PHIẾU ĐẶT":
                     cl.show(mainPanel, "\uD83D\uDCDD PHIẾU ĐẶT");
+                    qlpd.loadBanFromDatabase();
                     break;
             }
         }

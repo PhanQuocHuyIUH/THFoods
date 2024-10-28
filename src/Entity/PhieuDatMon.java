@@ -49,9 +49,9 @@ public class PhieuDatMon
         this.ghiChu = ghiChu;
     }
 
-    public Ban getMaBan()
+    public String getMaBan()
     {
-        return maBan;
+        return maBan.getMaBan();
     }
 
     public void setMaBan(Ban maBan)
@@ -59,9 +59,9 @@ public class PhieuDatMon
         this.maBan = maBan;
     }
 
-    public NhanVien getMaNV()
+    public String getMaNV()
     {
-        return maNV;
+        return maNV.getMaNV();
     }
 
     public void setMaNV(NhanVien maNV)

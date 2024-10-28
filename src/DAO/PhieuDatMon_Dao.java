@@ -40,7 +40,7 @@ public class PhieuDatMon_Dao{
     public void addPhieuDatMon(PhieuDatMon phieuDatMon) throws Exception{
         Database.getInstance();
         Connection con = Database.getConnection();
-        String sql = "insert into PhieuDatMon values('"+phieuDatMon.getMaPDB()+"', '"+phieuDatMon.getNgayDat()+"', '"+phieuDatMon.getGhiChu()+"', '"+phieuDatMon.getMaBan().getMaBan()+"', '"+phieuDatMon.getMaNV().getMaNV()+"')";
+        String sql = "insert into PhieuDatMon values('"+phieuDatMon.getMaPDB()+"', '"+phieuDatMon.getNgayDat()+"', '"+phieuDatMon.getGhiChu()+"', '"+phieuDatMon.getMaBan()+"', '"+phieuDatMon.getMaNV()+"')";
         Statement statement = con.createStatement();
         statement.executeUpdate(sql);
     }

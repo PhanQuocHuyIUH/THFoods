@@ -197,13 +197,13 @@ public class DangNhap extends JFrame implements ActionListener {
                 if(adminUsers.containsKey(userName) && adminUsers.get(userName).equals(convertPassword)) {
                     new CapTaiKhoan();
                     this.dispose();
-                }else if(nvUser.containsKey(userName) && nvUser.get(userName).equals(convertPassword)){
+                }else if(nvUser.containsKey(userName) && nvUser.get(userName).equals(convertPassword)) {
                     if (userName.startsWith("NV")) {
                         //Lấy tên nhân viên từ tên đăng nhập
                         NhanVien_Dao nhanVien_dao = new NhanVien_Dao();
                         ArrayList<NhanVien> nhanViens = nhanVien_dao.getInForNV();
-                        for(NhanVien nv : nhanViens) {
-                            if(nv.getTenDangNhap().getTenDangNhap().equals(userName)) {
+                        for (NhanVien nv : nhanViens) {
+                            if (nv.getTenDangNhap().getTenDangNhap().equals(userName)) {
                                 nvdn = nv;
                                 break;
                             }
@@ -213,15 +213,15 @@ public class DangNhap extends JFrame implements ActionListener {
                     } else if (userName.startsWith("QL")) {
                         QuanLy_Dao quanLy_dao = new QuanLy_Dao();
                         ArrayList<NguoiQuanLy> ql = quanLy_dao.getInForQL();
-                        for(NguoiQuanLy qls : ql) {
-                            if(qls.getTenDangNhap().getTenDangNhap().equals(userName)) {
+                        for (NguoiQuanLy qls : ql) {
+                            if (qls.getTenDangNhap().getTenDangNhap().equals(userName)) {
                                 qldn = qls;
                                 break;
                             }
                         }
                         new TrangChu(); // Chuyển đến trang chủ quản lý
                         this.dispose();
-                    }else {
+                    } else {
                         JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                     }
                 }else {

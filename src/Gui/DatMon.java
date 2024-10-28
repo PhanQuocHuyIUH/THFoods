@@ -29,7 +29,6 @@ public class DatMon extends JPanel {
     private double totalPrice = 0.0;
     private JTextField noteField;
     private JLabel nvField;
-
     private ArrayList<Ban> dsBan;
 
     public DatMon() {
@@ -377,6 +376,11 @@ public class DatMon extends JPanel {
         // kiểm tra xem đã chọn món chưa
         if (tableModel.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn món trước khi đặt!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        // Kiem tra chon ban
+        if (table == "Bàn ăn") {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn bàn trước khi đặt!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
         //kiểm tra trạng thái bàn

@@ -160,7 +160,7 @@ public class QuanLyPhieuDat extends JPanel {
     }
 
     // Tải danh sách bàn từ cơ sở dữ liệu
-    private void loadBanFromDatabase() {
+    public void loadBanFromDatabase() {
         try {
             panelBan.removeAll();
             dsBan = banDao.getAllBan();
@@ -238,6 +238,8 @@ public class QuanLyPhieuDat extends JPanel {
             for (String maPhieu : dsPhieu) {
                 banDao.deleteCTPhieu(maPhieu);
             }
+            //xóa phiếu theo mã bàn
+            banDao.deletePhieu(maBan);
             //cập nhật trạng thái bàn
             banDao.updateTrangThaiBan(maBan,"Trong");
             //cập nhật table và ds bàn
