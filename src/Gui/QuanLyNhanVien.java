@@ -36,167 +36,184 @@ public class QuanLyNhanVien extends JPanel {
      * Create the panel.
      */
     public QuanLyNhanVien() {
+
         setBackground(new Color(255, 255, 255));
         setForeground(new Color(0, 100, 0));
-        setBounds(0, 50, 1372, 800);
+        setBounds(0, 50, 1390, 800);
         setLayout(null);
 
         JButton btnImage = new JButton("");
         btnImage.setBackground(new Color(255, 255, 255));
         btnImage.setIcon(new ImageIcon("src\\img\\nhanvien.png"));
-        btnImage.setBounds(10, 86, 201, 300);
+        btnImage.setBounds(10, 86, 201, 269);
         add(btnImage);
 
         JLabel lblNewLabel = new JLabel("QUẢN LÝ NHÂN VIÊN");
-        lblNewLabel.setForeground(new Color(0, 100, 0));
-        lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 25));
-        lblNewLabel.setBounds(647, 11, 269, 64);
+        lblNewLabel.setForeground(new Color(0, 0, 0));
+        lblNewLabel.setFont(new Font("Consolas", Font.BOLD, 24));
+        lblNewLabel.setBounds(587, 11, 249, 64);
         add(lblNewLabel);
 
         JPanel jp_main = new JPanel();
         jp_main.setBackground(new Color(255, 255, 255));
         jp_main.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(192, 192, 192)));
-        jp_main.setBounds(221, 86, 1141, 300);
+        jp_main.setBounds(221, 86, 1148, 269);
         add(jp_main);
         jp_main.setLayout(null);
 
         JLabel lblMaNV = new JLabel("Mã nhân viên:");
-        lblMaNV.setFont(new Font("Arial", Font.BOLD, 16));
+        lblMaNV.setFont(new Font("Chalkduster", Font.BOLD, 14));
         lblMaNV.setBounds(22, 23, 116, 34);
         jp_main.add(lblMaNV);
 
         JLabel lblHoTen = new JLabel("Họ tên:");
-        lblHoTen.setFont(new Font("Arial", Font.BOLD, 16));
+        lblHoTen.setFont(new Font("Chalkduster", Font.BOLD, 14));
         lblHoTen.setBounds(22, 81, 116, 37);
         jp_main.add(lblHoTen);
 
         JLabel lblNgaySinh = new JLabel("Ngày sinh:");
-        lblNgaySinh.setFont(new Font("Arial", Font.BOLD, 16));
+        lblNgaySinh.setFont(new Font("Chalkduster", Font.BOLD, 14));
         lblNgaySinh.setBounds(593, 22, 96, 37);
         jp_main.add(lblNgaySinh);
 
-        txtMaNV = new JTextField();
-        txtMaNV.setFont(new Font("Arial", Font.PLAIN, 14));
-        txtMaNV.setBounds(148, 23, 389, 29);
-        jp_main.add(txtMaNV);
-        txtMaNV.setColumns(10);
-        // Cách lề trái cho JTextField
-        txtMaNV.setMargin(new Insets(5, 5, 5, 0));
-
-        txtHoTen = new JTextField();
-        txtHoTen.setFont(new Font("Arial", Font.PLAIN, 14));
-        txtHoTen.setColumns(10);
-        txtHoTen.setBounds(148, 81, 389, 29);
-        jp_main.add(txtHoTen);
-        // Cách lề trái cho JTextField
-        txtHoTen.setMargin(new Insets(5, 5, 5, 0));
-
-        txtNgaySinh = new JTextField();
-        txtNgaySinh.setFont(new Font("Arial", Font.PLAIN, 14));
-        txtNgaySinh.setColumns(10);
-        txtNgaySinh.setBounds(727, 27, 389, 29);
-        // Cách lề trái cho JTextField
-        txtNgaySinh.setMargin(new Insets(5, 5, 5, 0));
-        jp_main.add(txtNgaySinh);
-
         JLabel lblSDT = new JLabel("Số điện thoại:");
-        lblSDT.setFont(new Font("Arial", Font.BOLD, 16));
+        lblSDT.setFont(new Font("Chalkduster", Font.BOLD, 14));
         lblSDT.setBounds(22, 144, 116, 37);
         jp_main.add(lblSDT);
 
+        txtMaNV = new JTextField();
+        txtMaNV.setBounds(148, 29, 389, 29);
+        jp_main.add(txtMaNV);
+        txtMaNV.setFont(new Font("Consolas", Font.PLAIN, 14));
+        txtMaNV.setBackground(new Color(230, 240, 255));
+        txtMaNV.setColumns(10);
+        // Cách lề trái cho JTextField
+        txtMaNV.setMargin(new Insets(0, 5, 0, 0));
+
+        txtHoTen = new JTextField();
+        txtHoTen.setFont(new Font("Consolas", Font.PLAIN, 14));
+        txtHoTen.setColumns(10);
+        txtHoTen.setBounds(148, 88, 389, 29);
+        txtHoTen.setBackground(new Color(230, 240, 255));
+        jp_main.add(txtHoTen);
+        // Cách lề trái cho JTextField
+        txtHoTen.setMargin(new Insets(0, 5, 0, 0));
+
+        txtNgaySinh = new JTextField();
+        txtNgaySinh.setFont(new Font("Consolas", Font.PLAIN, 14));
+        txtNgaySinh.setColumns(10);
+        txtNgaySinh.setBounds(727, 29, 389, 29);
+        txtNgaySinh.setBackground(new Color(230, 240, 255));
+        // Cách lề trái cho JTextField
+        txtNgaySinh.setMargin(new Insets(0, 5, 0, 0));
+        jp_main.add(txtNgaySinh);
+
         txtSDT = new JTextField();
-        txtSDT.setFont(new Font("Arial", Font.PLAIN, 14));
+        txtSDT.setFont(new Font("Consolas", Font.PLAIN, 14));
         txtSDT.setColumns(10);
-        txtSDT.setBounds(148, 148, 389, 29);
-        txtSDT.setMargin(new Insets(5, 5, 5, 0));
+        txtSDT.setBounds(148, 151, 389, 29);
+        txtSDT.setBackground(new Color(230, 240, 255));
+        txtSDT.setMargin(new Insets(0, 5, 0, 0));
         jp_main.add(txtSDT);
 
         JLabel lblEmail = new JLabel("Email:");
-        lblEmail.setFont(new Font("Arial", Font.BOLD, 16));
+        lblEmail.setFont(new Font("Chalkduster", Font.BOLD, 14));
         lblEmail.setBounds(593, 81, 96, 37);
         jp_main.add(lblEmail);
 
         txtEmail = new JTextField();
-        txtEmail.setFont(new Font("Arial", Font.PLAIN, 14));
+        txtEmail.setFont(new Font("Consolas", Font.PLAIN, 14));
         txtEmail.setColumns(10);
-        txtEmail.setBounds(727, 86, 389, 29);
-        txtEmail.setMargin(new Insets(5, 5, 5, 0));
+        txtEmail.setBounds(727, 88, 389, 29);
+        txtEmail.setBackground(new Color(230, 240, 255));
+        txtEmail.setMargin(new Insets(0, 5, 0, 0));
         jp_main.add(txtEmail);
 
 
         //nút thêm
         btnThem = new JButton("THÊM");
         btnThem.setIcon(new ImageIcon("src\\img\\add.png"));
-        btnThem.setBackground(new Color(255, 255, 255));
+        btnThem.setBackground(new Color(105, 165, 225));
         btnThem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 themNhanVien();
             }
         });
-        btnThem.setFont(new Font("Chalkduster", Font.BOLD, 18));
-        btnThem.setBounds(53, 221, 147, 50);
+        btnThem.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnThem.setBounds(117, 209, 105, 34);
+        btnThem.setForeground(new Color(255, 255, 255));
         jp_main.add(btnThem);
 
         btnXoa = new JButton("XÓA");
-        btnXoa.setBounds(271, 221, 147, 50);
+        btnXoa.setForeground(new Color(255, 255, 255));
+        btnXoa.setBounds(330, 209, 105, 34);
         btnXoa.setIcon(new ImageIcon("src\\img\\delete.png"));
-        btnXoa.setBackground(new Color(255, 255, 255));
+        btnXoa.setBackground(new Color(105, 165, 225));
         btnXoa.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 xoaNhanVien();
             }
         });
-        btnXoa.setFont(new Font("Chalkduster", Font.BOLD, 18));
+        btnXoa.setFont(new Font("Segoe UI", Font.BOLD, 14));
         jp_main.add(btnXoa);
 
         btnSua = new JButton("SỬA");
+        btnSua.setForeground(new Color(255, 255, 255));
         btnSua.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 suaNhanVien();
             }
         });
         btnSua.setIcon(new ImageIcon("src\\img\\fix.png"));
-        btnSua.setBackground(new Color(255, 255, 255));
-        btnSua.setFont(new Font("Chalkduster", Font.BOLD, 18));
-        btnSua.setBounds(486, 221, 147, 50);
+        btnSua.setBackground(new Color(105, 165, 225));
+        btnSua.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnSua.setBounds(541, 209, 105, 34);
         jp_main.add(btnSua);
 
-        btnTim = new JButton("TÌM KIẾM");
+        btnTim = new JButton("TÌM");
+        btnTim.setForeground(new Color(255, 255, 255));
         btnTim.setIcon(new ImageIcon("src\\img\\find.png"));
-        btnTim.setBackground(new Color(255, 255, 255));
+        btnTim.setBackground(new Color(105, 165, 225));
         btnTim.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
             }
         });
-        btnTim.setFont(new Font("Chalkduster", Font.BOLD, 18));
-        btnTim.setBounds(697, 221, 147, 50);
+        btnTim.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnTim.setBounds(756, 209, 105, 34);
         jp_main.add(btnTim);
 
         btnLuu = new JButton("LƯU");
+        btnLuu.setForeground(new Color(255, 255, 255));
         btnLuu.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
 
             }
         });
         btnLuu.setIcon(new ImageIcon("src\\img\\xuatfile.png"));
-        btnLuu.setFont(new Font("Chalkduster", Font.BOLD, 18));
-        btnLuu.setBackground(Color.WHITE);
-        btnLuu.setBounds(917, 221, 147, 50);
+        btnLuu.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnLuu.setBackground(new Color(105, 165, 225));
+        btnLuu.setBounds(950, 209, 105, 34);
         jp_main.add(btnLuu);
 
         // Tiêu đề
         String[] columnNames = {"Mã nhân viên", "Họ tên", "Số điện thoại", "Email", "Ngày sinh"};
         model = new DefaultTableModel(columnNames, 0);
-
         table = new JTable(model);
-        table.setFont(new Font("Arial", Font.PLAIN, 14)); // Đặt cỡ chữ cho các hàng
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 14)); // Đặt cỡ chữ cho các hàng
 
         // Đặt cỡ chữ cho tiêu đề
         JTableHeader header = table.getTableHeader();
-        header.setFont(new Font("Arial", Font.BOLD, 17)); // Đặt cỡ chữ cho tiêu đề
+        header.setBackground(new Color(105, 165, 225));
+        header.setForeground(Color.WHITE);
+        header.setFont(new Font("Arial", Font.BOLD, 14));
+        header.setPreferredSize(new Dimension(100, 30)); // Đặt chiều cao cho tiêu đề
+        table.setRowHeight(30); // Đặt chiều cao cho tất cả các hàng
+        table.setBackground(new Color(230, 240, 255)); // Màu nền cho bảng
+        table.setForeground(new Color(10, 10, 10)); // Màu chữ cho bảng
+        table.setSelectionBackground(new Color(0, 0, 255, 150)); // Màu nền khi chọn hàng
+        table.setSelectionForeground(new Color(255, 255, 255)); // Màu chữ khi chọn hàng
 
-        table.setRowHeight(20); // Đặt chiều cao cho tất cả các hàng
 
 
         // Tạo custom cell renderer
@@ -219,7 +236,7 @@ public class QuanLyNhanVien extends JPanel {
 
 
         scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(10, 397, 1352, 392);
+        scrollPane.setBounds(10, 366, 1359, 423);
         add(scrollPane);
 
         // Dữ liệu cần thêm
@@ -334,7 +351,6 @@ public class QuanLyNhanVien extends JPanel {
         txtEmail.setText("");
         txtNgaySinh.setText("");
     }
-
 
 }
 

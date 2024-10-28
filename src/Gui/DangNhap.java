@@ -2,8 +2,10 @@ package Gui;
 
 import DAO.Admin_Dao;
 import DAO.NhanVien_Dao;
+import DAO.QuanLy_Dao;
 import DAO.TaiKhoan_Dao;
 import DB.Database;
+import Entity.NguoiQuanLy;
 import Entity.NguoiQuanTri;
 import Entity.NhanVien;
 import Entity.TaiKhoan;
@@ -12,6 +14,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +33,8 @@ public class DangNhap extends JFrame implements ActionListener {
     private HashMap<String, String> nvUser = new HashMap<>();
 
     //Biến lưu thông tin đăng nhập
-    static NhanVien nvdn = new NhanVien();
+    static NhanVien nvdn = null;
+    static NguoiQuanLy qldn = null;
     public DangNhap() {
 
         try {
@@ -71,6 +76,10 @@ public class DangNhap extends JFrame implements ActionListener {
         // Tạo nhãn và trường nhập cho username
         JLabel userLabel = new JLabel("Username:");
         userText = new JTextField();
+        userText.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(70, 130, 180), 2), // Đường viền ngoài
+                BorderFactory.createEmptyBorder(2, 2, 2, 2) // Khoảng đệm bên trong
+        ));
         userLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         userText.setFont(new Font("Segoe UI", Font.PLAIN, 20));
         userLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -83,6 +92,10 @@ public class DangNhap extends JFrame implements ActionListener {
         // Tạo nhãn và trường nhập cho password
         JLabel passwordLabel = new JLabel("Password:");
         passwordText = new JPasswordField();
+        passwordText.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(70, 130, 180), 2), // Đường viền ngoài
+                BorderFactory.createEmptyBorder(2, 2, 2, 2) // Khoảng đệm bên trong
+        ));
         passwordLabel.setFont(new Font("Segoe UI", Font.BOLD, 20));
         passwordText.setFont(new Font("Segoe UI", Font.PLAIN, 20));
         passwordLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -92,16 +105,9 @@ public class DangNhap extends JFrame implements ActionListener {
         formPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Tạo khoảng cách giữa các thành phần
 
         // Tạo nút Login
-        loginButton = new JButton("Login");
-        loginButton.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        loginButton.setPreferredSize(new Dimension(80, 30));  // Điều chỉnh kích thước phù hợp
-        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
+        loginButton = createSmoothButton("Login");
 // Tạo nút Thoát
-        exitButton = new JButton("Exit");
-        exitButton.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        exitButton.setPreferredSize(new Dimension(80, 30));  // Điều chỉnh kích thước phù hợp
-        exitButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        exitButton = createSmoothButton("Exit");
 
 // Sử dụng FlowLayout để hai nút nằm cạnh nhau
         JPanel buttonPanel = new JPanel();
@@ -130,6 +136,46 @@ public class DangNhap extends JFrame implements ActionListener {
         new DangNhap();
     }
 
+    private JButton createSmoothButton(String text) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Arial Unicode MS", Font.PLAIN, 14));
+        button.setForeground(Color.WHITE); // Màu chữ trắng
+        button.setBackground(new Color(0, 102, 204)); // Màu nền xanh với độ trong suốt
+        button.setPreferredSize(new Dimension(80, 30));
+        button.setAlignmentX(Component.CENTER_ALIGNMENT);
+        button.setFocusPainted(false);
+        button.setBorder(null); // Bỏ viền cho nút
+        button.setDoubleBuffered(true);
+
+
+        // Thêm MouseAdapter để xử lý sự kiện hover và click
+        button.addMouseListener(new MouseAdapter() {
+            private Color originalColor = button.getBackground();
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(new Color(0, 82, 164)); // Màu khi hover
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(originalColor);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                button.setBackground(new Color(0, 62, 124)); // Màu khi nhấn
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                button.setBackground(new Color(0, 102, 204)); // Màu sau khi nhả nút
+            }
+        });
+
+        return button;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         Object obj = e.getSource();
@@ -151,27 +197,33 @@ public class DangNhap extends JFrame implements ActionListener {
                 if(adminUsers.containsKey(userName) && adminUsers.get(userName).equals(convertPassword)) {
                     new CapTaiKhoan();
                     this.dispose();
-                }else if(nvUser.containsKey(userName) && nvUser.get(userName).equals(convertPassword)){
+                }else if(nvUser.containsKey(userName) && nvUser.get(userName).equals(convertPassword)) {
                     if (userName.startsWith("NV")) {
                         //Lấy tên nhân viên từ tên đăng nhập
                         NhanVien_Dao nhanVien_dao = new NhanVien_Dao();
                         ArrayList<NhanVien> nhanViens = nhanVien_dao.getInForNV();
-                        for(NhanVien nv : nhanViens) {
-                            if(nv.getTenDangNhap().getTenDangNhap().equals(userName)) {
+                        for (NhanVien nv : nhanViens) {
+                            if (nv.getTenDangNhap().getTenDangNhap().equals(userName)) {
                                 nvdn = nv;
+                                break;
                             }
                         }
                         new TrangChuNV(); // Chuyển đến trang chủ nhân viên
                         this.dispose();
                     } else if (userName.startsWith("QL")) {
+                        QuanLy_Dao quanLy_dao = new QuanLy_Dao();
+                        ArrayList<NguoiQuanLy> ql = quanLy_dao.getInForQL();
+                        for (NguoiQuanLy qls : ql) {
+                            if (qls.getTenDangNhap().getTenDangNhap().equals(userName)) {
+                                qldn = qls;
+                                break;
+                            }
+                        }
                         new TrangChu(); // Chuyển đến trang chủ quản lý
                         this.dispose();
-                    }else {
+                    } else {
                         JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                     }
-
-                }else {
-                    JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
