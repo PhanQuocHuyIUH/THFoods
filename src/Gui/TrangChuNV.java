@@ -63,10 +63,19 @@ public class TrangChuNV extends JFrame {
         for (String label : buttonLabels) {
             JButton button = createStyledButton(label); // Nút có màu sắc hài hòa
 
-            // Kiểm tra nếu là các nút "THỐNG KÊ", "THỰC ĐƠN", "NHÂN VIÊN" thì đổi màu và vô hiệu hóa
-            if (label.equals("\uD83D\uDCCA THỐNG KÊ") || label.equals("\uD83C\uDF72 THỰC ĐƠN") || label.equals("\uD83D\uDC68\u200D NHÂN VIÊN")) {
-                button.setBackground(new Color(143, 141, 141)); // Màu xám cho các nút này
-                button.setEnabled(false); // Vô hiệu hóa nút
+            //nếu là nút thong ke thì đổi ten nut
+            if(label.equals("\uD83D\uDCCA THỐNG KÊ")) {
+                button.setText("\uD83D\uDD12 THỐNG KÊ");
+            }
+
+            //neu la nut nhan vien thi doi ten nut
+            if(label.equals("\uD83D\uDC68\u200D NHÂN VIÊN")) {
+                button.setText("\uD83D\uDD12 NHÂN VIÊN");
+            }
+
+            //neu la nut thuc don thi doi ten nut
+            if(label.equals("\uD83C\uDF72 THỰC ĐƠN")) {
+                button.setText("\uD83D\uDD12 THỰC ĐƠN");
             }
 
             if(label.equals("ĐĂNG XUẤT")) {
@@ -143,7 +152,6 @@ public class TrangChuNV extends JFrame {
         button.setBorder(null); // Bỏ viền cho nút
         button.setOpaque(false); // Đặt nút trong suốt
 
-        // Hiệu ứng hover khi rê chuột
         // Hiệu ứng hover khi rê chuột
         button.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
