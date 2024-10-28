@@ -153,6 +153,14 @@ public class DangNhap extends JFrame implements ActionListener {
                     this.dispose();
                 }else if(nvUser.containsKey(userName) && nvUser.get(userName).equals(convertPassword)){
                     if (userName.startsWith("NV")) {
+                        //Lấy tên nhân viên từ tên đăng nhập
+                        NhanVien_Dao nhanVien_dao = new NhanVien_Dao();
+                        ArrayList<NhanVien> nhanViens = nhanVien_dao.getInForNV();
+                        for(NhanVien nv : nhanViens) {
+                            if(nv.getTenDangNhap().getTenDangNhap().equals(userName)) {
+                                nvdn = nv;
+                            }
+                        }
                         new TrangChuNV(); // Chuyển đến trang chủ nhân viên
                         this.dispose();
                     } else if (userName.startsWith("QL")) {
@@ -162,16 +170,6 @@ public class DangNhap extends JFrame implements ActionListener {
                         JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                     }
 
-                    //Lấy tên nhân viên từ tên đăng nhập
-                    NhanVien_Dao nhanVien_dao = new NhanVien_Dao();
-                    ArrayList<NhanVien> nhanViens = nhanVien_dao.getInForNV();
-                    for(NhanVien nv : nhanViens) {
-                        if(nv.getTenDangNhap().getTenDangNhap().equals(userName)) {
-                            nvdn = nv;
-                        }
-                    }
-                    new TrangChu();
-                    this.dispose();
                 }else {
                     JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 }
