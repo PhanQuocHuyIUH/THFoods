@@ -219,7 +219,7 @@ public class DangNhap extends JFrame implements ActionListener {
                                 break;
                             }
                         }
-                        new TrangChu(); // Chuyển đến trang chủ quản lý
+                        new TrangChuQL(); // Chuyển đến trang chủ quản lý
                         this.dispose();
                     } else {
                         JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
