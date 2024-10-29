@@ -5,11 +5,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class TrangChu extends JFrame {
+public class TrangChuQL extends JFrame {
     private JPanel mainPanel; // Đưa mainPanel thành thuộc tính của lớp
     private JButton lastClickedButton; // Nút được nhấn trước đó
 
-    public TrangChu() {
+    public TrangChuQL() {
         // Cấu hình cho frame
         setTitle("Nhà Hàng TH Food");
         setSize(900, 600); // Có thể giữ dòng này hoặc bỏ nếu không cần thiết
@@ -29,7 +29,7 @@ public class TrangChu extends JFrame {
             }
         };
         leftPanel.setLayout(new BorderLayout());
-        leftPanel.setBackground(new Color(255,255,255)); // Màu nền trắng cho leftPanel
+        leftPanel.setBackground(new Color(255, 255, 255)); // Màu nền trắng cho leftPanel
 
         // Logo trên phần nút chức năng
         ImageIcon logoIcon = new ImageIcon("src\\img\\logo2.png");
@@ -53,7 +53,7 @@ public class TrangChu extends JFrame {
                 "\uD83D\uDC68\u200D NHÂN VIÊN", // 👨‍💼 (Businessman)
                 "\uD83D\uDCDD PHIẾU ĐẶT", // 📝 (Memo)
                 "\uD83C\uDF72 THỰC ĐƠN", // 🍲 (Bowl of Food)
-                "\uD83D\uDCCA THỐNG KÊ" // 📊 (Bar Chart)
+                "\uD83D\uDCCA THỐNG KÊ", // 📊 (Bar Chart)
         };
         // Tạo một biến để lưu nút ĐẶT MÓN
         JButton firstButton = null;
@@ -61,7 +61,7 @@ public class TrangChu extends JFrame {
         for (String label : buttonLabels) {
             JButton button = createStyledButton(label); // Nút có màu sắc hài hòa
             buttonPanel.add(button);
-            button.addActionListener(new ButtonClickListener());
+            button.addActionListener(new ButtonClickListener(this));
 
             // Thêm khoảng cách giữa các nút
             buttonPanel.add(Box.createRigidArea(new Dimension(10, 30))); // Thêm khoảng cách 10px giữa các nút
@@ -72,7 +72,21 @@ public class TrangChu extends JFrame {
             }
         }
 
+        // Tạo nút ĐĂNG XUẤT
+        JButton logoutBT = new JButton("🚪");
+        logoutBT.setBackground(new Color(255, 255, 255));
+        logoutBT.setBorder(null);
+        //bỏ chọn
+        logoutBT.setFocusPainted(false);
+        logoutBT.addActionListener(new ButtonClickListener(this));
+        // SET FONT
+        logoutBT.setFont(new Font("Arial Unicode MS", Font.BOLD, 60)); // Font hỗ trợ tốt emoji
+        //PENABLE BUTTON
+        JPanel logoutPN = new JPanel();
+        logoutPN.setLayout(new BorderLayout());
+        logoutPN.add(logoutBT);
         leftPanel.add(buttonPanel, BorderLayout.CENTER);
+        leftPanel.add(logoutPN, BorderLayout.SOUTH);
 
         // Tạo panel bên phải cho phần hiển thị nội dung chức năng (main panel)
         mainPanel = new JPanel(); // Khai báo và khởi tạo mainPanel
@@ -83,7 +97,7 @@ public class TrangChu extends JFrame {
         // Thêm các nội dung tương ứng cho mỗi chức năng
         mainPanel.add(new DatMon(), "\uD83C\uDF7D ĐẶT MÓN");
         mainPanel.add(new QuanLyDatBan(), "\uD83D\uDCC5 ĐẶT BÀN");
-        mainPanel.add(new QuanLyBan(), "\u25A4 BÀN ĂN");
+        mainPanel.add(new QuanLyBan(), "\u25A4 BÀN ĂN  ");
         mainPanel.add(new QuanLyHoaDon(), "\uD83D\uDCDD HÓA ĐƠN");
         mainPanel.add(new QuanLyNhanVien(), "\uD83D\uDC68\u200D NHÂN VIÊN");
         mainPanel.add(new QuanLyPhieuDat(), "\uD83D\uDCDD PHIẾU ĐẶT");
@@ -99,7 +113,7 @@ public class TrangChu extends JFrame {
 
         // Tự động đổi màu cho nút ĐẶT MÓN khi chương trình khởi động
         if (firstButton != null) {
-            firstButton.setBackground(new Color(0, 0, 255, 150)); // Đổi màu cho nút ĐẶT MÓN
+            firstButton.setBackground(new Color(230,240,255)); // Đổi màu cho nút ĐẶT MÓN
             lastClickedButton = firstButton; // Cập nhật nút được nhấn trước đó
         }
 
@@ -122,8 +136,8 @@ public class TrangChu extends JFrame {
         button.setFocusPainted(false);
 //        button.setFont(new Font("Arial", Font.BOLD, 12)); // Kích thước font
         button.setFont(new Font("Arial Unicode MS", Font.PLAIN, 14)); // Font hỗ trợ tốt emoji
-        button.setForeground(new Color(255, 255, 255)); // Màu chữ trắng nổi bật
-        button.setBackground(new Color(0, 102, 204, 150)); // Màu nền xanh hài hòa với độ trong suốt
+        button.setForeground(new Color(0)); // Màu chữ trắng nổi bật
+        button.setBackground(new Color(255, 255, 255)); // Màu nền xanh hài hòa với độ trong suốt
         button.setPreferredSize(new Dimension(130, 40)); // Đã điều chỉnh chiều rộng và chiều cao của nút
         button.setMinimumSize(new Dimension(130, 40)); // Kích thước tối thiểu
         button.setMaximumSize(new Dimension(130, 40)); // Kích thước tối đa
@@ -133,30 +147,54 @@ public class TrangChu extends JFrame {
         // Hiệu ứng hover khi rê chuột
         button.addMouseListener(new java.awt.event.MouseAdapter() {
 
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                // Nếu nút không phải là nút được nhấn và không phải là nút quản lý
+                if (button != lastClickedButton && !button.getText().equals("\uD83D\uDEAA")) {
+                    button.setBackground(new Color(230,240,255)); // Đổi màu nền khi rê chuột vào
+                }
+            }
+
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 // Nếu nút không phải là nút được nhấn, màu trở lại bình thường
                 if (button != lastClickedButton) {
-                    button.setBackground(new Color(0, 102, 204, 150)); // Màu nền trở lại
+                    button.setBackground(new Color(255,255,255)); // Màu nền trở lại
                 }
             }
         });
+
 
         return button;
     }
 
     // Lớp xử lý sự kiện khi nhấn nút
-    private class ButtonClickListener implements ActionListener {
+    private class ButtonClickListener extends Component implements ActionListener {
+        private TrangChuQL trangChuQL; // Tham chiếu đến TrangChuNV
+
+        public ButtonClickListener(TrangChuQL trangChuQL) {
+            this.trangChuQL = trangChuQL; // Khởi tạo tham chiếu
+        }
         @Override
         public void actionPerformed(ActionEvent e) {
             JButton sourceButton = (JButton) e.getSource();
             CardLayout cl = (CardLayout) mainPanel.getLayout();
             String command = sourceButton.getText();
 
+            // Kiểm tra nút đăng xuất
+            if (command.equals("\uD83D\uDEAA")) {
+                int response = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn đăng xuất không?", "Xác Nhận Đăng Xuất", JOptionPane.YES_NO_OPTION);
+                if (response == JOptionPane.YES_OPTION) {
+                    // Nếu người dùng chọn "Có", thực hiện đăng xuất (đóng JFrame hoặc chuyển đến màn hình đăng nhập)
+                    new DangNhap();
+                    trangChuQL.dispose();
+                }
+                return; // Trở ra không thực hiện các thao tác khác
+            }
+
             // Đổi màu nút đã nhấn
             if (lastClickedButton != null) {
-                lastClickedButton.setBackground(new Color(0, 102, 204, 150)); // Đặt lại màu cho nút trước đó
+                lastClickedButton.setBackground(new Color(255,255,255)); // Đặt lại màu cho nút trước đó
             }
-            sourceButton.setBackground(new Color(0, 0, 255, 150)); // Đổi màu nút hiện tại
+            sourceButton.setBackground(new Color(230,240,255)); // Đổi màu nút hiện tại
             lastClickedButton = sourceButton; // Cập nhật nút được nhấn trước đó
 
             // Chuyển đổi giữa các nội dung dựa trên nút nhấn
@@ -187,10 +225,5 @@ public class TrangChu extends JFrame {
                     break;
             }
         }
-    }
-
-    public static void main(String[] args) {
-        // Khởi động ứng dụng
-        SwingUtilities.invokeLater(() -> new TrangChu());
     }
 }

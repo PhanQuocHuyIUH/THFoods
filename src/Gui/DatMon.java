@@ -2,6 +2,8 @@ package Gui;
 
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.basic.BasicComboBoxUI;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
@@ -30,6 +32,8 @@ public class DatMon extends JPanel {
     private JTextField noteField;
     private JLabel nvField;
     private ArrayList<Ban> dsBan;
+
+    private JButton lastClickedButton; // Nút được nhấn trước đó
 
     public DatMon() {
         try {
@@ -63,13 +67,13 @@ public class DatMon extends JPanel {
 
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel();
-        headerPanel.setBackground(new Color(230, 240, 255));
+        headerPanel.setBackground(new Color(255, 255, 255));
         headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         // Thêm chữ Menu
         JLabel menuLabel = new JLabel(" \u2630 MENU   ");
         menuLabel.setFont(new Font("Arial Unicode MS", Font.BOLD, 24));
-        menuLabel.setForeground(new Color(105, 165, 225));
+        menuLabel.setForeground(new Color(0));
         headerPanel.add(menuLabel);
 
         // Thêm các nút phân loại
@@ -79,18 +83,23 @@ public class DatMon extends JPanel {
             headerPanel.add(categoryButton);
         }
 
+        lastClickedButton = (JButton) headerPanel.getComponent(5); // Mặc định chọn nút đầu tiên
+        // Đổi màu nền cho nút đầu tiên
+        lastClickedButton.setBackground(new Color(230,240,255));
+
         // Thêm khoảng trống
         headerPanel.add(Box.createRigidArea(new Dimension(70, 0)));
 
         // Thanh tìm kiếm
         searchField = new JTextField(15);
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        searchField.setBackground(new Color(242, 244, 247));
         headerPanel.add(searchField);
 
         // Nút tìm kiếm
         JButton searchButton = createStyledButton("\uD83D\uDD0D Tìm kiếm", e -> filterMenuItemsBySearch());
         searchButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 14));
-        searchButton.setBackground(new Color(80, 80, 255));
+        searchButton.setBackground(new Color(105, 165, 225));
         headerPanel.add(searchButton);
 
         return headerPanel;
@@ -98,7 +107,32 @@ public class DatMon extends JPanel {
 
     private JButton createCategoryButton(String category) {
         JButton button = createStyledButton(category, e -> filterMenuItemsByCategory(category));
-        button.setBackground(new Color(105, 165, 225));
+        button.setBackground(new Color(255, 255, 255));
+        button.setForeground(new Color(0));
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(new Color(230,240,255)); // Đổi màu nền khi rê chuột vào
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                if (button != lastClickedButton) {
+                    button.setBackground(new Color(255, 255, 255)); // Màu nền trở lại
+                }
+            }
+        });
+
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (lastClickedButton != null) {
+                    lastClickedButton.setBackground(new Color(255, 255, 255)); // Đổi màu nền của nút trước đó
+                }
+                button.setBackground(new Color(230,240,255)); // Đổi màu nền của nút được nhấn
+                lastClickedButton = button; // Cập nhật nút được nhấn
+            }
+        });
+
         return button;
     }
 
@@ -112,7 +146,6 @@ public class DatMon extends JPanel {
     private JPanel createOrderPanel() {
         JPanel orderPanel = new JPanel();
         orderPanel.setLayout(new BorderLayout());
-        orderPanel.setBackground(new Color(245, 245, 255));
 
         // Bảng hiển thị chi tiết đặt món
         String[] columnNames = {"Tên món", "Đơn giá", "Số lượng", "Thành tiền"};
@@ -127,7 +160,7 @@ public class DatMon extends JPanel {
         // cả hai phần đều ở dưới cùng
         JPanel bottomPanel = createBottomPanel();
         //đường viền xanh
-        bottomPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(0, 0, 255)));
+        bottomPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(230,240,255)));
         orderPanel.add(bottomPanel, BorderLayout.CENTER);
 
         // Nút đặt món và nút reset
@@ -140,11 +173,31 @@ public class DatMon extends JPanel {
     private void customizeOrderTable() {
         orderTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         orderTable.setRowHeight(30);
-        orderTable.setBackground(new Color(230, 240, 255));
+        orderTable.setBackground(new Color(255, 255, 255));
         orderTable.setForeground(new Color(50, 50, 50));
-        orderTable.setSelectionBackground(new Color(0, 0, 255, 150));
-        orderTable.setSelectionForeground(Color.WHITE);
+
         orderTable.setGridColor(new Color(50, 150, 200));
+        //MÀU CỦA BẢNG KHI CHƯA CÓ CÁC DÒNG
+        orderTable.setFillsViewportHeight(true);
+        //set editable = false
+        orderTable.setDefaultEditor(Object.class, null);
+        //màu của các dòng chẳn sẽ có màu 242, 244, 247
+        orderTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if(isSelected){
+                    c.setBackground(new Color(230,240,255));
+                }
+                else if (row % 2 == 0) {
+                    c.setBackground(new Color(242, 244, 247));
+                } else {
+                    c.setBackground(new Color(255, 255, 255));
+                }
+                return c;
+            }
+        });
+        //đổi màu dòng khi có event click
 
         JTableHeader header = orderTable.getTableHeader();
         header.setBackground(new Color(105, 165, 225));
@@ -182,7 +235,22 @@ public class DatMon extends JPanel {
         tableComboBox = new JComboBox<>(tables);
         tableComboBox.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
         //xanh nhạt
-        tableComboBox.setBackground(new Color(230, 240, 255));
+        tableComboBox.setBackground(new Color(242, 244, 247));
+        //set màu cho vien của combobox
+        tableComboBox.setBorder(BorderFactory.createLineBorder(new Color(105, 165, 225)));
+        //set màu background cho combobox khi click
+        tableComboBox.setUI(new BasicComboBoxUI() {
+            @Override
+            protected JButton createArrowButton() {
+                JButton arrowButton = super.createArrowButton();
+                arrowButton.setBackground(new Color(105, 165, 225));
+                //MÀU CỦA ARROW MÀU TRẮNG
+                arrowButton.setForeground(Color.RED);
+                //bỏ viền cho arrow
+                arrowButton.setBorder(BorderFactory.createEmptyBorder());
+                return arrowButton;
+            }
+        });
         bottomPanel.add(tableComboBox);
 
         //ghi chú
@@ -191,8 +259,10 @@ public class DatMon extends JPanel {
         bottomPanel.add(noteLabel);
         noteField = new JTextField();
         noteField.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        //màu cho border
+        noteField.setBorder(BorderFactory.createLineBorder(new Color(105, 165, 225)));
         // xanh nhạt
-        noteField.setBackground(new Color(230, 240, 255));
+        noteField.setBackground(new Color(242, 244, 247));
         bottomPanel.add(noteField);
 
         // ngày
@@ -222,10 +292,10 @@ public class DatMon extends JPanel {
         JLabel totalLabelTitle = new JLabel(" Tổng Tiền:");
         totalLabelTitle = new JLabel("\uD83D\uDCB0 Tổng tiền :");
         totalLabelTitle.setFont(new Font("Arial Unicode MS", Font.BOLD, 20));
-        totalLabelTitle.setForeground(new Color(0, 102, 204));
+        totalLabelTitle.setForeground(new Color(105, 165, 225));
         bottomPanel.add(totalLabelTitle);
         totalLabel = new JLabel("0 VND");
-        totalLabel.setForeground(new Color(0, 102, 204));
+        totalLabel.setForeground(new Color(105, 165, 225));
         totalLabel.setFont(new Font("Chalkduster", Font.BOLD, 20));
         bottomPanel.add(totalLabel);
 
@@ -236,16 +306,18 @@ public class DatMon extends JPanel {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setBackground(new Color(255, 255, 255));
         JButton orderButton = createStyledButton("\uD83C\uDF7D Đặt Món", e -> placeOrder());
-        orderButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
+        orderButton.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
+        orderButton.setPreferredSize(new Dimension(130, 40));
         JButton resetButton = createStyledButton("\u21BA", e -> resetOrder());
         resetButton.setPreferredSize(new Dimension(60, 60));
         resetButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 26));
         resetButton.setBackground(new Color(255, 255, 255));
         resetButton.setForeground(Color.BLUE);
 
-        JButton cancelButton = createStyledButton("  \u274C Hủy  ", e -> cancelSelectedItem());
+        JButton cancelButton = createStyledButton("\u274C Hủy", e -> cancelSelectedItem());
         cancelButton.setBackground(new Color(255, 0, 15));
-        cancelButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
+        cancelButton.setFont(new Font("Arial Unicode MS", Font.PLAIN, 18));
+        cancelButton.setPreferredSize(new Dimension(130, 40));
 
         buttonPanel.add(orderButton);
         buttonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
@@ -276,6 +348,7 @@ public class DatMon extends JPanel {
     private void addDishToMenuPanel(JPanel menuPanel, MonAn monAn) {
         JPanel dishPanel = new JPanel();
         dishPanel.setLayout(new BorderLayout());
+        dishPanel.setBackground(new Color(242, 244, 247));
 
         // Tạo hình ảnh món ăn
         String imagePath = "src\\img\\" + monAn.getTenMon().toLowerCase().replace(" ", "_") + ".jpg";
@@ -321,10 +394,18 @@ public class DatMon extends JPanel {
         String searchText = searchField.getText().toLowerCase();
         JPanel menuPanel = (JPanel) ((JScrollPane) getComponent(1)).getViewport().getView();
         menuPanel.removeAll(); // Xóa các món ăn cũ
+        String loaiMon = "";
 
         for (MonAn monAn : menuItems) {
             boolean matchesSearch = monAn.getTenMon().toLowerCase().contains(searchText);
             if (matchesSearch) {
+                addDishToMenuPanel(menuPanel, monAn);
+                loaiMon = monAn.getLoaiMon();
+            }
+        }
+        // đổ mấy món cùng loại
+        for (MonAn monAn : menuItems) {
+            if (monAn.getLoaiMon().equals(loaiMon) && !monAn.getTenMon().toLowerCase().contains(searchText)) {
                 addDishToMenuPanel(menuPanel, monAn);
             }
         }
