@@ -49,24 +49,24 @@ INSERT INTO KhachHang (maKH, tenKH, sdt) VALUES
 -- Thêm dữ liệu vào bảng Bàn
 INSERT INTO Ban (maBan, trangThai, soGhe) VALUES 
 ('B1', 'Trong', 4),
-('B2', 'DaDat', 6),
+('B2', 'Trong', 6),
 ('B3', 'DangDung', 2),
 ('B4', 'DaDat', 8),
 ('B5', 'Trong', 4),
 ('B6', 'DangDung', 4),
 ('B7', 'Trong', 4),
 ('B8', 'DangDung', 2),
-('B9', 'DaDat', 8),
+('B9', 'Trong', 8),
 ('B10', 'Trong', 10),
 ('B11', 'DangDung', 4),
 ('B12', 'Trong', 4),
-('B13', 'DaDat', 2),
+('B13', 'Trong', 2),
 ('B14', 'DangDung', 8),
 ('B15', 'Trong', 10),
 ('B16', 'DaDat', 4),
 ('B17', 'Trong', 6),
 ('B18', 'DangDung', 2),
-('B19', 'DaDat', 8),
+('B19', 'Trong', 8),
 ('B20', 'Trong', 10),
 ('B21', 'DangDung', 4),
 ('B22', 'Trong', 6),
@@ -80,7 +80,7 @@ INSERT INTO Ban (maBan, trangThai, soGhe) VALUES
 ('B30', 'DangDung', 4);
 
 -- Thêm dữ liệu vào bảng Món ăn
-INSERT INTO MonAn (maMon, tenMon, loaiMon, donGia, moTa) VALUES 
+INSERT INTO MonAn (maMon, tenMon, loaiMon, donGia, moTa) VALUES
 ('M1', N'Phở bò', N'Món chính', 60000, N'Phở bò thơm ngon, nấu theo công thức gia truyền'),
 ('M2', N'Cà phê sữa', N'Nước uống', 35000, N'Cà phê sữa đậm đà, thơm ngon'),
 ('M3', N'Bánh mì', N'Món ăn nhẹ', 30000, N'Bánh mì giòn tan, ăn kèm pate'),
@@ -132,9 +132,9 @@ INSERT INTO MonAn (maMon, tenMon, loaiMon, donGia, moTa) VALUES
 ('M49', N'Bún thịt nướng', N'Món chính', 55000, N'Bún thịt nướng thơm phức, ăn kèm rau sống'),
 ('M50', N'Sữa chua dâu', N'Món tráng miệng', 30000, N'Sữa chua dâu mát lạnh, vị chua ngọt')
 
-	
+
 -- Thêm dữ liệu vào bảng Hóa đơn
-INSERT INTO HoaDon (maHD, ngayTao) VALUES 
+INSERT INTO HoaDon (maHD, ngayTao) VALUES
 ('HD1', '2024-10-16'),
 ('HD2', '2024-10-16'),
 ('HD3', '2024-10-16'),
@@ -157,7 +157,7 @@ INSERT INTO HoaDon (maHD, ngayTao) VALUES
 ('HD20', '2024-10-16');
 
 -- Thêm dữ liệu vào bảng Phiếu đặt món
-INSERT INTO PhieuDatMon (maPDB, ngayDat, ghiChu, maBan, maNV) VALUES 
+INSERT INTO PhieuDatMon (maPDB, ngayDat, ghiChu, maBan, maNV) VALUES
 ('PDB21', '2024-10-16', N'Không nấu cay', 'B11', 'NV01'),
 ('PDB22', '2024-10-16', N'Không hành', 'B14', 'NV02'),
 ('PDB23', '2024-10-16', N'Không', 'B18', 'NV03'),
@@ -170,7 +170,7 @@ INSERT INTO PhieuDatMon (maPDB, ngayDat, ghiChu, maBan, maNV) VALUES
 ('PDB30', '2024-10-16', N'Không', 'B8', 'NV01');
 
 -- Thêm dữ liệu vào bảng Chi tiết đặt món (CTDM)
-INSERT INTO CTDM (maPDB, maMon, soLuong) VALUES 
+INSERT INTO CTDM (maPDB, maMon, soLuong) VALUES
 ('PDB21', 'M12', 2),
 ('PDB21', 'M7', 3),
 ('PDB21', 'M25', 1),
@@ -212,7 +212,7 @@ INSERT INTO CTDM (maPDB, maMon, soLuong) VALUES
 
 
 -- Thêm dữ liệu vào bảng Chi tiết hóa đơn (CTHD)
-INSERT INTO CTHD (maHD, maMon, soLuong) VALUES 
+INSERT INTO CTHD (maHD, maMon, soLuong) VALUES
 ('HD1', 'M1', 2),
 ('HD1', 'M12', 1),
 ('HD1', 'M27', 3),
@@ -269,11 +269,11 @@ INSERT INTO CTHD (maHD, maMon, soLuong) VALUES
 
 -- Thêm dữ liệu vào bảng Đơn đặt bàn
 INSERT INTO DonDatBan (maDDB, ngayDatBan, soGhe, ghiChu, maBan, khachHang, sdt) VALUES
-('DDB1', '2024-10-17', 2, N'Bàn gần cửa sổ, 18-19h đến' , 'B3', N'Trần Thị B', '012345681'),
-('DDB2', '2024-10-17', 10, N'Bàn rộng 12h đến' , 'B20', N'Nguyễn Thị D', '012345695'),
-('DDB3', '2024-10-17', 4, N'10h đến' , 'B5', N'Nguyễn Văn A', '012345688'),
-('DDB4', '2024-10-17', 4, N'20h đến' , 'B6', N'Lê Văn C', '012345694'),
-('DDB5', '2024-10-17', 4, N'19h đến' , 'B7', N'Trần Thị B', '012345697');
+('DDB1', '2024-10-17', 8, N'Bàn gần cửa sổ, 18-19h đến' , 'B4', N'Trần Thị B', '012345681'),
+('DDB2', '2024-10-17', 4, N'Bàn rộng 12h đến' , 'B16', N'Nguyễn Thị D', '012345695'),
+('DDB3', '2024-10-17', 2, N'10h đến' , 'B23', N'Nguyễn Văn A', '012345688'),
+('DDB4', '2024-10-17', 4, N'20h đến' , 'B26', N'Lê Văn C', '012345694'),
+('DDB5', '2024-10-17', 8, N'19h đến' , 'B29', N'Trần Thị B', '012345697');
 
 
 select * from TaiKhoan

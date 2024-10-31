@@ -97,7 +97,7 @@ public class TrangChuQL extends JFrame {
         // Thêm các nội dung tương ứng cho mỗi chức năng
         mainPanel.add(new DatMon(), "\uD83C\uDF7D ĐẶT MÓN");
         mainPanel.add(new QuanLyDatBan(), "\uD83D\uDCC5 ĐẶT BÀN");
-        mainPanel.add(new QuanLyBan(), "\u25A4 BÀN ĂN  ");
+        mainPanel.add(new QuanLyBan(), "\u25A4 BÀN ĂN");
         mainPanel.add(new QuanLyHoaDon(), "\uD83D\uDCDD HÓA ĐƠN");
         mainPanel.add(new QuanLyNhanVien(), "\uD83D\uDC68\u200D NHÂN VIÊN");
         mainPanel.add(new QuanLyPhieuDat(), "\uD83D\uDCDD PHIẾU ĐẶT");
