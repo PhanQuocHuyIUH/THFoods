@@ -43,7 +43,7 @@ public class DatMon extends JPanel {
         }
 
         setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+        setBackground(AppColor.trang);
 
         // Phần header
         JPanel headerPanel = createHeaderPanel();
@@ -139,7 +139,7 @@ public class DatMon extends JPanel {
     private JPanel createMenuPanel() {
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new GridLayout(0, 4, 10, 10));
-        menuPanel.setBackground(Color.WHITE);
+        menuPanel.setBackground(AppColor.trang);
         return menuPanel;
     }
 
@@ -413,7 +413,7 @@ public class DatMon extends JPanel {
     private JButton createStyledButton(String text, ActionListener actionListener) {
         JButton button = new JButton(text);
         button.setBackground(AppColor.xanh);
-        button.setForeground(Color.WHITE);
+        button.setForeground(AppColor.trang);
         button.setFont(new Font("Segoe UI", Font.BOLD, 14));
         button.addActionListener(actionListener);
         button.setFocusPainted(false);

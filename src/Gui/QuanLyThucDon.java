@@ -7,6 +7,7 @@ import Entity.MonAn;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.sql.SQLException;
@@ -24,6 +25,7 @@ public class QuanLyThucDon extends JPanel
     private JTextField donGia;
     private JTextField moTa;
     private JButton imageButton;
+    private JButton lastClickedButton;
 
     public QuanLyThucDon()
     {
@@ -34,7 +36,7 @@ public class QuanLyThucDon extends JPanel
         }
 
         setLayout(new BorderLayout());
-        setBackground(Color.WHITE);
+        setBackground(AppColor.trang);
 
         // Phần header
         JPanel headerPanel = createHeaderPanel();
@@ -206,13 +208,13 @@ public class QuanLyThucDon extends JPanel
 
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel();
-        headerPanel.setBackground(new Color(0, 102, 204, 150));
+        headerPanel.setBackground(AppColor.trang);
         headerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         // Thêm chữ Menu
         JLabel menuLabel = new JLabel(" \u2630 MENU   ");
         menuLabel.setFont(new Font("Arial Unicode MS", Font.BOLD, 24));
-        menuLabel.setForeground(Color.WHITE);
+        menuLabel.setForeground(AppColor.den);
         headerPanel.add(menuLabel);
 
         // Thêm các nút phân loại
@@ -222,18 +224,23 @@ public class QuanLyThucDon extends JPanel
             headerPanel.add(categoryButton);
         }
 
+        lastClickedButton = (JButton) headerPanel.getComponent(5); // Mặc định chọn nút đầu tiên
+        // Đổi màu nền cho nút đầu tiên
+        lastClickedButton.setBackground(AppColor.xanhNhat);
+
         // Thêm khoảng trống
-        headerPanel.add(Box.createRigidArea(new Dimension(70, 0)));
+        headerPanel.add(Box.createRigidArea(new Dimension(292, 0)));
 
         // Thanh tìm kiếm
         searchField = new JTextField(15);
         searchField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        searchField.setBackground(AppColor.xam);
         headerPanel.add(searchField);
 
         // Nút tìm kiếm
         JButton searchButton = createStyledButton("\uD83D\uDD0D Tìm kiếm", e -> filterMenuItemsBySearch());
         searchButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 14));
-        searchButton.setBackground(new Color(80, 80, 255));
+        searchButton.setBackground(AppColor.xanh);
         headerPanel.add(searchButton);
 
         return headerPanel;
@@ -241,8 +248,8 @@ public class QuanLyThucDon extends JPanel
 
     private JButton createStyledButton(String text, ActionListener actionListener) {
         JButton button = new JButton(text);
-        button.setBackground(new Color(105, 165, 225));
-        button.setForeground(Color.WHITE);
+        button.setBackground(AppColor.xanh);
+        button.setForeground(AppColor.trang);
         button.setFont(new Font("Segoe UI", Font.BOLD, 14));
         button.addActionListener(actionListener);
         button.setFocusPainted(false);
@@ -254,10 +261,18 @@ public class QuanLyThucDon extends JPanel
         String searchText = searchField.getText().toLowerCase();
         JPanel menuPanel = (JPanel) ((JScrollPane) getComponent(1)).getViewport().getView();
         menuPanel.removeAll(); // Xóa các món ăn cũ
+        String loaiMon = "";
 
         for (MonAn monAn : menuItems) {
             boolean matchesSearch = monAn.getTenMon().toLowerCase().contains(searchText);
             if (matchesSearch) {
+                addDishToMenuPanel(menuPanel, monAn);
+                loaiMon = monAn.getLoaiMon();
+            }
+        }
+        // đổ mấy món cùng loại
+        for (MonAn monAn : menuItems) {
+            if (monAn.getLoaiMon().equals(loaiMon) && !monAn.getTenMon().toLowerCase().contains(searchText)) {
                 addDishToMenuPanel(menuPanel, monAn);
             }
         }
@@ -268,20 +283,46 @@ public class QuanLyThucDon extends JPanel
 
     private JButton createCategoryButton(String category) {
         JButton button = createStyledButton(category, e -> filterMenuItemsByCategory(category));
-        button.setBackground(new Color(100, 100, 255));
+        button.setBackground(AppColor.trang);
+        button.setForeground(AppColor.den);
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(AppColor.xanhNhat); // Đổi màu nền khi rê chuột vào
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                if (button != lastClickedButton) {
+                    button.setBackground(AppColor.trang); // Màu nền trở lại
+                }
+            }
+        });
+
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (lastClickedButton != null) {
+                    lastClickedButton.setBackground(AppColor.trang); // Đổi màu nền của nút trước đó
+                }
+                button.setBackground(AppColor.xanhNhat); // Đổi màu nền của nút được nhấn
+                lastClickedButton = button; // Cập nhật nút được nhấn
+            }
+        });
+
         return button;
     }
 
     private JPanel createMenuPanel() {
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new GridLayout(0, 4, 10, 10));
-        menuPanel.setBackground(Color.WHITE);
+        menuPanel.setBackground(AppColor.trang);
         return menuPanel;
     }
 
     private void addDishToMenuPanel(JPanel menuPanel, MonAn monAn) {
         JPanel dishPanel = new JPanel();
         dishPanel.setLayout(new BorderLayout());
+        dishPanel.setBackground(AppColor.xam);
 
         // Tạo hình ảnh món ăn
         String imagePath = "src\\img\\" + monAn.getTenMon().toLowerCase().replace(" ", "_") + ".jpg";
