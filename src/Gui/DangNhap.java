@@ -205,6 +205,7 @@ public class DangNhap extends JFrame implements ActionListener {
                         for (NhanVien nv : nhanViens) {
                             if (nv.getTenDangNhap().getTenDangNhap().equals(userName)) {
                                 nvdn = nv;
+                                qldn = null;
                                 break;
                             }
                         }
@@ -216,6 +217,7 @@ public class DangNhap extends JFrame implements ActionListener {
                         for (NguoiQuanLy qls : ql) {
                             if (qls.getTenDangNhap().getTenDangNhap().equals(userName)) {
                                 qldn = qls;
+                                nvdn = null;
                                 break;
                             }
                         }
