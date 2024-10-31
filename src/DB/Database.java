@@ -29,7 +29,13 @@ public class Database {
         }
     }
 
-    public static Connection getConnection() {
+    public static Connection getConnection() throws SQLException {
+        if (con == null || con.isClosed()) {
+            String url = "jdbc:sqlserver://localhost:1433;databasename=THFoods;trustServerCertificate=true";
+            String user = "sa";
+            String pw = "sapassword";
+            con = DriverManager.getConnection(url, user, pw);
+        }
         return con;
     }
 }

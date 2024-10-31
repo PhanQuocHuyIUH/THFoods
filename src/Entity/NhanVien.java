@@ -14,6 +14,14 @@ public class NhanVien {
     public NhanVien() {
     }
 
+    public NhanVien(String maNV, String tenNV, String sdt, String email, LocalDate ngaySinh) {
+        this.maNV = maNV;
+        this.tenNV = tenNV;
+        this.sdt = sdt;
+        this.email = email;
+        this.ngaySinh = ngaySinh;
+    }
+
     public NhanVien(String maNV, String tenNV, String sdt, String email, LocalDate ngaySinh, TaiKhoan tenDangNhap) {
         this.maNV = maNV;
         this.tenNV = tenNV;
