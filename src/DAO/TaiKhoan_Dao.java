@@ -1,13 +1,10 @@
 package DAO;
 
 import DB.Database;
-import Entity.NhanVien;
 import Entity.TaiKhoan;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import javax.swing.table.DefaultTableModel;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -31,4 +28,36 @@ public class TaiKhoan_Dao {
         }
         return dsTK;
     }
+
+    public void loadNhanVienData(DefaultTableModel tableModel) throws SQLException {
+        // Xóa dữ liệu cũ trong tableModel nếu có
+        tableModel.setRowCount(0);
+
+        // Khởi tạo kết nối
+        Database.getInstance().connect();
+        Connection con = Database.getConnection();
+
+        if (con != null) {
+            CallableStatement stmt = con.prepareCall("{CALL getInforTkN}");
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String maNV = rs.getString("maNV");
+                String tenNV = rs.getString("tenNV");
+                String sdt = rs.getString("sdt");
+                String email = rs.getString("email");
+                LocalDate ngaySinh = rs.getDate("ngaySinh").toLocalDate();
+                String tenDangNhap = rs.getString("tenDangNhap");
+                String matKhau = rs.getString("matKhau");
+
+                tableModel.addRow(new Object[]{maNV, tenNV, sdt, email, ngaySinh, tenDangNhap, matKhau});
+            }
+            rs.close();
+            stmt.close();
+        } else {
+            System.out.println("Không thể kết nối đến cơ sở dữ liệu.");
+        }
+    }
+
+
 }
