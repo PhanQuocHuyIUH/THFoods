@@ -10,6 +10,11 @@ public class Ban
 
     public Ban() {}
 
+    public Ban(String maBan, int soGhe) {
+        this.maBan = maBan;
+        this.soGhe = soGhe;
+    }
+
     public Ban(String maBan, TrangThaiBan trangThai, int soGhe)
     {
         this.maBan = maBan;
