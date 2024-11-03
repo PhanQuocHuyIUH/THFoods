@@ -1,5 +1,15 @@
 package Gui;
 
+import DAO.Ban_Dao;
+import DAO.ChiTietHoaDon_Dao;
+import DAO.HoaDon_Dao;
+import DAO.MonAn_Dao;
+import DB.Database;
+import Entity.Ban;
+import Entity.HoaDon;
+import Entity.ChiTietHoaDon;
+import Entity.MonAn;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -9,6 +19,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuanLyHoaDon extends JPanel {
 
@@ -16,8 +29,17 @@ public class QuanLyHoaDon extends JPanel {
     private JTable chiTietTable;
     private JTextField searchField;
     private JComboBox<String> tableComboBox;
+    private HoaDon_Dao hoaDon_dao = new HoaDon_Dao();
+    private ChiTietHoaDon_Dao chiTietHoaDon_dao = new ChiTietHoaDon_Dao();
+    private MonAn_Dao monAn_dao = new MonAn_Dao();
 
     public QuanLyHoaDon() {
+        try {
+            Database.getInstance().connect();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         setLayout(new BorderLayout());
 
         // Panel chứa các chức năng tìm kiếm và nút, set màu nền trắng
@@ -65,7 +87,7 @@ public class QuanLyHoaDon extends JPanel {
 
         // Bảng hiển thị hóa đơn
         hoaDonTable = new JTable(new DefaultTableModel(
-                new Object[]{"Mã Hóa Đơn", "Bàn", "Ngày", "Tổng Tiền"}, 0
+                new Object[]{"Mã Hóa Đơn", "Số Lượng Món", "Ngày", "Tổng Tiền"}, 0
         ));
         JScrollPane hoaDonScrollPane = new JScrollPane(hoaDonTable);
         hoaDonScrollPane.setPreferredSize(new Dimension(600, 150));
@@ -115,13 +137,6 @@ public class QuanLyHoaDon extends JPanel {
 
         add(tablePanel, BorderLayout.CENTER);
 
-        // Thêm dữ liệu mẫu vào bảng hóa đơn
-        DefaultTableModel hoaDonModel = (DefaultTableModel) hoaDonTable.getModel();
-        hoaDonModel.addRow(new Object[]{"HD001", "Bàn 1", "12/10/2024", "500.000đ"});
-        hoaDonModel.addRow(new Object[]{"HD002", "Bàn 2", "13/10/2024", "300.000đ"});
-        hoaDonModel.addRow(new Object[]{"HD003", "Bàn 3", "14/10/2024", "450.000đ"});
-        hoaDonModel.addRow(new Object[]{"HD004", "Bàn 4", "15/10/2024", "700.000đ"});
-
         // Xử lý sự kiện làm mới
         refreshButton.addActionListener(new ActionListener() {
             @Override
@@ -137,15 +152,36 @@ public class QuanLyHoaDon extends JPanel {
                 showChiTietHoaDon();
             }
         });
+
+        // Lấy dữ liệu ban đầu cho bảng hóa đơn
+        refreshHoaDon();
     }
 
     private void refreshHoaDon() {
-        DefaultTableModel model = (DefaultTableModel) hoaDonTable.getModel();
-        model.setRowCount(0);
-        model.addRow(new Object[]{"HD001", "Bàn 1", "12/10/2024", "500.000đ"});
-        model.addRow(new Object[]{"HD002", "Bàn 2", "13/10/2024", "300.000đ"});
-        model.addRow(new Object[]{"HD003", "Bàn 3", "14/10/2024", "450.000đ"});
-        model.addRow(new Object[]{"HD004", "Bàn 4", "15/10/2024", "700.000đ"});
+        try {
+            List<HoaDon> hoaDons = hoaDon_dao.getAllHD();
+            DefaultTableModel hoaDonModel = (DefaultTableModel) hoaDonTable.getModel();
+            hoaDonModel.setRowCount(0);
+            //đếm số chi tiết hóa đơn
+            int count = 0;
+            for (HoaDon hoaDon : hoaDons) {
+                List<ChiTietHoaDon> chiTietHoaDons = chiTietHoaDon_dao.getCTHDByMaHD(hoaDon.getMaHD());
+                //Lấy món ăn từ chi tiết hóa đơn
+                int TongTien = 0;
+                for (ChiTietHoaDon chiTietHoaDon : chiTietHoaDons) {
+                    monAn_dao.getGiaMonAn(chiTietHoaDon.getMaMon());
+                    TongTien += chiTietHoaDon.getSoLuong() * monAn_dao.getGiaMonAn(chiTietHoaDon.getMaMon());
+                }
+                hoaDonModel.addRow(new Object[]{
+                        hoaDon.getMaHD(),
+                        chiTietHoaDons.size(),
+                        hoaDon.getNgayTao(),
+                        TongTien
+                });
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu hóa đơn từ database: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
         searchField.setText("");
         tableComboBox.setSelectedIndex(0);
     }
@@ -154,10 +190,22 @@ public class QuanLyHoaDon extends JPanel {
         int selectedRow = hoaDonTable.getSelectedRow();
         if (selectedRow != -1) {
             String maHoaDon = (String) hoaDonTable.getValueAt(selectedRow, 0);
-            DefaultTableModel model = (DefaultTableModel) chiTietTable.getModel();
-            model.setRowCount(0);
-            model.addRow(new Object[]{maHoaDon, "Món 1", "2", "100.000đ", "200.000đ"});
-            model.addRow(new Object[]{maHoaDon, "Món 2", "1", "150.000đ", "150.000đ"});
+            try {
+                List<ChiTietHoaDon> chiTietHoaDons = chiTietHoaDon_dao.getCTHDByMaHD(maHoaDon);
+                DefaultTableModel chiTietModel = (DefaultTableModel) chiTietTable.getModel();
+                chiTietModel.setRowCount(0);
+                for (ChiTietHoaDon chiTiet : chiTietHoaDons) {
+                    chiTietModel.addRow(new Object[]{
+                            chiTiet.getMaHD(),
+                            monAn_dao.getTenMon(chiTiet.getMaMon()),
+                            chiTiet.getSoLuong(),
+                            monAn_dao.getGiaMonAn(chiTiet.getMaMon()),
+                            monAn_dao.getGiaMonAn(chiTiet.getMaMon()) * chiTiet.getSoLuong()
+                    });
+                }
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu chi tiết hóa đơn từ database: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn hóa đơn để xem chi tiết.");
         }

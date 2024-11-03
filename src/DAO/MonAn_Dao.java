@@ -51,21 +51,6 @@ public class MonAn_Dao {
         return 0;
     }
 
-    //lấy mã món theo tên món
-    public String getMaMon(String tenMon) throws SQLException {
-        Database.getInstance();
-        Connection con = Database.getConnection();
-        String sql = "select MaMon from MonAn where TenMon = '" + tenMon + "'";
-
-        Statement statement = con.createStatement();
-        ResultSet rs = statement.executeQuery(sql);
-
-        if (rs.next()) {
-            return rs.getString(1);
-        }
-        return null;
-    }
-
     //lấy tên món theo mã món
     public String getTenMon(String maMon) throws SQLException {
         Database.getInstance();
@@ -113,5 +98,70 @@ public class MonAn_Dao {
         }
         System.out.println("Không tìm thấy món ăn");
         return null;
+    }
+
+//    public int getSoLuongMonAn() throws SQLException {
+//        Database.getInstance();
+//        Connection con = Database.getConnection();
+//        String sql = "select count(*) from MonAn";
+//
+//        Statement statement = con.createStatement();
+//        ResultSet rs = statement.executeQuery(sql);
+//
+//        if (rs.next()) {
+//            return rs.getInt(1);
+//        }
+//        return 0;
+//    }
+
+//    public MonAn getMonAnByMaMon(String maMon) throws SQLException {
+//        Database.getInstance();
+//        Connection con = Database.getConnection();
+//        String sql = "select * from MonAn where MaMon = '" + maMon + "'";
+//
+//        Statement statement = con.createStatement();
+//        ResultSet rs = statement.executeQuery(sql);
+//
+//        if (rs.next()) {
+//            String tenMon = rs.getString(2);
+//            String loaiMon = rs.getString(3);
+//            double donGia = rs.getDouble(4);
+//            String moTa = rs.getString(5);
+//
+//            return new MonAn(maMon, tenMon, loaiMon, donGia, moTa);
+//        }
+//        System.out.println("Không tìm thấy món ăn");
+//        return null;
+//    }
+
+    public boolean xoaMonAn(String maMon) throws SQLException {
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "delete from MonAn where MaMon = '" + maMon + "'";
+
+        Statement statement = con.createStatement();
+        return statement.executeUpdate(sql) > 0;
+    }
+
+    public boolean themMonAn(MonAn monAn) throws SQLException {
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "insert into MonAn values ('" + monAn.getMaMon() + "', N'" + monAn.getTenMon()
+                + "', N'" + monAn.getLoaiMon() + "', " + monAn.getDonGia() + ", N'"
+                + monAn.getMoTa() + "')";
+
+        Statement statement = con.createStatement();
+        return statement.executeUpdate(sql) > 0;
+    }
+
+    public boolean capNhatMonAn(MonAn monAn) throws SQLException {
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "update MonAn set TenMon = N'" + monAn.getTenMon() + "', LoaiMon = N'" +
+                monAn.getLoaiMon() + "', DonGia = " + monAn.getDonGia() + ", MoTa = N'" +
+                monAn.getMoTa() + "' where MaMon = '" + monAn.getMaMon() + "'";
+
+        Statement statement = con.createStatement();
+        return statement.executeUpdate(sql) > 0;
     }
 }

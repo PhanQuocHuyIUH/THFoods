@@ -102,7 +102,8 @@ public class HoaDon_Dao
 
         for (HoaDon hd : dsHD) {
             Date ngayTao = new Date(hd.getNgayTao().getYear()+1900, hd.getNgayTao().getMonth()+1, hd.getNgayTao().getDate());
-            Date today = new Date(2024, 10, 16);
+            Date temp = new Date();
+            Date today = new Date(temp.getYear()+1900, temp.getMonth()+1, temp.getDate());
             long diff = today.getTime() - ngayTao.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
             if (diffDays <= 7) {
@@ -181,7 +182,8 @@ public class HoaDon_Dao
 
         for (HoaDon hd : dsHD) {
             Date ngayTao = new Date(hd.getNgayTao().getYear()+1900, hd.getNgayTao().getMonth()+1, hd.getNgayTao().getDate());
-            Date today = new Date(2024, 10, 16);
+            Date temp = new Date();
+            Date today = new Date(temp.getYear()+1900, temp.getMonth()+1, temp.getDate());
             long diff = today.getTime() - ngayTao.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
             if (diffDays <= 30) {
@@ -227,7 +229,8 @@ public class HoaDon_Dao
 
         for (HoaDon hd : dsHD) {
             Date ngayTao = new Date(hd.getNgayTao().getYear()+1900, hd.getNgayTao().getMonth()+1, hd.getNgayTao().getDate());
-            Date today = new Date(2024, 10, 16);
+            Date temp = new Date();
+            Date today = new Date(temp.getYear()+1900, temp.getMonth()+1, temp.getDate());
             long diff = today.getTime() - ngayTao.getTime();
             long diffDays = diff / (24 * 60 * 60 * 1000);
             if (diffDays <= 30) {
