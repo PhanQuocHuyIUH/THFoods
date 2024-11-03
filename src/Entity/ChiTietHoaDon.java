@@ -44,4 +44,5 @@ public class ChiTietHoaDon
     {
         this.soLuong = soLuong;
     }
+
 }
