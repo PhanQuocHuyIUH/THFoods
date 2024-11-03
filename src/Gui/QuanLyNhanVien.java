@@ -1,12 +1,8 @@
 package Gui;
 
 import javax.swing.*;
-
 import java.awt.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.MatteBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -22,178 +18,137 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class QuanLyNhanVien extends JPanel {
 
     private static final long serialVersionUID = 1L;
-    private JTextField txtMaNV;
-    private JTextField txtHoTen;
-    private JTextField txtNgaySinh;
-    private JTextField txtSDT;
-    private JTextField txtEmail;
+    private JTextField txtTimKiem; // Declare the JTextField
     private DefaultTableModel model;
-    private JButton btnXoa;
-    private JButton btnSua;
-    private JButton btnTim;
     private JTable table;
     private JScrollPane scrollPane;
+    private JButton lastClickedButton;
+    private JButton btnXoa;
+    private JButton btnSua;
+    private JButton btnLamMoi;
 
     /**
      * Create the panel.
      */
     public QuanLyNhanVien() {
+        setLayout(new BorderLayout()); // Đảm bảo sử dụng BorderLayout cho JPanel chính
+        setBackground(AppColor.trang); // Đặt màu nền cho JPanel chính
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new BorderLayout());
+        northPanel.setBackground(AppColor.trang);
+        add(northPanel, BorderLayout.NORTH);
 
-        setBackground(new Color(255, 255, 255));
-        setForeground(new Color(0, 100, 0));
-        setBounds(0, 50, 1390, 800);
-        setLayout(null);
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BorderLayout()); // Sử dụng BorderLayout cho centerPanel
+        add(centerPanel, BorderLayout.CENTER);
 
-        JLabel lblNewLabel = new JLabel("QUẢN LÝ NHÂN VIÊN");
-        lblNewLabel.setForeground(new Color(0, 0, 0));
-        lblNewLabel.setFont(new Font("Consolas", Font.BOLD, 24));
-        lblNewLabel.setBounds(587, 11, 249, 64);
-        add(lblNewLabel);
+        // Initialize the JTextField
+        txtTimKiem = new JTextField(15);
+        txtTimKiem.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        txtTimKiem.setBackground(AppColor.xam);
+        txtTimKiem.setPreferredSize(new Dimension(600, 30));
+        txtTimKiem.setText("Nhập nội dung tìm kiếm...");
+        // Ẩn text khi focus và hiển thị lại khi blur
+        txtTimKiem.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                txtTimKiem.setText("");
+            }
 
-        JPanel jp_main = new JPanel();
-        jp_main.setBackground(new Color(255, 255, 255));
-        jp_main.setBorder(new MatteBorder(1, 1, 1, 1, (Color) new Color(192, 192, 192)));
-        jp_main.setBounds(10, 75, 1359, 269);
-        add(jp_main);
-        jp_main.setLayout(null);
-
-        JLabel lblMaNV = new JLabel("Mã nhân viên:");
-        lblMaNV.setFont(new Font("Chalkduster", Font.BOLD, 14));
-        lblMaNV.setBounds(64, 23, 116, 34);
-        jp_main.add(lblMaNV);
-
-        JLabel lblHoTen = new JLabel("Họ tên:");
-        lblHoTen.setFont(new Font("Chalkduster", Font.BOLD, 14));
-        lblHoTen.setBounds(64, 81, 116, 37);
-        jp_main.add(lblHoTen);
-
-        JLabel lblNgaySinh = new JLabel("Ngày sinh:");
-        lblNgaySinh.setFont(new Font("Chalkduster", Font.BOLD, 14));
-        lblNgaySinh.setBounds(765, 22, 96, 37);
-        jp_main.add(lblNgaySinh);
-
-        JLabel lblSDT = new JLabel("Số điện thoại:");
-        lblSDT.setFont(new Font("Chalkduster", Font.BOLD, 14));
-        lblSDT.setBounds(64, 144, 116, 37);
-        jp_main.add(lblSDT);
-
-        JLabel lblEmail = new JLabel("Email");
-        lblEmail.setFont(new Font("Chalkduster", Font.BOLD, 14));
-        lblEmail.setBounds(765, 81, 96, 37);
-        jp_main.add(lblEmail);
-
-        txtMaNV = new JTextField();
-        txtMaNV.setBounds(219, 29, 450, 29);
-        jp_main.add(txtMaNV);
-        txtMaNV.setFont(new Font("Consolas", Font.PLAIN, 14));
-        txtMaNV.setBackground(new Color(230, 240, 255));
-        txtMaNV.setColumns(10);
-        // Cách lề trái cho JTextField
-        txtMaNV.setMargin(new Insets(0, 5, 0, 0));
-
-        txtHoTen = new JTextField();
-        txtHoTen.setFont(new Font("Consolas", Font.PLAIN, 14));
-        txtHoTen.setColumns(10);
-        txtHoTen.setBounds(219, 88, 450, 29);
-        txtHoTen.setBackground(new Color(230, 240, 255));
-        jp_main.add(txtHoTen);
-        // Cách lề trái cho JTextField
-        txtHoTen.setMargin(new Insets(0, 5, 0, 0));
-
-        txtNgaySinh = new JTextField();
-        txtNgaySinh.setFont(new Font("Consolas", Font.PLAIN, 14));
-        txtNgaySinh.setColumns(10);
-        txtNgaySinh.setBounds(890, 29, 416, 29);
-        txtNgaySinh.setBackground(new Color(230, 240, 255));
-        // Cách lề trái cho JTextField
-        txtNgaySinh.setMargin(new Insets(0, 5, 0, 0));
-        jp_main.add(txtNgaySinh);
-
-        txtSDT = new JTextField();
-        txtSDT.setFont(new Font("Consolas", Font.PLAIN, 14));
-        txtSDT.setColumns(10);
-        txtSDT.setBounds(219, 151, 450, 29);
-        txtSDT.setBackground(new Color(230, 240, 255));
-        txtSDT.setMargin(new Insets(0, 5, 0, 0));
-        jp_main.add(txtSDT);
-
-        txtEmail = new JTextField();
-        txtEmail.setFont(new Font("Consolas", Font.PLAIN, 14));
-        txtEmail.setColumns(10);
-        txtEmail.setBounds(890, 88, 416, 29);
-        txtEmail.setBackground(new Color(230, 240, 255));
-        txtEmail.setMargin(new Insets(0, 5, 0, 0));
-        jp_main.add(txtEmail);
-
-        btnXoa = new RoundedButton("XÓA");
-        btnXoa.setForeground(new Color(255, 255, 255));
-        btnXoa.setBounds(485, 209, 96, 34);
-        btnXoa.setIcon(new ImageIcon("src\\img\\delete.png"));
-        btnXoa.setBackground(new Color(105, 165, 225));
-        btnXoa.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                xoaNhanVien();
+            @Override
+            public void focusLost(FocusEvent e) {
+                txtTimKiem.setText("Nhập nội dung tìm kiếm...");
             }
         });
-        btnXoa.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        jp_main.add(btnXoa);
 
-        btnSua = new RoundedButton("SỬA");
-        btnSua.setForeground(new Color(255, 255, 255));
-        btnSua.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                suaNhanVien();
+        btnXoa = createStyledButton("XÓA", e -> xoaNhanVien());
+        btnSua = createStyledButton("SỬA", e -> suaNhanVien());
+        btnLamMoi = createStyledButton("LÀM MỚI", e -> loadToTable());
+        btnXoa.setIcon(new ImageIcon("src/img/delete_icon.png"));
+        btnSua.setIcon(new ImageIcon("src/img/fix_icon.png"));
+        btnLamMoi.setIcon(new ImageIcon("src/img/refresh_icon.png"));
+        
+        // Tạo JComboBox cho tiêu chí tìm kiếm
+        String[] searchOptions = { "Tìm theo mã", "Tìm theo tên" };
+        JComboBox<String> cboTim = new JComboBox<>(searchOptions);
+        cboTim.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        cboTim.setPreferredSize(new Dimension(150, 30));
+        cboTim.setBackground(AppColor.xam);
+        cboTim.setBorder(BorderFactory.createLineBorder(AppColor.xanh));
+
+        // Thêm KeyListener cho JTextField
+        txtTimKiem.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    timNhanVien(cboTim.getSelectedItem().toString()); // Gọi phương thức tìm nhân viên
+                }
             }
         });
-        btnSua.setIcon(new ImageIcon("src\\img\\fix.png"));
-        btnSua.setBackground(new Color(105, 165, 225));
-        btnSua.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnSua.setBounds(657, 209, 96, 34);
-        jp_main.add(btnSua);
 
-        btnTim = new RoundedButton("TÌM");
-        btnTim.setForeground(new Color(255, 255, 255));
-        btnTim.setIcon(new ImageIcon("src\\img\\find.png"));
-        btnTim.setBackground(new Color(105, 165, 225));
-        btnTim.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                timNhanVien();
-            }
-        });
-        btnTim.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        btnTim.setBounds(817, 209, 96, 34);
-        jp_main.add(btnTim);
+        // Tạo một panel cho các nút xóa và sửa
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT)); // Panel bên trái
+        leftPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        leftPanel.setBackground(AppColor.trang);
+        leftPanel.add(btnXoa);
+        leftPanel.add(btnSua);
+        northPanel.add(leftPanel, BorderLayout.WEST); // Thêm panel bên trái vào northPanel
+
+        // Tạo một panel cho ô tìm kiếm, JComboBox và nút làm mới
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)); // Panel bên phải
+        rightPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        rightPanel.setBackground(AppColor.trang);
+        rightPanel.add(txtTimKiem);
+        rightPanel.add(cboTim);
+        rightPanel.add(btnLamMoi);
+        northPanel.add(rightPanel, BorderLayout.EAST); // Thêm panel bên phải vào northPanel
 
         // Tiêu đề
         String[] columnNames = { "Mã nhân viên", "Họ tên", "Số điện thoại", "Email", "Ngày sinh" };
         model = new DefaultTableModel(columnNames, 0);
         table = new JTable(model);
-        table.setFont(new Font("Segoe UI", Font.PLAIN, 14)); // Đặt cỡ chữ cho các hàng
 
-        // Đặt cỡ chữ cho tiêu đề
-        JTableHeader header = table.getTableHeader();
-        header.setBackground(new Color(105, 165, 225));
-        header.setForeground(Color.WHITE);
-        header.setFont(new Font("Arial", Font.BOLD, 14));
-        header.setPreferredSize(new Dimension(100, 30)); // Đặt chiều cao cho tiêu đề
-        table.setRowHeight(30); // Đặt chiều cao cho tất cả các hàng
-        table.setBackground(new Color(230, 240, 255)); // Màu nền cho bảng
-        table.setForeground(new Color(10, 10, 10)); // Màu chữ cho bảng
-        table.setSelectionBackground(new Color(0, 0, 255, 150)); // Màu nền khi chọn hàng
-        table.setSelectionForeground(new Color(255, 255, 255)); // Màu chữ khi chọn hàng
+        customizeEmployeeTable();
 
-        // Tạo custom cell renderer
+        scrollPane = new JScrollPane(table);
+        scrollPane.setBackground(AppColor.trang);
+        centerPanel.add(scrollPane, BorderLayout.CENTER);
+
+        loadToTable();
+    }
+
+    private void customizeEmployeeTable() {
+        table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        table.setRowHeight(30);
+        table.setBackground(AppColor.trang);
+        table.setForeground(AppColor.den);
+        table.setGridColor(AppColor.xanh);
+        table.setFillsViewportHeight(true);
+        table.setDefaultEditor(Object.class, null);
+
+        // Tạo custom cell renderer với lề trái 5 pixel
         DefaultTableCellRenderer paddingRenderer = new DefaultTableCellRenderer() {
             @Override
-            public Component getTableCellRendererComponent(JTable table, Object value,
-                    boolean isSelected, boolean hasFocus, int row, int column) {
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                    boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 if (c instanceof JLabel) {
                     ((JLabel) c).setBorder(new EmptyBorder(0, 5, 0, 0)); // Cách lề trái 5 pixel
+                }
+                if (isSelected) {
+                    c.setBackground(AppColor.xanhNhat);
+                } else if (row % 2 == 0) {
+                    c.setBackground(AppColor.xam);
+                } else {
+                    c.setBackground(AppColor.trang);
                 }
                 return c;
             }
@@ -204,118 +159,219 @@ public class QuanLyNhanVien extends JPanel {
             table.getColumnModel().getColumn(i).setCellRenderer(paddingRenderer);
         }
 
-        scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(10, 366, 1359, 423);
-        add(scrollPane);
+        JTableHeader header = table.getTableHeader();
+        header.setBackground(AppColor.xanh);
+        header.setForeground(Color.WHITE);
+        header.setFont(new Font("Arial", Font.BOLD, 17));
+    }
 
-        // Thêm ListSelectionListener vào bảng
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                    int index = table.getSelectedRow();
-                    if (index != -1) {
-                        // Lấy thông tin từ hàng đã chọn
-                        String maNV = (String) table.getValueAt(index, 0);
-                        String hoTen = (String) table.getValueAt(index, 1);
-                        String sdt = (String) table.getValueAt(index, 2);
-                        String email = (String) table.getValueAt(index, 3);
-                        LocalDate ngaySinh = (LocalDate) table.getValueAt(index, 4); // Lấy giá trị LocalDate
+    private JButton createStyledButton(String text, ActionListener action) { // Thêm kiểu trả về JButton
+        JButton button = new JButton(text);
+        button.addActionListener(action);
+        // Thêm bất kỳ kiểu dáng bổ sung nào nếu cần
+        button.setFont(new Font("Arial Unicode MS", Font.BOLD, 17));
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        button.setPreferredSize(new Dimension(150, 30));
+        applyButtonColorChange(button);
+        return button;
+    }
 
-                        // Chuyển đổi LocalDate thành String với định dạng "dd/MM/yyyy"
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                        String ngaySinhString = ngaySinh != null ? ngaySinh.format(formatter) : "";
+    private void applyButtonColorChange(JButton button) {
+        button.setBackground(AppColor.trang);
+        button.setForeground(AppColor.den);
 
-                        // Hiển thị thông tin lên các JTextField
-                        txtMaNV.setText(maNV);
-                        txtHoTen.setText(hoTen);
-                        txtSDT.setText(sdt);
-                        txtEmail.setText(email);
-                        txtNgaySinh.setText(ngaySinhString); // Gán giá trị đã chuyển đổi
-                    }
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(AppColor.xanhNhat); // Đổi màu nền khi rê chuột vào
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                if (button != lastClickedButton) {
+                    button.setBackground(AppColor.trang); // Màu nền trở lại
                 }
             }
         });
-        // Gọi phương thức loadToTable() để nạp dữ liệu vào bảng
-        loadToTable();
 
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (lastClickedButton != null) {
+                    lastClickedButton.setBackground(AppColor.trang); // Đổi màu nền của nút trước đó
+                }
+                button.setBackground(AppColor.xanhNhat); // Đổi màu nền của nút được nhấn
+                lastClickedButton = button; // Cập nhật nút được nhấn
+            }
+        });
     }
 
     public void suaNhanVien() {
-        // Lấy chỉ số dòng đã chọn trong bảng
-        int index = table.getSelectedRow();
-        if (index == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhân viên để sửa.");
+        int selectedRow = table.getSelectedRow(); // Lấy chỉ số hàng được chọn
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhân viên để sửa!");
             return;
         }
     
-        // Lấy giá trị từ các JTextField
-        String maNV = txtMaNV.getText();
-        String hoTen = txtHoTen.getText();
-        String sdt = txtSDT.getText();
-        String email = txtEmail.getText();
-        String ngaySinhInput = txtNgaySinh.getText();
+        // Lấy thông tin nhân viên từ hàng được chọn
+        String maNV = model.getValueAt(selectedRow, 0).toString();
+        String tenNV = model.getValueAt(selectedRow, 1).toString();
+        String sdt = model.getValueAt(selectedRow, 2).toString();
+        String email = model.getValueAt(selectedRow, 3).toString();
+        String ngaySinhStr = model.getValueAt(selectedRow, 4).toString(); // Lấy ngày sinh dưới dạng String
+        LocalDate ngaySinh = LocalDate.parse(ngaySinhStr, DateTimeFormatter.ofPattern("dd/MM/yyyy")); // Chuyển đổi từ String sang LocalDate
     
-        // Tạo DateTimeFormatter với định dạng "dd/MM/yyyy"
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        LocalDate ngaySinh;
+        // Tạo hộp thoại để chỉnh sửa thông tin nhân viên
+        JTextField txtMaNV = new JTextField(maNV);
+        txtMaNV.setEditable(false); // Không cho phép sửa mã nhân viên
+        txtMaNV.setFont(new Font("Consolas", Font.PLAIN, 14));
+        txtMaNV.setPreferredSize(new Dimension(300, 30)); // Đặt chiều dài cho JTextField
+
+        JTextField txtTenNV = new JTextField(tenNV);
+        txtTenNV.setFont(new Font("Consolas", Font.PLAIN, 14));
+        txtTenNV.setPreferredSize(new Dimension(300, 30)); // Đặt chiều dài cho JTextField
     
-        try {
-            // Phân tích chuỗi ngày tháng thành LocalDate
-            ngaySinh = LocalDate.parse(ngaySinhInput, inputFormatter);
-        } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "Ngày sinh không hợp lệ. Vui lòng nhập theo định dạng dd/MM/yyyy.");
-            return;
-        }
-    
-        // Cập nhật thông tin nhân viên trong bảng
-        NhanVien nhanVien = new NhanVien(maNV, hoTen, sdt, email, ngaySinh); // Sử dụng constructor 5 tham số
-        NhanVien_Dao dao = new NhanVien_Dao();
+        JTextField txtSDT = new JTextField(sdt);
+        txtSDT.setFont(new Font("Consolas", Font.PLAIN, 14));
+        txtSDT.setPreferredSize(new Dimension(300, 30)); // Đặt chiều dài cho JTextField
+
+        JTextField txtEmail = new JTextField(email);
+        txtEmail.setFont(new Font("Consolas", Font.PLAIN, 14));
+        txtEmail.setPreferredSize(new Dimension(300, 30)); // Đặt chiều dài cho JTextField
         
-        try {
-            dao.update(nhanVien); // Gọi phương thức update mà không cần gán giá trị
-            // Cập nhật lại bảng
-            loadToTable(); // Gọi phương thức để nạp lại dữ liệu vào bảng
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật thông tin nhân viên!");
+        JTextField txtNgaySinh = new JTextField(ngaySinh.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))); // Chuyển đổi LocalDate thành String với định dạng dd/MM/yyyy
+        txtNgaySinh.setFont(new Font("Consolas", Font.PLAIN, 14));
+        txtNgaySinh.setPreferredSize(new Dimension(300, 30)); // Đặt chiều dài cho JTextField
+
+        // Tạo panel để chứa các thành phần
+        JPanel panel = new JPanel(new GridLayout(5, 2, 10, 10)); // Sử dụng GridLayout để sắp xếp nhãn và trường nhập
+        panel.add(new JLabel("Mã nhân viên:"));
+        panel.add(txtMaNV);
+        panel.add(new JLabel("Tên nhân viên:"));
+        panel.add(txtTenNV);
+        panel.add(new JLabel("Số điện thoại:"));
+        panel.add(txtSDT);
+        panel.add(new JLabel("Email:"));
+        panel.add(txtEmail);
+        panel.add(new JLabel("Ngày sinh:"));
+        panel.add(txtNgaySinh);
+    
+        // Đặt font cho các JLabel
+        for (Component comp : panel.getComponents()) {
+            if (comp instanceof JLabel) {
+                comp.setFont(new Font("Chalkduster", Font.BOLD, 14));
+            }
+        }
+    
+        // Hiển thị hộp thoại với panel
+        JOptionPane optionPane = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE, JOptionPane.OK_CANCEL_OPTION);
+        JDialog dialog = optionPane.createDialog("Sửa thông tin nhân viên");
+        dialog.setPreferredSize(new Dimension(550, 300)); // Đặt kích thước cho hộp thoại
+        dialog.pack(); // Đảm bảo hộp thoại được đóng gói lại với kích thước mới
+        dialog.setLocationRelativeTo(null); // Đặt vị trí hộp thoại ở giữa màn hình
+        dialog.setVisible(true);
+    
+        // Xử lý kết quả từ hộp thoại
+        if (optionPane.getValue() != null && optionPane.getValue().equals(JOptionPane.OK_OPTION)) {
+            // Cập nhật thông tin nhân viên
+            try {
+                NhanVien_Dao dao = new NhanVien_Dao();
+                NhanVien nhanVien = new NhanVien(maNV, txtTenNV.getText(), txtSDT.getText(), txtEmail.getText(), LocalDate.parse(txtNgaySinh.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy")), new TaiKhoan(txtMaNV.getText()));
+                boolean isUpdated = dao.update(nhanVien); // Gọi phương thức cập nhật từ NhanVien_Dao
+                if (isUpdated) {
+                    JOptionPane.showMessageDialog(this, "Cập nhật thông tin nhân viên thành công!");
+                    loadToTable(); // Tải lại bảng để cập nhật dữ liệu
+                } else {
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy nhân viên với mã " + maNV + "!");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật thông tin nhân viên: " + e.getMessage());
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Lỗi khi chuyển đổi ngày sinh: " + e.getMessage());
+            }
         }
     }
+    
 
     private void xoaNhanVien() {
-        String maNV = txtMaNV.getText();
-        try {
-            NhanVien_Dao dao = new NhanVien_Dao();
-            dao.delete(maNV);
-            loadToTable(); // Cập nhật bảng sau khi xóa
-            xoaRongTextFields(); // Xóa dữ liệu trong các trường nhập
-            JOptionPane.showMessageDialog(this, "Xóa nhân viên thành công!");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi xóa nhân viên!");
+        int selectedRow = table.getSelectedRow(); // Lấy chỉ số hàng được chọn
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhân viên để xóa!");
+            return;
+        }
+
+        String maNV = model.getValueAt(selectedRow, 0).toString(); // Lấy mã nhân viên từ cột đầu tiên
+
+        // Kiểm tra xem nhân viên có đang được tham chiếu trong bảng khác không
+        if (isEmployeeReferenced(maNV)) {
+            JOptionPane.showMessageDialog(this,
+                    "Không thể xóa nhân viên này vì nó đang được tham chiếu trong bảng khác!");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa nhân viên có mã " + maNV + "?",
+                "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                NhanVien_Dao dao = new NhanVien_Dao();
+                boolean isDeleted = dao.delete(maNV); // Gọi phương thức xóa từ NhanVien_Dao
+                if (isDeleted) {
+                    JOptionPane.showMessageDialog(this, "Xóa nhân viên thành công!");
+                    loadToTable(); // Tải lại bảng để cập nhật dữ liệu
+                } else {
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy nhân viên với mã " + maNV + "!");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Lỗi khi xóa nhân viên: " + e.getMessage());
+            }
         }
     }
 
-    private void timNhanVien() {
-        String maNV = txtMaNV.getText();
+    // Phương thức kiểm tra xem nhân viên có đang được tham chiếu không
+    private boolean isEmployeeReferenced(String maNV) {
+        // Gọi phương thức từ NhanVien_Dao để kiểm tra tham chiếu
+        // Ví dụ: kiểm tra trong bảng đơn hàng
+        try {
+            // Giả sử có phương thức checkEmployeeReferences trong NhanVien_Dao
+            NhanVien_Dao dao = new NhanVien_Dao();
+            return dao.checkEmployeeReferences(maNV); // Trả về true nếu có tham chiếu
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Nếu có lỗi, giả sử không có tham chiếu
+        }
+    }
+
+    private void timNhanVien(String searchOption) {
+        String searchText = txtTimKiem.getText().trim(); // Lấy nội dung tìm kiếm từ ô nhập liệu
+        if (searchText.isEmpty() || searchText.equals("Nhập nội dung tìm kiếm...")) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập nội dung tìm kiếm!");
+            return;
+        }
+
         try {
             NhanVien_Dao dao = new NhanVien_Dao();
-            NhanVien nhanVien = dao.select(maNV);
-            if (nhanVien != null) {
-                txtHoTen.setText(nhanVien.getTenNV());
-                txtSDT.setText(nhanVien.getSdt());
-                txtEmail.setText(nhanVien.getEmail());
-                
-                // Định dạng lại ngày sinh
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                String ngaySinhString = nhanVien.getNgaySinh() != null ? nhanVien.getNgaySinh().format(formatter) : "";
-                txtNgaySinh.setText(ngaySinhString);
+            ArrayList<NhanVien> dsNV;
+
+            if (searchOption.equals("Tìm theo mã")) {
+                dsNV = dao.getAllNhanVienByMa(searchText); // Gọi phương thức tìm theo mã
             } else {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy nhân viên!");
+                dsNV = dao.getAllNhanVienByTen(searchText); // Gọi phương thức tìm theo tên
+            }
+
+            model.setRowCount(0); // Xóa dữ liệu cũ trong bảng
+            for (NhanVien nv : dsNV) {
+                model.addRow(
+                        new Object[] { nv.getMaNV(), nv.getTenNV(), nv.getSdt(), nv.getEmail(), nv.getNgaySinh() });
+            }
+
+            if (dsNV.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy nhân viên nào!");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi tìm nhân viên!");
+            JOptionPane.showMessageDialog(this, "Lỗi khi tìm kiếm nhân viên: " + e.getMessage());
         }
     }
 
@@ -324,73 +380,20 @@ public class QuanLyNhanVien extends JPanel {
             NhanVien_Dao dao = new NhanVien_Dao();
             ArrayList<NhanVien> dsNV = dao.getAllNhanVien();
             model.setRowCount(0); // Xóa dữ liệu cũ trong bảng
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy"); // Định dạng ngày
+    
             for (NhanVien nv : dsNV) {
-                model.addRow(
-                        new Object[] { nv.getMaNV(), nv.getTenNV(), nv.getSdt(), nv.getEmail(), nv.getNgaySinh() });
+                model.addRow(new Object[] {
+                    nv.getMaNV(),
+                    nv.getTenNV(),
+                    nv.getSdt(),
+                    nv.getEmail(),
+                    nv.getNgaySinh().format(formatter) // Định dạng ngày sinh
+                });
             }
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu nhân viên!");
-        }
-    }
-
-    private void xoaRongTextFields() {
-        // Xóa dữ liệu trong các trường nhập
-        txtMaNV.setText("");
-        txtHoTen.setText("");
-        txtSDT.setText("");
-        txtEmail.setText("");
-        txtNgaySinh.setText("");
-    }
-
-    // Lớp RoundedButton bên trong để tạo nút bo tròn
-    private class RoundedButton extends JButton {
-        public RoundedButton(String text) {
-            super(text);
-            setContentAreaFilled(false);
-            setOpaque(false);
-            setBorderPainted(false);
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-            // Vẽ nền bo góc tròn
-            g2.setColor(getBackground());
-            g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
-
-            // Khoảng cách giữa icon và văn bản
-            int iconTextGap = 5;
-
-            // Tính toán vị trí của icon và văn bản
-            int iconX = 10; // Đặt icon cách lề trái 10px
-            int iconY = (getHeight() - (getIcon() != null ? getIcon().getIconHeight() : 0)) / 2;
-
-            int textX = iconX + (getIcon() != null ? getIcon().getIconWidth() : 0) + iconTextGap;
-            FontMetrics fm = g2.getFontMetrics();
-            int textY = (getHeight() + fm.getAscent()) / 2 - 2;
-
-            // Vẽ icon nếu có
-            if (getIcon() != null) {
-                getIcon().paintIcon(this, g2, iconX, iconY);
-            }
-
-            // Vẽ văn bản
-            g2.setColor(getForeground());
-            g2.drawString(getText(), textX, textY);
-
-            g2.dispose();
-        }
-
-        @Override
-        protected void paintBorder(Graphics g) {
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(getForeground());
-            g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 15, 15);
-            g2.dispose();
         }
     }
 }
