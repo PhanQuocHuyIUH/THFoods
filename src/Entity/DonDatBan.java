@@ -8,19 +8,28 @@ public class DonDatBan
     private String ngayDatBan;
     private int soGhe;
     private String ghiChu;
-    private Ban maBan;
+    private Ban ban;
     private String khachHang;
+    private String sdt;
 
     public DonDatBan() {}
 
-    public DonDatBan(String maDDB, String ngayDatBan, int soGhe, String ghiChu, Ban maBan, String khachHang)
-    {
+    public DonDatBan(String maDDB, String ngayDatBan, int soGhe, String ghiChu, Ban ban, String khachHang, String sdt) {
         this.maDDB = maDDB;
         this.ngayDatBan = ngayDatBan;
         this.soGhe = soGhe;
+        this.ban = ban;
         this.ghiChu = ghiChu;
-        this.maBan = maBan;
         this.khachHang = khachHang;
+        this.sdt = sdt;
+    }
+
+    public String getSdt() {
+        return sdt;
+    }
+
+    public void setSdt(String sdt) {
+        this.sdt = sdt;
     }
 
     public String getMaDDB()
@@ -63,14 +72,14 @@ public class DonDatBan
         this.ghiChu = ghiChu;
     }
 
-    public Ban getMaBan()
+    public Ban getBan()
     {
-        return maBan;
+        return ban;
     }
 
-    public void setMaBan(Ban maBan)
+    public void setBan(Ban maBan)
     {
-        this.maBan = maBan;
+        this.ban = maBan;
     }
 
     public String getKhachHang()

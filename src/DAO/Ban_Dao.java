@@ -192,4 +192,32 @@ public class Ban_Dao {
             }
         }
     }
+
+    // Lấy số lượng bàn
+    public int getSoLuongBan() throws SQLException {
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "SELECT COUNT(MaBan) FROM Ban";
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+        rs.next();
+        return rs.getInt(1);
+    }
+
+    // Lấy danh sach bàn theo trạng thái
+    public ArrayList<Ban> getDanhSachBanTheoTrangThai(TrangThaiBan trangThai) throws SQLException {
+        ArrayList<Ban> dsBan = new ArrayList<>();
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "select * from Ban where TrangThai = '" + trangThai + "'";
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+        while (rs.next()) {
+            String maBan = rs.getString(1);
+            TrangThaiBan trangThaiBan = TrangThaiBan.valueOf(rs.getString(2));
+            int soGhe = rs.getInt(3);
+            dsBan.add(new Ban(maBan, trangThaiBan, soGhe));
+        }
+        return dsBan;
+    }
 }

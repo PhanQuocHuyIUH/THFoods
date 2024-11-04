@@ -538,8 +538,6 @@ public class QuanLyDatBan extends JPanel {
             gbc.insets = new Insets(10, 10, 5, 10); // Điều chỉnh khoảng cách giữa các thành phần
             gbc.fill = GridBagConstraints.HORIZONTAL;
 
-
-
             // Các trường nhập thông tin khách hàng
             maDonField = new JTextField(String.format("DDB"), 15);
             maDonField.setEditable(true);
@@ -611,8 +609,8 @@ public class QuanLyDatBan extends JPanel {
             xacNhanButton = createStyledButton("Xác nhận");
             huyButton = createStyledButton("Hủy");
 
-            xacNhanButton.setPreferredSize(new Dimension(100, 30));
-            huyButton.setPreferredSize(new Dimension(100, 30));
+//            xacNhanButton.setPreferredSize(new Dimension(100, 30));
+//            huyButton.setPreferredSize(new Dimension(100, 30));
 
             buttonPanel.add(xacNhanButton);
             buttonPanel.add(huyButton);

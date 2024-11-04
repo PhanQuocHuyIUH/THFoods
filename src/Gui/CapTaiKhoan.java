@@ -217,17 +217,4 @@ public class CapTaiKhoan implements ActionListener {
             passwordField.setText("");
 
         }
-
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                new CapTaiKhoan();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-
 }
