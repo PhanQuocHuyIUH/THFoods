@@ -1,7 +1,10 @@
 package Gui;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 import DAO.Ban_Dao;
 import Entity.Ban;
@@ -19,39 +22,44 @@ public class QuanLyBan extends JPanel {
     private JButton btnThem, btnXoa, btnSua;
     private JTable tableList;
     private DefaultTableModel tableModel;
+    private JButton lastClickedButton;
 
     public QuanLyBan() {
         setLayout(new BorderLayout(20, 20)); // Tăng khoảng cách giữa các khu vực
+        setBackground(AppColor.trang);
 
         // Header
         JLabel lblHeader = new JLabel("QUẢN LÝ BÀN", JLabel.CENTER);
-        lblHeader.setFont(new Font("Serif", Font.BOLD, 36));
-        lblHeader.setForeground(new Color(52, 73, 94)); // Thay đổi màu header cho nhẹ nhàng
+        lblHeader.setFont(new Font("Consolas", Font.BOLD, 30));
+        lblHeader.setForeground(AppColor.den); 
+        lblHeader.setPreferredSize(new Dimension(0, 50));
 
         // Tạo JPanel cho khu vực header
         JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(AppColor.trang);
         headerPanel.add(lblHeader, BorderLayout.CENTER);
         headerPanel.setBorder(BorderFactory.createTitledBorder( // Thêm viền cho header
                 BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
                 "Tiêu đề", // Tiêu đề cho viền (có thể bỏ trống nếu không cần)
                 0,
                 0,
-                new Font("Serif", Font.BOLD, 20),
-                new Color(52, 152, 219)));
+                new Font("Consolas", Font.BOLD, 20),
+                AppColor.xanh));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Tạo padding cho header
 
         add(headerPanel, BorderLayout.NORTH); // Thêm headerPanel vào khu vực NORTH
 
         // Form to input table info
         JPanel formPanel = new JPanel();
+        formPanel.setBackground(AppColor.trang);
         formPanel.setLayout(new GridBagLayout());
         formPanel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(new Color(52, 152, 219), 2),
                 "Thông tin bàn",
                 0,
                 0,
-                new Font("Serif", Font.BOLD, 20),
-                new Color(52, 152, 219)));
+                new Font("Consolas", Font.BOLD, 20),
+                AppColor.xanh));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(15, 15, 15, 15); // Tăng khoảng cách giữa các thành phần
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -60,54 +68,43 @@ public class QuanLyBan extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 0;
         JLabel lblMaBan = new JLabel("Mã bàn:");
-        lblMaBan.setFont(new Font("Serif", Font.PLAIN, 18));
+        lblMaBan.setFont(new Font("Chalkduster", Font.BOLD, 14));
         formPanel.add(lblMaBan, gbc);
 
         gbc.gridx = 1;
         txtMaBan = new JTextField(20);
-        txtMaBan.setFont(new Font("Serif", Font.PLAIN, 18));
+        txtMaBan.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        txtMaBan.setBackground(AppColor.xam);
         formPanel.add(txtMaBan, gbc);
 
         // So Ghe
         gbc.gridx = 0;
         gbc.gridy = 1;
         JLabel lblSoGhe = new JLabel("Số ghế:");
-        lblSoGhe.setFont(new Font("Serif", Font.PLAIN, 18));
+        lblSoGhe.setFont(new Font("Chalkduster", Font.BOLD, 14));
         formPanel.add(lblSoGhe, gbc);
 
         gbc.gridx = 1;
         txtSoGhe = new JTextField(20);
-        txtSoGhe.setFont(new Font("Serif", Font.PLAIN, 18));
+        txtSoGhe.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        txtSoGhe.setBackground(AppColor.xam);
         formPanel.add(txtSoGhe, gbc);
 
         // Buttons for actions inside formPanel
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 3, 15, 0)); // Tăng khoảng cách giữa các nút
+        JPanel buttonPanel = new JPanel(); // Tăng khoảng cách giữa các nút
+        buttonPanel.setBackground(AppColor.trang);
 
-        btnThem = new JButton("Thêm");
-        styleButton(btnThem, new Color(76, 175, 80), Color.WHITE); // Sử dụng hàm styleButton để định dạng
-        btnThem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                themBan();
-            }
-        });
+        btnThem = createStyledButton("Thêm", e -> themBan());
+        btnThem.setIcon(new ImageIcon("src/img/add_icon.png"));
         buttonPanel.add(btnThem);
 
-        btnXoa = new JButton("Xóa");
-        styleButton(btnXoa, new Color(244, 67, 54), Color.WHITE);
-        btnXoa.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                xoaBan();
-            }
-        });
+
+        btnXoa = createStyledButton("Xóa", e -> xoaBan());
+        btnXoa.setIcon(new ImageIcon("src/img/delete_icon.png"));
         buttonPanel.add(btnXoa);
 
-        btnSua = new JButton("Sửa");
-        styleButton(btnSua, new Color(33, 150, 243), Color.WHITE);
-        btnSua.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                suaBan();
-            }
-        });
+        btnSua = createStyledButton("Sửa", e -> suaBan());
+        btnSua.setIcon(new ImageIcon("src/img/fix_icon.png"));
         buttonPanel.add(btnSua);
 
         // Adding button panel to formPanel, move to the last row
@@ -123,11 +120,8 @@ public class QuanLyBan extends JPanel {
         String[] columnNames = { "Mã bàn", "Số ghế" };
         tableModel = new DefaultTableModel(columnNames, 0); // Bảng trống với tiêu đề cột
         tableList = new JTable(tableModel);
-        tableList.setFont(new Font("Serif", Font.PLAIN, 18)); // Đổi font cho danh sách bàn
-        tableList.getTableHeader().setFont(new Font("Serif", Font.BOLD, 20)); // Font cho tiêu đề cột
-        tableList.getTableHeader().setBackground(new Color(52, 152, 219)); // Màu nền cho tiêu đề cột
-        tableList.getTableHeader().setForeground(Color.WHITE); // Màu chữ cho tiêu đề cột
         JScrollPane tableScrollPane = new JScrollPane(tableList);
+        customizeTable();
 
         // Add the table to the right side of the frame
         add(tableScrollPane, BorderLayout.CENTER);
@@ -154,14 +148,84 @@ public class QuanLyBan extends JPanel {
         loadToTable();
     }
 
-    // Hàm định dạng cho button
-    private void styleButton(JButton button, Color background, Color foreground) {
-        button.setBackground(background);
-        button.setForeground(foreground);
-        button.setFont(new Font("Serif", Font.BOLD, 18));
-        button.setFocusPainted(false); // Bỏ đường viền khi focus
-        button.setBorder(BorderFactory.createLineBorder(background.darker(), 2)); // Tạo đường viền bo
-        button.setPreferredSize(new Dimension(120, 50)); // Tăng kích thước nút
+    private void customizeTable() {
+        tableList.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        tableList.setRowHeight(30);
+        tableList.setBackground(AppColor.trang);
+        tableList.setForeground(AppColor.den);
+        tableList.setGridColor(AppColor.xanh);
+        tableList.setFillsViewportHeight(true);
+        tableList.setDefaultEditor(Object.class, null);
+
+        // Tạo custom cell renderer với lề trái 5 pixel
+        DefaultTableCellRenderer paddingRenderer = new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                    boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (c instanceof JLabel) {
+                    ((JLabel) c).setBorder(new EmptyBorder(0, 5, 0, 0)); // Cách lề trái 5 pixel
+                }
+                if (isSelected) {
+                    c.setBackground(AppColor.xanhNhat);
+                } else if (row % 2 == 0) {
+                    c.setBackground(AppColor.xam);
+                } else {
+                    c.setBackground(AppColor.trang);
+                }
+                return c;
+            }
+        };
+
+        // Áp dụng renderer cho tất cả các cột
+        for (int i = 0; i < tableList.getColumnCount(); i++) {
+            tableList.getColumnModel().getColumn(i).setCellRenderer(paddingRenderer);
+        }
+
+        JTableHeader header = tableList.getTableHeader();
+        header.setBackground(AppColor.xanh);
+        header.setForeground(Color.WHITE);
+        header.setFont(new Font("Arial", Font.BOLD, 17));
+    }
+
+
+private JButton createStyledButton(String text, ActionListener action) { // Thêm kiểu trả về JButton
+        JButton button = new JButton(text);
+        button.addActionListener(action);
+        // Thêm bất kỳ kiểu dáng bổ sung nào nếu cần
+        button.setFont(new Font("Arial Unicode MS", Font.BOLD, 17));
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        applyButtonColorChange(button);
+        return button;
+    }
+
+    private void applyButtonColorChange(JButton button) {
+        button.setBackground(AppColor.trang);
+        button.setForeground(AppColor.den);
+
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(AppColor.xanhNhat); // Đổi màu nền khi rê chuột vào
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                if (button != lastClickedButton) {
+                    button.setBackground(AppColor.trang); // Màu nền trở lại
+                }
+            }
+        });
+
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (lastClickedButton != null) {
+                    lastClickedButton.setBackground(AppColor.trang); // Đổi màu nền của nút trước đó
+                }
+                button.setBackground(AppColor.xanhNhat); // Đổi màu nền của nút được nhấn
+                lastClickedButton = button; // Cập nhật nút được nhấn
+            }
+        });
     }
 
     private void setBorderAndSpacing() {
