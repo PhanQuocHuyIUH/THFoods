@@ -20,6 +20,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static Gui.AppColor.xanh;
+import static Gui.AppColor.xanhNhat;
+
 public class DangNhap extends JFrame implements ActionListener {
     private JButton loginButton,exitButton;
     private  JPasswordField passwordText;
@@ -58,13 +61,13 @@ public class DangNhap extends JFrame implements ActionListener {
 
         // Tạo JPanel chứa form đăng nhập (bên phải) và set màu nền
         JPanel formPanel = new JPanel();
-        formPanel.setBackground(new Color(173, 216, 230)); // Màu xanh da trời nhạt
+        formPanel.setBackground(xanh); // Màu xanh da trời nhạt
         formPanel.setLayout(new BoxLayout(formPanel, BoxLayout.Y_AXIS)); // Sử dụng BoxLayout theo chiều dọc
 
         // Tạo tile
-        formPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Tạo khoảng cách trên tiêu đề
+
         JLabel brand = new JLabel("THFOODS");
-        brand.setForeground(Color.WHITE);
+        brand.setForeground(AppColor.trang);
         brand.setFont(new Font("Segoe UI", Font.BOLD, 60));
         brand.setAlignmentX(Component.CENTER_ALIGNMENT);
         formPanel.add(brand);
@@ -87,7 +90,7 @@ public class DangNhap extends JFrame implements ActionListener {
 
         formPanel.add(userLabel);
         formPanel.add(userText);
-        formPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Tạo khoảng cách giữa các thành phần
+        formPanel.add(Box.createRigidArea(new Dimension(0, 5))); // Tạo khoảng cách giữa các thành phần
 
         // Tạo nhãn và trường nhập cho password
         JLabel passwordLabel = new JLabel("Password:");
@@ -104,15 +107,41 @@ public class DangNhap extends JFrame implements ActionListener {
         formPanel.add(passwordText);
         formPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Tạo khoảng cách giữa các thành phần
 
+        // Hiển thị mật khẩu
+        JCheckBox showPasswordCheckBox = new JCheckBox("Hiển thị mật khẩu");
+        showPasswordCheckBox.setFont(new Font("Segoe UI", Font.PLAIN, 16)); // Đặt font chữ
+        showPasswordCheckBox.setBackground(xanh); // Màu nền giống với form
+        showPasswordCheckBox.setForeground(AppColor.trang); // Đặt màu chữ
+        showPasswordCheckBox.setFocusPainted(false); // Xóa viền focus để nút trông gọn hơn
+        JPanel checkBoxPanel = new JPanel();
+        checkBoxPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0)); // Căn trái
+        checkBoxPanel.setBackground(xanh); // Màu nền giống với form
+        checkBoxPanel.add(showPasswordCheckBox); // Thêm checkbox vào panel con
+        checkBoxPanel.setBorder(BorderFactory.createEmptyBorder(-5, 64, 0, 0));
+        formPanel.add(checkBoxPanel);
+        // Xử lý sự kiện checkbox
+        showPasswordCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (showPasswordCheckBox.isSelected()) {
+                    // Hiển thị mật khẩu
+                    passwordText.setEchoChar((char) 0);
+                } else {
+                    // Ẩn mật khẩu
+                    passwordText.setEchoChar('•');
+                }
+            }
+        });
+
         // Tạo nút Login
         loginButton = createSmoothButton("Login");
-// Tạo nút Thoát
+        // Tạo nút Thoát
         exitButton = createSmoothButton("Exit");
 
-// Sử dụng FlowLayout để hai nút nằm cạnh nhau
+        // Sử dụng FlowLayout để hai nút nằm cạnh nhau
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));  // Khoảng cách giữa các nút là 10
-        buttonPanel.setBackground(new Color(173, 216, 230));
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 35, 0));  // Khoảng cách giữa các nút là 10
+        buttonPanel.setBackground(xanh);
         buttonPanel.add(loginButton);
         buttonPanel.add(exitButton);
         formPanel.add(buttonPanel);
