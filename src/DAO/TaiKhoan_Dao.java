@@ -38,7 +38,7 @@ public class TaiKhoan_Dao {
         Connection con = Database.getConnection();
 
         if (con != null) {
-            CallableStatement stmt = con.prepareCall("{CALL getInforTkN}");
+            CallableStatement stmt = con.prepareCall("{CALL getInforTkNV}");
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -51,6 +51,35 @@ public class TaiKhoan_Dao {
                 String matKhau = rs.getString("matKhau");
 
                 tableModel.addRow(new Object[]{maNV, tenNV, sdt, email, ngaySinh, tenDangNhap, matKhau});
+            }
+            rs.close();
+            stmt.close();
+        } else {
+            System.out.println("Không thể kết nối đến cơ sở dữ liệu.");
+        }
+    }
+
+    public void loadQuanLyData(DefaultTableModel tableModel) throws SQLException {
+        // Xóa dữ liệu cũ trong tableModel nếu có
+        tableModel.setRowCount(0);
+
+        // Khởi tạo kết nối
+        Database.getInstance().connect();
+        Connection con = Database.getConnection();
+
+        if (con != null) {
+            CallableStatement stmt = con.prepareCall("{CALL getInforTkQL}");
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String maQL = rs.getString("maQL");
+                String tenQL = rs.getString("tenQL");
+                String sdt = rs.getString("sdt");
+                String email = rs.getString("email");
+                String tenDangNhap = rs.getString("tenDangNhap");
+                String matKhau = rs.getString("matKhau");
+
+                tableModel.addRow(new Object[]{maQL, tenQL, sdt, email, tenDangNhap, matKhau});
             }
             rs.close();
             stmt.close();

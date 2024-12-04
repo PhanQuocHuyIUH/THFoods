@@ -52,7 +52,7 @@ public class QuanLyPhieuDat extends JPanel {
         setLayout(new BorderLayout());
         // Panel trái chứa bàn
         JPanel leftPanel = new JPanel(new BorderLayout());
-        leftPanel.setPreferredSize(new Dimension(600, getHeight()));
+        leftPanel.setPreferredSize(new Dimension(900, getHeight()));
         leftPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         leftPanel.setBackground(new Color(105, 165, 225));
 
@@ -75,10 +75,11 @@ public class QuanLyPhieuDat extends JPanel {
 
         // Phần hiển thị các bàn với cuộn dọc
         panelBan = new JPanel();
-        panelBan.setLayout(new GridLayout(0, 2, 10, 10));
+        panelBan.setLayout(new GridLayout(0, 3, 10, 10));
         JScrollPane scrollPaneBan = new JScrollPane(panelBan);
         scrollPaneBan.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPaneBan.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPaneBan.getVerticalScrollBar().setUnitIncrement(20);// Tăng tốc độ cuộn
         leftPanel.add(scrollPaneBan, BorderLayout.CENTER);
         add(leftPanel, BorderLayout.WEST);
 
@@ -143,7 +144,8 @@ public class QuanLyPhieuDat extends JPanel {
         btnXoaChiTiet.setFont(new Font("Arial Unicode MS", Font.BOLD, 30));
         btnXoaChiTiet.setBackground(new Color(255, 255, 255));
         btnXoaChiTiet.setForeground(new Color(0, 0, 225));
-        btnXoaPhieuDat = createStyledButton("\u274C HỦY BÀN", e -> xoaPhieuDat());
+        btnXoaPhieuDat = createStyledButton("\u274C HỦY BÀN", e ->
+                xoaPhieuDat());
         btnXoaPhieuDat.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
         btnXoaPhieuDat.setBackground(new Color(255, 0, 0));
 
@@ -258,15 +260,16 @@ public class QuanLyPhieuDat extends JPanel {
         int selectedRow = tableChiTietPhieu.getSelectedRow();
         if (selectedRow != -1) {
             tableModel.removeRow(selectedRow);
-            JOptionPane.showMessageDialog(this, "Chi tiết đã được xóa!");
+            JOptionPane.showMessageDialog(this, "Món đã được xóa!");
         } else {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn chi tiết để xóa!");
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn món để xóa!");
         }
     }
 
     private void xoaPhieuDat() {
         int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa phiếu này?");
         if (confirm == JOptionPane.YES_OPTION) {
+
             JOptionPane.showMessageDialog(this, "Phiếu đã được xóa!");
             loadBanFromDatabase();
         }

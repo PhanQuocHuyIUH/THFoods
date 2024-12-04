@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import static Gui.AppColor.xanh;
-import static Gui.AppColor.xanhNhat;
 
 public class DangNhap extends JFrame implements ActionListener {
     private JButton loginButton,exitButton;
@@ -213,9 +212,9 @@ public class DangNhap extends JFrame implements ActionListener {
             try {
                 ArrayList<NguoiQuanTri> admin = admin_dao.getInFor();
                 ArrayList<TaiKhoan> tk = taiKhoan_dao.getAllTK();
-                String userName = userText.getText();
+                String userName = userText.getText().trim();
                 char[] password = passwordText.getPassword();
-                String convertPassword = new String(password);
+                String convertPassword = new String(password).trim();
                 for (NguoiQuanTri ad : admin) {
                     adminUsers.put(ad.getTenDangNhap(),ad.getMatKhau());
                 }
@@ -253,16 +252,16 @@ public class DangNhap extends JFrame implements ActionListener {
                         new TrangChuQL(); // Chuyển đến trang chủ quản lý
                         this.dispose();
                     } else {
-                        JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc mật khẩu", "Login Failed", JOptionPane.ERROR_MESSAGE);
                     }
                 }else {
-                    JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc mật khẩu", "Login Failed", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Invalid Username or Password", "Login Failed", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Login Failed", JOptionPane.ERROR_MESSAGE);
             }
         }else if(obj == exitButton){
-            int exitClick = JOptionPane.showConfirmDialog(panel,"Do you want to exit?","Confirm",JOptionPane.YES_NO_OPTION);
+            int exitClick = JOptionPane.showConfirmDialog(panel,"Bạn có muốn thoát?","Confirm",JOptionPane.YES_NO_OPTION);
             if (exitClick == JOptionPane.YES_OPTION) {
                 System.exit(0);
             }

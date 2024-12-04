@@ -1,220 +1,215 @@
 package Gui;
 
-import DAO.NhanVien_Dao;
-import DAO.TaiKhoan_Dao;
-
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.time.LocalDate;
 
-public class CapTaiKhoan implements ActionListener {
-
-    private JFrame frame;
-    private JTextField nameField, emailField, phoneField, addressField, birthDateField, idField, loginNameFiled, passwordField;
-    private JTable table;
-    private DefaultTableModel tableModel;
-    private JButton addButton;
-    NhanVien_Dao nhanVien_dao = new NhanVien_Dao();
-    TaiKhoan_Dao taiKhoan_dao = new TaiKhoan_Dao();
+public class CapTaiKhoan extends JFrame {
+    private JPanel mainPanel; // Đưa mainPanel thành thuộc tính của lớp
+    private JButton lastClickedButton; // Nút được nhấn trước đó
 
     public CapTaiKhoan() throws SQLException {
-        frame = new JFrame("Cấp Tài Khoản");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        frame.setLayout(new BorderLayout());
+        // Cấu hình cho frame
+        setTitle("Nhà Hàng TH Food");
+        setSize(900, 600); // Có thể giữ dòng này hoặc bỏ nếu không cần thiết
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Đặt chương trình ở chế độ toàn màn hình
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
-        // Thêm màu nền cho khung
-        frame.getContentPane().setBackground(new Color(230, 230, 250));
+        // Tạo panel bên trái chứa logo và các nút chức năng
+        JPanel leftPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // Vẽ hình nền cho leftPanel
+                ImageIcon icon = new ImageIcon("background_image.jpg"); // Đường dẫn tới hình nền cho leftPanel
+                Image img = icon.getImage();
+                g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
+            }
+        };
+        leftPanel.setLayout(new BorderLayout());
+        leftPanel.setBackground(new Color(255, 255, 255)); // Màu nền trắng cho leftPanel
 
-        // Panel nhập thông tin nhân viên
-        JPanel inputPanel = new JPanel();
-        inputPanel.setLayout(new GridLayout(8, 2, 10, 5)); // Tăng khoảng cách giữa các trường nhập
-        inputPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Thông Tin Nhân Viên",
-                0, 0, new Font("Arial", Font.BOLD, 16), new Color(0, 102, 204)));
+        // Logo trên phần nút chức năng
+        ImageIcon logoIcon = new ImageIcon("src\\img\\logo2.png");
+        Image logoImage = logoIcon.getImage().getScaledInstance(140, 180, Image.SCALE_SMOOTH);
+        JLabel logoLabel = new JLabel(new ImageIcon(logoImage));
+        logoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        leftPanel.add(logoLabel, BorderLayout.NORTH);
 
-        // Các trường nhập thông tin
-        inputPanel.add(new JLabel("Mã:"));
-        idField = new JTextField();
-        inputPanel.add(idField);
-        idField.setEditable(false);
+        // Panel chứa các nút chức năng
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(255,255,255));
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS)); // Thay đổi layout thành BoxLayout
+        buttonPanel.setOpaque(false); // Tắt nền mặc định của panel
 
-        inputPanel.add(new JLabel("Họ Tên:"));
-        nameField = new JTextField();
-        inputPanel.add(nameField);
+        // Tạo 2 nút chức năng với màu nền
+        String[] buttonLabels = {
+                "\uD83D\uDC68\u200D NHÂN VIÊN",
+                "\uD83D\uDC68\u200D QUẢN LÝ",
 
-        inputPanel.add(new JLabel("SDT:"));
-        phoneField = new JTextField();
-        inputPanel.add(phoneField);
+        };
+        // Tạo một biến để lưu nút ĐẶT MÓN
+        JButton firstButton = null;
 
-        inputPanel.add(new JLabel("Email:"));
-        emailField = new JTextField();
-        inputPanel.add(emailField);
+        for (String label : buttonLabels) {
+            JButton button = createStyledButton(label); // Nút có màu sắc hài hòa
 
-        inputPanel.add(new JLabel("Ngày Sinh:"));
-        birthDateField = new JTextField();
-        inputPanel.add(birthDateField);
+            //nếu là nút thong ke thì đổi ten nut
+            if(label.equals("\uD83D\uDC68\u200D NHÂN VIÊN")) {
+                button.setText("\uD83D\uDC68\u200D NHÂN VIÊN");
+            }
 
-        inputPanel.add(new JLabel("Tên Đăng Nhập:"));
-        loginNameFiled = new JTextField();
-        loginNameFiled.setEditable(false);
-        inputPanel.add(loginNameFiled);
+            //neu la nut nhan vien thi doi ten nut
+            if(label.equals("\uD83D\uDC68\u200D QUẢN LÝ")) {
+                button.setText("\uD83D\uDC68\u200D QUẢN LÝ");
+            }
+            buttonPanel.add(button);
+            button.addActionListener(new ButtonClickListener(this));
 
-        inputPanel.add(new JLabel("Mật Khẩu:"));
-        passwordField = new JTextField();
-        inputPanel.add(passwordField);
-        setID();
-        // Nút Thêm Nhân Viên
-        addButton = new JButton("Xác nhận");
-        addButton.setBackground(new Color(0, 153, 51));
-        addButton.setForeground(Color.WHITE);
-        addButton.setFont(new Font("Arial", Font.BOLD, 14));
-        inputPanel.add(addButton);
+            // Thêm khoảng cách giữa các nút
+            buttonPanel.add(Box.createRigidArea(new Dimension(10, 30))); // Thêm khoảng cách 10px giữa các nút
 
-        frame.add(inputPanel, BorderLayout.NORTH);
+            // Lưu nút NHÂN VIÊN
+            if (label.equals("\uD83D\uDC68\u200D NHÂN VIÊN")) {
+                firstButton = button;
+            }
+        }
 
-        // Đẩy danh sách thông tin tài khoản nhân viên vào bảng
+        // Tạo nút ĐĂNG XUẤT
+        JButton logoutBT = new JButton("🚪");
+        logoutBT.setBackground(new Color(255, 255, 255));
+        logoutBT.setBorder(null);
+        //bỏ chọn
+        logoutBT.setFocusPainted(false);
+        logoutBT.addActionListener(new ButtonClickListener(this));
+        // SET FONT
+        logoutBT.setFont(new Font("Arial Unicode MS", Font.BOLD, 60)); // Font hỗ trợ tốt emoji
+        //PENABLE BUTTON
+        JPanel logoutPN = new JPanel();
+        logoutPN.setLayout(new BorderLayout());
+        logoutPN.add(logoutBT);
+        leftPanel.add(buttonPanel, BorderLayout.CENTER);
+        leftPanel.add(logoutPN, BorderLayout.SOUTH);
 
-        // Bảng danh sách nhân viên
-        tableModel = new DefaultTableModel(new Object[]{"Mã", "Họ Tên", "SDT", "Email", "Ngày Sinh", "Tên Đăng Nhập", "Mật Khẩu"}, 0);
-        table = new JTable(tableModel);
-        table.setFont(new Font("Arial", Font.PLAIN, 16));
-        table.setRowHeight(25);
-        JScrollPane scrollPane = new JScrollPane(table);
-        frame.add(scrollPane, BorderLayout.CENTER);
-        taiKhoan_dao.loadNhanVienData(tableModel);
+        //SET FONT CHO NÚT CUỐI CÙNG BỰ 40
+        buttonPanel.getComponent(buttonPanel.getComponentCount()-1).setFont(new Font("Arial Unicode MS", Font.PLAIN, 40));
+
+        // Tạo panel bên phải cho phần hiển thị nội dung chức năng (main panel)
+        mainPanel = new JPanel(); // Khai báo và khởi tạo mainPanel
+        mainPanel.setLayout(new CardLayout());
+        mainPanel.setBackground(Color.WHITE); // Màu nền trắng cho main panel
+        mainPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2)); // Đường viền đẹp cho main panel
+
+        // Thêm các nội dung tương ứng cho mỗi chức năng
+
+        mainPanel.add(new CapTaiKhoanNV(), "\uD83D\uDC68\u200D NHÂN VIÊN");
+        mainPanel.add(new CapTaiKhoanQL(), "\uD83D\uDC68\u200D QUẢN LÝ");
 
 
-        frame.setVisible(true);
+        // Tạo JSplitPane để chia khu vực bên trái và bên phải, bỏ đi thanh điều chỉnh kích thước
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, mainPanel);
+        splitPane.setDividerLocation(110); // Thay đổi kích thước chia tay
+        splitPane.setResizeWeight(0.1);    // 10% cho panel trái, 90% cho panel phải
+        // Thêm splitPane vào frame
+        add(splitPane);
 
-        addButton.addActionListener(this);
+        // Tự động đổi màu cho nút NHÂN VIÊN khi chương trình khởi động
+        if (firstButton != null) {
+            firstButton.setBackground(new Color(230,240,255)); // Đổi màu cho nút ĐẶT MÓN
+            lastClickedButton = firstButton; // Cập nhật nút được nhấn trước đó
+        }
+
+        // Hiển thị frame
+        setVisible(true);
     }
 
+    // Phương thức tạo nút với màu sắc hài hòa
+    private JButton createStyledButton(String text) {
+        JButton button = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                // Vẽ hình dạng bo tròn
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15); // Bo góc với bán kính 15
+                super.paintComponent(g);
+            }
+        };
+        button.setFocusPainted(false);
+        button.setFont(new Font("Arial Unicode MS", Font.PLAIN, 14)); // Font hỗ trợ tốt emoji
+        button.setForeground(new Color(0)); // Màu chữ trắng nổi bật
+        button.setBackground(new Color(255, 255, 255)); // Màu nền xanh hài hòa với độ trong suốt
+        button.setPreferredSize(new Dimension(130, 40)); // Đã điều chỉnh chiều rộng và chiều cao của nút
+        button.setMinimumSize(new Dimension(130, 40)); // Kích thước tối thiểu
+        button.setMaximumSize(new Dimension(130, 40)); // Kích thước tối đa
+        button.setBorder(null); // Bỏ viền cho nút
+        button.setOpaque(false); // Đặt nút trong suốt
 
+
+        // Hiệu ứng hover khi rê chuột
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                // Nếu nút không phải là nút được nhấn và không phải là nút quản lý
+                if (button != lastClickedButton && !button.getText().equals("\uD83C\uDF7D")) {
+                    button.setBackground(new Color(230,240,255)); // Đổi màu nền khi rê chuột vào
+                }
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                // Nếu nút không phải là nút được nhấn và không phải là nút quản lý
+                if (button != lastClickedButton ) {
+                    button.setBackground(new Color(255,255,255)); // Màu nền trở lại
+                }
+            }
+        });
+
+        return button;
+    }
+
+    // Lớp xử lý sự kiện khi nhấn nút
+    private class ButtonClickListener extends Component implements ActionListener {
+        private CapTaiKhoan capTaiKhoan; // Tham chiếu đến capTaiKhoan
+
+        public ButtonClickListener(CapTaiKhoan capTaiKhoan) {
+            this.capTaiKhoan = capTaiKhoan; // Khởi tạo tham chiếu
+        }
         @Override
         public void actionPerformed(ActionEvent e) {
-        Object obj = e.getSource();
-            if(obj.equals(addButton)) {
-                if(validateFields()) {
-                    try {
-                        insertNvAndTk();
-                        taiKhoan_dao.loadNhanVienData(tableModel);
-                        xoaRong();
-                        setID();
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(frame,"Thêm thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    }
+            JButton sourceButton = (JButton) e.getSource();
+            CardLayout cl = (CardLayout) mainPanel.getLayout();
+            String command = sourceButton.getText();
+
+            // Kiểm tra nút đăng xuất
+            if (command.equals("\uD83D\uDEAA")) {
+                int response = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn đăng xuất không?", "Xác Nhận Đăng Xuất", JOptionPane.YES_NO_OPTION);
+                if (response == JOptionPane.YES_OPTION) {
+                    // Nếu người dùng chọn "Có", thực hiện đăng xuất (đóng JFrame hoặc chuyển đến màn hình đăng nhập)
+                    new DangNhap();
+                    capTaiKhoan.dispose();
                 }
+                return; // Trở ra không thực hiện các thao tác khác
             }
 
-
-        }
-        // Lấy ra mã lớn nhất và gán cho mã nhân viên và tên đăng nhập
-        public void setID() throws SQLException {
-        String newMaNV = nhanVien_dao.getIDMax();
-        idField.setText(newMaNV);
-        loginNameFiled.setText(newMaNV);
-        }
-
-        // Kiểm tra các trường
-        private boolean validateFields() {
-            // Kiểm tra họ tên
-            String name = nameField.getText().trim();
-            if(name.trim().isEmpty()){
-                JOptionPane.showMessageDialog(frame, "Họ tên không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return false;
+            // Đổi màu nút đã nhấn
+            if (lastClickedButton != null) {
+                lastClickedButton.setBackground(new Color(255,255,255)); // Đặt lại màu cho nút trước đó
             }
-            if (!name.matches("^(?=.*\\s)([A-Z][a-zA-Z]*(\\s+[A-Z][a-zA-Z]*)*)+$")) {
-                JOptionPane.showMessageDialog(frame, "Họ tên phải có ít nhất 2 từ, mỗi từ bắt đầu bằng chữ hoa.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return false;
+            sourceButton.setBackground(new Color(230,240,255)); // Đổi màu nút hiện tại
+            lastClickedButton = sourceButton; // Cập nhật nút được nhấn trước đó
+
+            // Chuyển đổi giữa các nội dung dựa trên nút nhấn
+            switch (command) {
+                case "\uD83D\uDC68\u200D NHÂN VIÊN":
+                    cl.show(mainPanel, "\uD83D\uDC68\u200D NHÂN VIÊN");
+                    break;
+                case "\uD83D\uDC68\u200D QUẢN LÝ":
+                    cl.show(mainPanel, "\uD83D\uDC68\u200D QUẢN LÝ");
+                    break;
             }
-
-            // Kiểm tra số điện thoại
-            String phone = phoneField.getText().trim();
-
-            if(phone.isEmpty()){
-                JOptionPane.showMessageDialog(frame, "Số điện thoại  không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            if (!phone.matches("^\\d{10}$")) {
-                JOptionPane.showMessageDialog(frame, "Số điện thoại phải là 10 số.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            // Kiểm tra email
-            String email = emailField.getText().trim();
-
-            if(email.isEmpty()){
-                JOptionPane.showMessageDialog(frame, "Email  không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            if (!email.matches("^[A-Za-z0-9._%+-]+@gmail\\.com$")) {
-                JOptionPane.showMessageDialog(frame, "Email phải có định dạng @gmail.com.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            // Kiểm tra ngày sinh
-            String birthDate = birthDateField.getText();
-            String regex = "^\\d{4}-\\d{2}-\\d{2}$";
-
-            if(birthDate.isEmpty()){
-                JOptionPane.showMessageDialog(frame, "Ngày sinh không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            if (!birthDate.matches(regex)) {
-                JOptionPane.showMessageDialog(frame, "Ngày sinh phải có định dạng yyyy-MM-dd.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            // Kiểm tra tính hợp lệ của ngày
-            try {
-                LocalDate date = LocalDate.parse(birthDate);
-                if (date.isAfter(LocalDate.now())) {
-                    JOptionPane.showMessageDialog(frame, "Ngày sinh không được là ngày tương lai.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(frame, "Ngày sinh không hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-            // Kiểm tra mật khẩu
-            String password = passwordField.getText().trim();
-
-            if(password.isEmpty()){
-                JOptionPane.showMessageDialog(frame, "Mật khẩu không được để trống.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-            if (password.length() < 5) {
-                JOptionPane.showMessageDialog(frame, "Mật khẩu phải có ít nhất 5 ký tự.", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            return true; // Tất cả các trường hợp lệ
         }
 
-        public void insertNvAndTk() throws SQLException {
-            String id = idField.getText();
-            String tenNV = nameField.getText();
-            String numberPhone = phoneField.getText();
-            String email = emailField.getText();
-            String ngaySinh = birthDateField.getText();
-            String tenDangNhap = loginNameFiled.getText();
-            String matKhau = passwordField.getText();
-            nhanVien_dao.addTaiKhoanAndNhanVien(tenDangNhap,matKhau,id,tenNV,numberPhone,email,ngaySinh);
-        }
-
-        public void xoaRong() {
-            nameField.setText("");
-            phoneField.setText("");
-            emailField.setText("");
-            birthDateField.setText("");
-            passwordField.setText("");
-
-        }
+    }
 }
