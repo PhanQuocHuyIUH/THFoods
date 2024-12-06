@@ -17,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 
 public class QuanLyPhieuDat extends JPanel {
@@ -217,7 +218,7 @@ public class QuanLyPhieuDat extends JPanel {
         try {
             //tạo hóa đơn mới
             hoaDon = new HoaDon();
-            LocalDate current = LocalDate.now();
+            Date current = new Date();
             hoaDon.setNgayTao(current);
             //mã hóa đơn sẽ là số thứ tự tiếp theo của hd
             hoaDon.setMaHD("HD" + (hoaDonDao.getAllHD().size() + 1));
