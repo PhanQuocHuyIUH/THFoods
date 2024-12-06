@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
@@ -216,52 +217,65 @@ public class QuanLyPhieuDat extends JPanel {
 
     private void thanhToan() {
         try {
-            //tạo hóa đơn mới
+            // Tạo hóa đơn mới
             hoaDon = new HoaDon();
-            Date current = new Date();
+            LocalDateTime current = LocalDateTime.now();
             hoaDon.setNgayTao(current);
-            //mã hóa đơn sẽ là số thứ tự tiếp theo của hd
+
+            // Mã hóa đơn sẽ là số thứ tự tiếp theo của hd
             hoaDon.setMaHD("HD" + (hoaDonDao.getAllHD().size() + 1));
-            //các chi tiết hóa đơn sẽ lấy từ bảng chi tiết phiếu
+
+            // Các chi tiết hóa đơn sẽ lấy từ bảng chi tiết phiếu
             hoaDon.setChiTietHoaDon(new ArrayList<>());
             for (int i = 0; i < tableModel.getRowCount(); i++) {
                 String tenMon = (String) tableModel.getValueAt(i, 0);
-                MonAn monAn = monAnDao.getMonAnByTenMon(tenMon);
+
+                // Lấy đơn giá và chuyển sang kiểu double
+                String donGiaString = (String) tableModel.getValueAt(i, 2); // Lấy giá trị đơn giá dưới dạng String
+                double donGia = Double.parseDouble(donGiaString);  // Chuyển đổi thành double
 
                 int soLuong = (int) tableModel.getValueAt(i, 1);
 
-                hoaDon.getChiTietHoaDon().add(new ChiTietHoaDon(hoaDon.getMaHD(),monAn.getMaMon(), soLuong));
+                // Thêm chi tiết hóa đơn vào danh sách
+                hoaDon.getChiTietHoaDon().add(new ChiTietHoaDon(hoaDon.getMaHD(), tenMon, soLuong, donGia));
             }
-            //thêm hóa đơn vào cơ sở dữ liệu
+
+            // Thêm hóa đơn vào cơ sở dữ liệu
             hoaDonDao.createHD(hoaDon);
-            //thêm chi tiết ho đơn vào cơ sở dữ liệu
+
+            // Thêm chi tiết hóa đơn vào cơ sở dữ liệu
             for (ChiTietHoaDon cthd : hoaDon.getChiTietHoaDon()) {
                 hoaDonDao.createCTHD(cthd);
             }
-            //lấy mã bàn từ text bàn
+
+            // Lấy mã bàn từ text bàn
             String maBan = lblBan.getText();
-            //Lấy danh sách mã phiếu theo mã bàn
+
+            // Lấy danh sách mã phiếu theo mã bàn
             ArrayList<String> dsPhieu = banDao.getDSPhieu(maBan);
             System.out.println(dsPhieu);
-            //chạy vòng lập xóa chi tiết phiếu theo mã phiếu
+
+            // Chạy vòng lập xóa chi tiết phiếu theo mã phiếu
             for (String maPhieu : dsPhieu) {
                 banDao.deleteCTPhieu(maPhieu);
             }
-            //xóa phiếu theo mã bàn
+
+            // Xóa phiếu theo mã bàn
             banDao.deletePhieu(maBan);
-            //cập nhật trạng thái bàn
+
+            // Cập nhật trạng thái bàn
             banDao.updateTrangThaiBan(maBan,"Trong");
-            //cập nhật table và ds bàn
+
+            // Cập nhật table và danh sách bàn
             tableModel.setRowCount(0);
             loadBanFromDatabase();
+
             JOptionPane.showMessageDialog(this, "Thanh toán thành công!");
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
     }
+
 
     private void xoaChiTiet() {
         int selectedRow = tableChiTietPhieu.getSelectedRow();

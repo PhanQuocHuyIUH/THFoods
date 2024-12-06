@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -448,19 +449,22 @@ public class DatMon extends JPanel {
         // Lấy thông tin từ các trường
         String table = (String) tableComboBox.getSelectedItem();
         String note = noteField.getText();
-        String date = java.time.LocalDate.now().toString();
+        LocalDateTime date = LocalDateTime.now(); // Sử dụng LocalDateTime cho ngày và giờ hiện tại
         String nv = nvField.getText();
+
         // kiểm tra xem đã chọn món chưa
         if (tableModel.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn món trước khi đặt!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        // Kiem tra chon ban
-        if (table == "Bàn ăn") {
+
+        // Kiểm tra chọn bàn
+        if (table.equals("Bàn ăn")) {  // Dùng equals thay vì '=='
             JOptionPane.showMessageDialog(this, "Vui lòng chọn bàn trước khi đặt!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        //kiểm tra trạng thái bàn
+
+        // Kiểm tra trạng thái bàn
         Ban ban = null;
         for (Ban b : dsBan) {
             if (b.getMaBan().equals(table)) {
@@ -468,13 +472,15 @@ public class DatMon extends JPanel {
                 break;
             }
         }
+
         // Thêm phiếu đặt món vào database
         try {
-            //thêm phiếu đặt món
-            PhieuDatMon phieuDatMon = new PhieuDatMon("PDB" + System.currentTimeMillis(), date, note, ban, DangNhap.nvdn);
+            // Thêm phiếu đặt món
+            PhieuDatMon phieuDatMon = new PhieuDatMon("PDB" + System.currentTimeMillis(), date, note, ban, nv);
             PhieuDatMon_Dao phieuDatMonDao = new PhieuDatMon_Dao();
             phieuDatMonDao.addPhieuDatMon(phieuDatMon);
-            //thêm chi tiết phiếu đặt món
+
+            // Thêm chi tiết phiếu đặt món
             for (int i = 0; i < tableModel.getRowCount(); i++) {
                 String tenMon = (String) tableModel.getValueAt(i, 0);
                 int soLuong = (int) tableModel.getValueAt(i, 2);
@@ -489,10 +495,12 @@ public class DatMon extends JPanel {
                 CTPDM_Dao ctpdmDao = new CTPDM_Dao();
                 ctpdmDao.addCTPDM(chiTietDatMon);
             }
-            //cập nhật trạng thái bàn
+
+            // Cập nhật trạng thái bàn
             Ban_Dao banDao = new Ban_Dao();
             Ban banUpdate = new Ban(ban.getMaBan(), TrangThaiBan.DangDung, ban.getSoGhe());
             banDao.updateTrangThaiBan(banUpdate);
+
             JOptionPane.showMessageDialog(this, "Đặt món thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             resetOrder();
         } catch (Exception e) {
@@ -500,6 +508,7 @@ public class DatMon extends JPanel {
             JOptionPane.showMessageDialog(this, "Đặt món thất bại!", "Thông báo", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
     private void resetOrder() {
         tableModel.setRowCount(0); // Xóa các món trong bảng
