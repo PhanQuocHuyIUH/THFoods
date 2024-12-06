@@ -293,58 +293,15 @@ public class QuanLyNhanVien extends JPanel {
         }
     }
     
-
-//    private void xoaNhanVien() {
-//        int selectedRow = table.getSelectedRow(); // Lấy chỉ số hàng được chọn
-//        if (selectedRow == -1) {
-//            JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhân viên để xóa!");
-//            return;
-//        }
-//
-//        String maNV = model.getValueAt(selectedRow, 0).toString(); // Lấy mã nhân viên từ cột đầu tiên
-//
-//        // Kiểm tra xem nhân viên có đang được tham chiếu trong bảng khác không
-//        if (isEmployeeReferenced(maNV)) {
-//            JOptionPane.showMessageDialog(this,
-//                    "Không thể xóa nhân viên này vì nó đang được tham chiếu trong bảng khác!");
-//            return;
-//        }
-//
-//        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa nhân viên có mã " + maNV + "?",
-//                "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
-//        if (confirm == JOptionPane.YES_OPTION) {
-//            try {
-//                NhanVien_Dao dao = new NhanVien_Dao();
-//                boolean isDeleted = dao.delete(maNV); // Gọi phương thức xóa từ NhanVien_Dao
-//                if (isDeleted) {
-//                    JOptionPane.showMessageDialog(this, "Xóa nhân viên thành công!");
-//                    loadToTable(); // Tải lại bảng để cập nhật dữ liệu
-//                } else {
-//                    JOptionPane.showMessageDialog(this, "Không tìm thấy nhân viên với mã " + maNV + "!");
-//                }
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//                JOptionPane.showMessageDialog(this, "Lỗi khi xóa nhân viên: " + e.getMessage());
-//            }
-//        }
-//    }
-
     private void xoaNhanVien() {
         int selectedRow = table.getSelectedRow(); // Lấy chỉ số hàng được chọn
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhân viên để xóa!");
             return;
         }
-
+    
         String maNV = model.getValueAt(selectedRow, 0).toString(); // Lấy mã nhân viên từ cột đầu tiên
-
-        // Kiểm tra xem nhân viên có đang được tham chiếu trong bảng khác không
-        if (isEmployeeReferenced(maNV)) {
-            JOptionPane.showMessageDialog(this,
-                    "Không thể xóa nhân viên này vì nó đang được tham chiếu trong bảng khác!");
-            return;
-        }
-
+    
         int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa nhân viên có mã " + maNV + "?",
                 "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
@@ -352,29 +309,14 @@ public class QuanLyNhanVien extends JPanel {
                 NhanVien_Dao dao = new NhanVien_Dao();
                 boolean isDeleted = dao.deleteEmployeeAndAccount(maNV); // Gọi phương thức xóa nhân viên và tài khoản
                 if (isDeleted) {
-                    JOptionPane.showMessageDialog(this, "Xóa nhân viên và tài khoản thành công!");
                     loadToTable(); // Tải lại bảng để cập nhật dữ liệu
                 } else {
-                    JOptionPane.showMessageDialog(this, "Không tìm thấy nhân viên với mã " + maNV + "!");
+                    JOptionPane.showMessageDialog(this, "Không thể xóa nhân viên!");
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Lỗi khi xóa nhân viên: " + e.getMessage());
             }
-        }
-    }
-
-    // Phương thức kiểm tra xem nhân viên có đang được tham chiếu không
-    private boolean isEmployeeReferenced(String maNV) {
-        // Gọi phương thức từ NhanVien_Dao để kiểm tra tham chiếu
-        // Ví dụ: kiểm tra trong bảng đơn hàng
-        try {
-            // Giả sử có phương thức checkEmployeeReferences trong NhanVien_Dao
-            NhanVien_Dao dao = new NhanVien_Dao();
-            return dao.checkEmployeeReferences(maNV); // Trả về true nếu có tham chiếu
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false; // Nếu có lỗi, giả sử không có tham chiếu
         }
     }
 

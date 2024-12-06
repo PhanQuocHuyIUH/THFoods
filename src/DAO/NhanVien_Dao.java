@@ -49,72 +49,49 @@ public class NhanVien_Dao {
         }
     }
 
-//    public boolean delete(String maNV) throws SQLException {
-//        String sql = "DELETE FROM NhanVien WHERE maNV = ?";
-//        try (Connection con = Database.getConnection();
-//                PreparedStatement pstmt = con.prepareStatement(sql)) {
-//            pstmt.setString(1, maNV);
-//            int rowsAffected = pstmt.executeUpdate();
-//            return rowsAffected > 0; // Trả về true nếu có hàng bị xóa
-//        }
-//    }
-
     public boolean deleteEmployeeAndAccount(String maNV) throws SQLException {
-        String deleteAccountSql = "DELETE FROM TaiKhoan WHERE tenDangNhap = (SELECT tenDangNhap FROM NhanVien WHERE maNV = ?)";
+        String getAccountSql = "SELECT tenDangNhap FROM NhanVien WHERE maNV = ?";
         String deleteEmployeeSql = "DELETE FROM NhanVien WHERE maNV = ?";
-
-        Connection con = null; // Khai báo biến con ở đây
-        try {
-            con = Database.getConnection(); // Khởi tạo kết nối
-            // Bắt đầu giao dịch
-            con.setAutoCommit(false);
-
-            // Xóa tài khoản
-            try (PreparedStatement pstmt1 = con.prepareStatement(deleteAccountSql)) {
-                pstmt1.setString(1, maNV);
-                pstmt1.executeUpdate();
+        String deleteAccountSql = "DELETE FROM TaiKhoan WHERE tenDangNhap = ?";
+    
+        try (Connection con = Database.getConnection()) {
+            con.setAutoCommit(false); // Bắt đầu giao dịch
+    
+            String tenDangNhap = null;
+    
+            // Lấy tên đăng nhập của nhân viên
+            try (PreparedStatement pstmtGetAccount = con.prepareStatement(getAccountSql)) {
+                pstmtGetAccount.setString(1, maNV);
+                ResultSet rs = pstmtGetAccount.executeQuery();
+                if (rs.next()) {
+                    tenDangNhap = rs.getString("tenDangNhap");
+                }
             }
-
-            // Xóa nhân viên
-            try (PreparedStatement pstmt2 = con.prepareStatement(deleteEmployeeSql)) {
+    
+            // Nếu không tìm thấy tên đăng nhập, không thực hiện xóa
+            if (tenDangNhap == null) {
+                return false; // Không tìm thấy nhân viên
+            }
+    
+            try (PreparedStatement pstmt2 = con.prepareStatement(deleteEmployeeSql);
+                 PreparedStatement pstmt1 = con.prepareStatement(deleteAccountSql)) {
+    
+                // Xóa nhân viên
                 pstmt2.setString(1, maNV);
                 int rowsAffected = pstmt2.executeUpdate();
-
-                // Kiểm tra xem có nhân viên nào bị xóa không
-                if (rowsAffected > 0) {
-                    // Nếu xóa thành công, commit giao dịch
-                    con.commit();
-                    return true; // Trả về true nếu xóa thành công
-                } else {
-                    // Nếu không xóa được nhân viên, rollback giao dịch
-                    con.rollback();
-                    return false; // Trả về false nếu không xóa được nhân viên
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Nếu có lỗi xảy ra, rollback giao dịch
-            try {
-                if (con != null) {
-                    con.rollback();
-                }
-            } catch (SQLException rollbackEx) {
-                rollbackEx.printStackTrace();
-            }
-            return false; // Trả về false nếu có lỗi xảy ra
-        } finally {
-            // Đảm bảo đóng kết nối nếu nó đã được mở
-            if (con != null) {
-                try {
-                    con.close();
-                } catch (SQLException closeEx) {
-                    closeEx.printStackTrace();
-                }
+    
+                // Xóa tài khoản
+                pstmt1.setString(1, tenDangNhap);
+                pstmt1.executeUpdate();
+    
+                con.commit(); // Cam kết giao dịch
+                return rowsAffected > 0; // Trả về true nếu có hàng bị xóa
+            } catch (SQLException e) {
+                con.rollback(); // Rollback nếu có lỗi
+                throw e; // Ném lại ngoại lệ để xử lý bên ngoài
             }
         }
     }
-
-
 
     public NhanVien select(String maNV) throws SQLException {
         String sql = "SELECT * FROM NhanVien WHERE maNV = ?";
@@ -185,29 +162,6 @@ public class NhanVien_Dao {
         return dsNV; // Trả về danh sách nhân viên tìm được
     }
 
-    public boolean checkEmployeeReferences(String maNV) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM PhieuDatMon WHERE maNV = ?"; // Kiểm tra trong bảng Phiếu đặt món
-        String sqlCTHD = "SELECT COUNT(*) FROM CTHD WHERE maMon IN (SELECT maMon FROM MonAn WHERE maNV = ?)";                                                                  
-        try (Connection con = Database.getConnection();
-                PreparedStatement pstmt1 = con.prepareStatement(sql);
-                PreparedStatement pstmt2 = con.prepareStatement(sqlCTHD)) {
-
-            // Kiểm tra trong bảng Phiếu đặt món
-            pstmt1.setString(1, maNV);
-            ResultSet rs1 = pstmt1.executeQuery();
-            if (rs1.next() && rs1.getInt(1) > 0) {
-                return true; // Có tham chiếu trong bảng Phiếu đặt món
-            }
-
-            // Kiểm tra trong bảng Chi tiết hóa đơn
-            pstmt2.setString(1, maNV);
-            ResultSet rs2 = pstmt2.executeQuery();
-            if (rs2.next() && rs2.getInt(1) > 0) {
-                return true; // Có tham chiếu trong bảng Chi tiết hóa đơn
-            }
-        }
-        return false; // Không có tham chiếu
-    }
 
     public ArrayList<NhanVien> getAllNhanVien() throws SQLException {
         ArrayList<NhanVien> dsNV = new ArrayList<>();
