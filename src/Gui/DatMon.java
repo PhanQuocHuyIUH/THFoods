@@ -520,4 +520,147 @@ public class DatMon extends JPanel {
         }
     }
 
+    public DatMon(String maBan) {
+        try {
+            Database.getInstance().connect();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        setLayout(new BorderLayout());
+        setBackground(AppColor.trang);
+
+        // Phần header
+        JPanel headerPanel = createHeaderPanel();
+        add(headerPanel, BorderLayout.NORTH);
+
+        // Phần bên trái hiển thị menu món ăn
+        JPanel menuPanel = createMenuPanel();
+        JScrollPane menuScrollPane = new JScrollPane(menuPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        menuScrollPane.getVerticalScrollBar().setUnitIncrement(16); // Tăng tốc độ cuộn
+        add(menuScrollPane, BorderLayout.CENTER);
+
+        // Phần bên phải hiển thị chi tiết đặt món
+        JPanel orderPanel = createOrderPanel(maBan);
+        add(orderPanel, BorderLayout.EAST);
+
+        // Tải menu món từ cơ sở dữ liệu
+        loadMenuItems(menuPanel);
+
+        orderQuantity = new HashMap<>(); // Khởi tạo HashMap
+    }
+
+    private JPanel createBottomPanel(String maBan) {
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new GridLayout(5, 2, 10, 10));
+        bottomPanel.setBackground(AppColor.trang);
+
+        // ComboBox chọn bàn
+        JLabel tableLabel = new JLabel(" \u25A4 Chọn bàn:");
+        tableLabel.setFont(new Font("Chalkduster", Font.BOLD, 14));
+        bottomPanel.add(tableLabel);
+        //lấy danh sách bàn từ Dao
+        try {
+            Ban_Dao banDao = new Ban_Dao();
+            dsBan = banDao.getAllBan();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //set combobox là mã bàn maBan
+        String tables = maBan;
+        tableComboBox = new JComboBox<>(new String[]{tables});
+        tableComboBox.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        tableComboBox.setBackground(AppColor.xam);
+        //set màu cho vien của combobox
+        tableComboBox.setBorder(BorderFactory.createLineBorder(AppColor.xanh));
+        //set màu background cho combobox khi click
+        tableComboBox.setUI(new BasicComboBoxUI() {
+            @Override
+            protected JButton createArrowButton() {
+                JButton arrowButton = super.createArrowButton();
+                arrowButton.setBackground(AppColor.xanh);
+                // màu của arrow thành màu trắng
+                arrowButton.setForeground(AppColor.trang);
+                //bỏ viền cho arrow
+                arrowButton.setBorder(BorderFactory.createEmptyBorder());
+                return arrowButton;
+            }
+        });
+        bottomPanel.add(tableComboBox);
+
+        //ghi chú
+        JLabel noteLabel = new JLabel(" \uD83D\uDCDD Ghi chú:");
+        noteLabel.setFont(new Font("Chalkduster", Font.BOLD, 12));
+        bottomPanel.add(noteLabel);
+        noteField = new JTextField();
+        noteField.setFont(new Font("Comic Sans MS", Font.PLAIN, 12));
+        //màu cho border
+        noteField.setBorder(BorderFactory.createLineBorder(AppColor.xanh));
+        noteField.setBackground(AppColor.xam);
+        bottomPanel.add(noteField);
+
+        // ngày
+        JLabel dateLabel = new JLabel(" \uD83D\uDCC5 Ngày:");
+        dateLabel.setFont(new Font("Chalkduster", Font.BOLD, 12));
+        bottomPanel.add(dateLabel);
+        //tự động cập nhật ngày
+        JLabel dateField = new JLabel();
+        dateField.setFont(new Font("Comic Sans MS", Font.PLAIN, 12));
+        dateField.setText(java.time.LocalDate.now().toString());
+        bottomPanel.add(dateField);
+
+        //nhân viên (lấy từ đăng nhập)
+        JLabel nvLabel = new JLabel(" \uD83D\uDC68\u200D Nhân viên:");
+        nvLabel.setFont(new Font("Chalkduster", Font.BOLD, 12));
+        bottomPanel.add(nvLabel);
+        nvField = new JLabel();
+        if(DangNhap.nvdn != null){
+            nvField.setText(DangNhap.nvdn.getTenNV());
+        }else {
+            nvField.setText(DangNhap.qldn.getTenQL());
+        }
+        nvField.setFont(new Font("Chalkboard", Font.PLAIN, 12));
+        bottomPanel.add(nvField);
+
+        // Hiển thị tổng tiền
+        JLabel totalLabelTitle = new JLabel(" Tổng Tiền:");
+        totalLabelTitle = new JLabel("\uD83D\uDCB0 Tổng tiền :");
+        totalLabelTitle.setFont(new Font("Arial Unicode MS", Font.BOLD, 18));
+        totalLabelTitle.setForeground(AppColor.xanh);
+        bottomPanel.add(totalLabelTitle);
+        totalLabel = new JLabel("0 VND");
+        totalLabel.setForeground(AppColor.xanh);
+        totalLabel.setFont(new Font("Chalkduster", Font.BOLD, 18));
+        bottomPanel.add(totalLabel);
+
+        return bottomPanel;
+    }
+
+    private JPanel createOrderPanel(String maBan) {
+        JPanel orderPanel = new JPanel();
+        orderPanel.setLayout(new BorderLayout());
+
+        // Bảng hiển thị chi tiết đặt món
+        String[] columnNames = {"Tên món", "Đơn giá", "Số lượng", "Thành tiền"};
+        tableModel = new DefaultTableModel(columnNames, 0);
+        orderTable = new JTable(tableModel);
+        customizeOrderTable();
+
+        JScrollPane orderScrollPane = new JScrollPane(orderTable);
+        orderPanel.add(orderScrollPane, BorderLayout.NORTH);
+
+        // Phần dưới cùng hiển thị tổng tiền và các nút
+        // cả hai phần đều ở dưới cùng
+        JPanel bottomPanel = createBottomPanel(maBan);
+        //đường viền xanh
+        bottomPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, AppColor.xanhNhat));
+        orderPanel.add(bottomPanel, BorderLayout.CENTER);
+
+        // Nút đặt món và nút reset
+        JPanel buttonPanel = createButtonPanel();
+        orderPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        return orderPanel;
+    }
+
 }
