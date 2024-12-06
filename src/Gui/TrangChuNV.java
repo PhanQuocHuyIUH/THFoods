@@ -227,7 +227,7 @@ public class TrangChuNV extends JFrame {
             // Chuyển đổi giữa các nội dung dựa trên nút nhấn
             switch (command) {
                 case "\uD83C\uDF7D ĐẶT MÓN":
-
+                    mainPanel.add(new DatMon(), "\uD83C\uDF7D ĐẶT MÓN");
                     cl.show(mainPanel, "\uD83C\uDF7D ĐẶT MÓN");
                     break;
                 case "\uD83D\uDCC5 ĐẶT BÀN":
@@ -246,7 +246,7 @@ public class TrangChuNV extends JFrame {
                     break;
                 case "\uD83D\uDCDD PHIẾU ĐẶT":
                     cl.show(mainPanel, "\uD83D\uDCDD PHIẾU ĐẶT");
-                    qlpd.loadBanFromDatabase();
+                    mainPanel.add(new QuanLyPhieuDat(), "\uD83D\uDCDD PHIẾU ĐẶT");
                     break;
             }
         }

@@ -16,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
@@ -36,6 +37,7 @@ public class QuanLyPhieuDat extends JPanel {
     private PhieuDatMon_Dao phieuDatMonDao = new PhieuDatMon_Dao();
     private JLabel lblBan;
     private JLabel lblSoPhieu;
+    private JLabel lblNhanVien;
 
     public QuanLyPhieuDat() {
         try {
@@ -54,7 +56,7 @@ public class QuanLyPhieuDat extends JPanel {
         setLayout(new BorderLayout());
         // Panel trái chứa bàn
         JPanel leftPanel = new JPanel(new BorderLayout());
-        leftPanel.setPreferredSize(new Dimension(900, getHeight()));
+        leftPanel.setPreferredSize(new Dimension(700, getHeight()));
         leftPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         leftPanel.setBackground(new Color(105, 165, 225));
 
@@ -77,7 +79,7 @@ public class QuanLyPhieuDat extends JPanel {
 
         // Phần hiển thị các bàn với cuộn dọc
         panelBan = new JPanel();
-        panelBan.setLayout(new GridLayout(0, 3, 10, 10));
+        panelBan.setLayout(new GridLayout(0, 2, 10, 10));
         JScrollPane scrollPaneBan = new JScrollPane(panelBan);
         scrollPaneBan.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPaneBan.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -109,17 +111,20 @@ public class QuanLyPhieuDat extends JPanel {
         header.setFont(new Font("Arial", Font.BOLD, 14));
 
         // Ghi chú và tổng tiền
-        JPanel panelThongTin = new JPanel(new GridLayout(4, 2));
+        JPanel panelThongTin = new JPanel(new GridLayout(5, 2));
         panelThongTin.setBackground(new Color(255, 255, 255));
         // bên trái là tiêu đề bên phải là hiển thị nội dung
         JLabel lblTieuDeGhiChu = new JLabel("       \uD83D\uDCDD Ghi chú :");
         lblTieuDeGhiChu.setFont(new Font("Arial Unicode MS", Font.BOLD, 16));
         lblGhiChu = new JLabel();
         lblGhiChu.setFont(new Font("Arial Unicode MS", Font.BOLD, 16));
-        JLabel lblTieuDeSoPhieu = new JLabel("      \uD83D\uDCDD Số phiếu :");
+        JLabel lblTieuDeSoPhieu = new JLabel("      \uD83D\uDCC5 Ngày :");
         lblTieuDeSoPhieu.setFont(new Font("Arial Unicode MS", Font.BOLD, 16));
         lblSoPhieu = new JLabel();
         lblSoPhieu.setFont(new Font("Arial Unicode MS", Font.BOLD, 16));
+        JLabel lblTenNhanVien = new JLabel("      \uD83D\uDC64 Nhân viên:");
+        lblTenNhanVien.setFont(new Font("Arial Unicode MS", Font.BOLD, 16));
+        lblNhanVien = new JLabel();
         JLabel lblTieuDeBan = new JLabel("      \u25A4 Bàn:");
         lblTieuDeBan.setFont(new Font("Arial Unicode MS", Font.BOLD, 16));
         lblBan = new JLabel();
@@ -130,6 +135,8 @@ public class QuanLyPhieuDat extends JPanel {
 
         panelThongTin.add(lblTieuDeSoPhieu);
         panelThongTin.add(lblSoPhieu);
+        panelThongTin.add(lblTenNhanVien);
+        panelThongTin.add(lblNhanVien);
         panelThongTin.add(lblTieuDeBan);
         panelThongTin.add(lblBan);
         panelThongTin.add(lblTieuDeGhiChu);
@@ -140,27 +147,20 @@ public class QuanLyPhieuDat extends JPanel {
         // Các nút điều khiển
         JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
         panelButtons.setBackground(new Color(255, 255, 255));
-        btnThemMon = createStyledButton("\uD83D\uDCB5 Thêm món", e -> show());
+        btnThemMon = createStyledButton("\uD83C\uDF7D Thêm món", e -> themMon());
         btnThemMon.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
         btnThanhToan = createStyledButton("\uD83D\uDCB5 Thanh toán", e -> thanhToan());
         btnThanhToan.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
         btnXoaChiTiet = createStyledButton("\uD83D\uDDD1\uFE0F\n", e -> xoaChiTiet());
         btnXoaChiTiet.setFont(new Font("Arial Unicode MS", Font.BOLD, 30));
         btnXoaChiTiet.setBackground(new Color(255, 255, 255));
-        btnXoaChiTiet.setForeground(new Color(0, 0, 225));
-        btnXoaPhieuDat = createStyledButton("\u274C HỦY BÀN", e ->
-                xoaPhieuDat());
-        btnXoaPhieuDat.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
-        btnXoaPhieuDat.setBackground(new Color(255, 0, 0));
-
+        btnXoaChiTiet.setForeground(new Color(255, 0, 0));
 
         panelButtons.add(btnThemMon);
         panelButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         panelButtons.add(btnThanhToan);
         panelButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         panelButtons.add(btnXoaChiTiet);
-        panelButtons.add(Box.createRigidArea(new Dimension(10, 0)));
-        panelButtons.add(btnXoaPhieuDat);
         rightPanel.add(panelButtons, BorderLayout.SOUTH);
 
         add(rightPanel, BorderLayout.CENTER);
@@ -180,8 +180,8 @@ public class QuanLyPhieuDat extends JPanel {
                     continue;
                 }
                 JPanel panelItem = new JPanel(new BorderLayout());
-                panelItem.setBorder(BorderFactory.createLineBorder(Color.GRAY));
-                panelItem.setBackground(new Color(255, 255, 224));
+                panelItem.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+                panelItem.setBackground(new Color(255, 255, 255));
 
                 JLabel lblImage = new JLabel(new ImageIcon("src/img/datban.jpg"));
                 panelItem.add(lblImage, BorderLayout.CENTER);
@@ -192,15 +192,24 @@ public class QuanLyPhieuDat extends JPanel {
                 }
                 // lấy so phieu theo mã bàn từ phương thức getSoPhieu() của Ban_Dao
                 String soPhieu = banDao.getSoPhieu(ban.getMaBan());
-                JLabel lblThongTin = new JLabel("<html>Mã bàn: " + ban.getMaBan() + "<br>Số phiếu: "
-                        + soPhieu + "<br>Trạng thái: " + trangThai + "</html>");
+                JLabel lblThongTin = new JLabel("<html>Mã bàn: " + ban.getMaBan() + "<br>Trạng thái: " + trangThai + "</html>");
                 lblThongTin.setHorizontalAlignment(SwingConstants.CENTER);
                 lblThongTin.setFont(new Font("Comic Sans MS", Font.PLAIN, 12));
                 panelItem.add(lblThongTin, BorderLayout.SOUTH);
 
                 panelItem.addMouseListener(new java.awt.event.MouseAdapter() {
                     public void mouseClicked(java.awt.event.MouseEvent evt) {
-                        loadSampleDataForTable(Integer.parseInt(soPhieu), ban.getMaBan());
+                        loadSampleDataForTable(ban.getMaBan());
+                    }
+                });
+
+                // add action để khi nhấn vào panelTiem sẽ highlight màu và viền còn lại sẽ mất highlight
+                panelItem.addMouseListener(new java.awt.event.MouseAdapter() {
+                    public void mouseClicked(java.awt.event.MouseEvent evt) {
+                        for (Component c : panelBan.getComponents()) {
+                            c.setBackground(new Color(255, 255, 255));
+                        }
+                        panelItem.setBackground(new Color(255, 255, 224));
                     }
                 });
 
@@ -212,6 +221,26 @@ public class QuanLyPhieuDat extends JPanel {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void themMon() {
+        //hiển thị trang đặt món và lấy mã bàn
+        String maBan = lblBan.getText();
+        //tạo frame mơ chua dat mon
+        JFrame frame = new JFrame("Thêm món");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(1000, 700);
+        frame.setLocationRelativeTo(null);
+        frame.setLayout(new BorderLayout());
+        frame.add(new DatMon(maBan));
+        frame.setVisible(true);
+        //nếu frame đóng thì load lại table chi tiết phiếu
+        frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent windowEvent) {
+                loadSampleDataForTable(lblBan.getText());
+            }
+        });
     }
 
     private void thanhToan() {
@@ -286,7 +315,7 @@ public class QuanLyPhieuDat extends JPanel {
         JButton button = new JButton(text);
         button.setBackground(new Color(105, 165, 225));
         button.setForeground(Color.WHITE);
-        button.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        button.setFont(new Font("Segoe UI", Font.BOLD, 20));
         button.addActionListener(actionListener);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
@@ -294,7 +323,7 @@ public class QuanLyPhieuDat extends JPanel {
     }
 
     // Hàm để tải dữ liệu mẫu cho bảng chi tiết phiếu từ số lượng phiếu
-    private void loadSampleDataForTable(int soPhieu, String maBan) {
+    private void loadSampleDataForTable(String maBan) {
         tableModel.setRowCount(0); // Xóa các hàng cũ trong bảng
 
         // lấy danh sách phiếu theo mã bàn
@@ -365,12 +394,15 @@ public class QuanLyPhieuDat extends JPanel {
         //lấy ghi chú từ phiếu đặt món
         String ghiChu = "";
         for (PhieuDatMon phieuDatMon : dsPhieuDatMon) {
-            ghiChu += phieuDatMon.getGhiChu() + " ";
+            if(!phieuDatMon.getGhiChu().equals("")){
+                ghiChu += phieuDatMon.getGhiChu() + ", ";
         }
+        LocalDate localDate = LocalDate.now();
         //Lấy số phiếu từ số phiếu
-        lblSoPhieu.setText(soPhieu + "");
+        lblSoPhieu.setText(localDate.toString());
         lblGhiChu.setText( ghiChu);
         lblBan.setText( maBan);
-    }
+        lblNhanVien.setText("Nhân viên");
+    }}
 
 }
