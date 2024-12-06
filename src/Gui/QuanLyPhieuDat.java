@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -22,7 +23,7 @@ public class QuanLyPhieuDat extends JPanel {
     private JTable tableChiTietPhieu;
     private DefaultTableModel tableModel;
     private JLabel lblTongTien, lblGhiChu, lblSoLuongBanDangDung;
-    private JButton btnThanhToan, btnXoaChiTiet, btnXoaPhieuDat;
+    private JButton btnThanhToan, btnXoaChiTiet, btnXoaPhieuDat, btnThemMon;
     private JTextField txtTimKiemBan;
     private JPanel panelBan;
     private ArrayList<Ban> dsBan;
@@ -138,6 +139,8 @@ public class QuanLyPhieuDat extends JPanel {
         // Các nút điều khiển
         JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER));
         panelButtons.setBackground(new Color(255, 255, 255));
+        btnThemMon = createStyledButton("\uD83D\uDCB5 Thêm món", e -> show());
+        btnThemMon.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
         btnThanhToan = createStyledButton("\uD83D\uDCB5 Thanh toán", e -> thanhToan());
         btnThanhToan.setFont(new Font("Arial Unicode MS", Font.BOLD, 22));
         btnXoaChiTiet = createStyledButton("\uD83D\uDDD1\uFE0F\n", e -> xoaChiTiet());
@@ -150,7 +153,8 @@ public class QuanLyPhieuDat extends JPanel {
         btnXoaPhieuDat.setBackground(new Color(255, 0, 0));
 
 
-
+        panelButtons.add(btnThemMon);
+        panelButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         panelButtons.add(btnThanhToan);
         panelButtons.add(Box.createRigidArea(new Dimension(10, 0)));
         panelButtons.add(btnXoaChiTiet);
@@ -160,6 +164,7 @@ public class QuanLyPhieuDat extends JPanel {
 
         add(rightPanel, BorderLayout.CENTER);
     }
+
 
     // Tải danh sách bàn từ cơ sở dữ liệu
     public void loadBanFromDatabase() {
@@ -212,7 +217,8 @@ public class QuanLyPhieuDat extends JPanel {
         try {
             //tạo hóa đơn mới
             hoaDon = new HoaDon();
-            hoaDon.setNgayTao(new java.sql.Date(new java.util.Date().getTime()));
+            LocalDate current = LocalDate.now();
+            hoaDon.setNgayTao(current);
             //mã hóa đơn sẽ là số thứ tự tiếp theo của hd
             hoaDon.setMaHD("HD" + (hoaDonDao.getAllHD().size() + 1));
             //các chi tiết hóa đơn sẽ lấy từ bảng chi tiết phiếu
