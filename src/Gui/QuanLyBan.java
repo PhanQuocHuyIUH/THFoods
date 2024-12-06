@@ -117,7 +117,7 @@ public class QuanLyBan extends JPanel {
         add(formPanel, BorderLayout.EAST);
 
         // JTable to display tables with column headers
-        String[] columnNames = { "Mã bàn", "Số ghế" };
+        String[] columnNames = { "Mã bàn", "Số ghế", "Trạng thái" };
         tableModel = new DefaultTableModel(columnNames, 0); // Bảng trống với tiêu đề cột
         tableList = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(tableList);
@@ -295,8 +295,7 @@ private JButton createStyledButton(String text, ActionListener action) { // Thê
             loadToTable(); // Tải lại dữ liệu vào bảng
             JOptionPane.showMessageDialog(this, "Sửa bàn thành công.", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE); // Hiển thị thông báo
-                                                                                                   // lỗi
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE); // Hiển thị thông báo lỗi
         }
     }
 
@@ -328,8 +327,17 @@ private JButton createStyledButton(String text, ActionListener action) { // Thê
 
             tableModel.setRowCount(0);
 
+            String trangThai = "";
+
             for (Ban ban : danhSachBan) {
-                tableModel.addRow(new Object[] { ban.getMaBan(), ban.getSoGhe() });
+                if(ban.getTrangThai() == TrangThaiBan.Trong) {
+                    trangThai = "Trống";
+                } else if(ban.getTrangThai() == TrangThaiBan.DaDat) {
+                    trangThai = "Đã đặt";
+                } else if(ban.getTrangThai() == TrangThaiBan.DangDung) {
+                    trangThai = "Đang dùng";
+                }
+                tableModel.addRow(new Object[] { ban.getMaBan(), ban.getSoGhe(), trangThai });
             }
         } catch (SQLException e) {
             e.printStackTrace();
