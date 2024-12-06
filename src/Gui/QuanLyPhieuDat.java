@@ -259,8 +259,14 @@ public class QuanLyPhieuDat extends JPanel {
                 String tenMon = (String) tableModel.getValueAt(i, 0);
 
                 // Lấy đơn giá và chuyển sang kiểu double
-                String donGiaString = (String) tableModel.getValueAt(i, 2); // Lấy giá trị đơn giá dưới dạng String
-                double donGia = Double.parseDouble(donGiaString);  // Chuyển đổi thành double
+                // Kiểm tra xem giá trị có phải là Double hay không và ép kiểu phù hợp
+                Object donGiaObject = tableModel.getValueAt(i, 2);
+                double donGia = 0.0;
+                if (donGiaObject instanceof Double) {
+                    donGia = (Double) donGiaObject; // Nếu là Double, lấy trực tiếp
+                } else if (donGiaObject instanceof String) {
+                    donGia = Double.parseDouble((String) donGiaObject); // Nếu là String, chuyển thành Double
+                }
 
                 int soLuong = (int) tableModel.getValueAt(i, 1);
 
@@ -303,6 +309,7 @@ public class QuanLyPhieuDat extends JPanel {
             e.printStackTrace();
         }
     }
+
 
 
     private void xoaChiTiet() {
