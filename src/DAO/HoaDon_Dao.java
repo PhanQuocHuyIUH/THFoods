@@ -155,23 +155,45 @@ public class HoaDon_Dao
 ////        return revenueByMonthLast6;
 //    }
 
-    public void createHD(HoaDon hd) throws SQLException
-    {
+    public void createHD(HoaDon hd) throws SQLException {
         Database.getInstance().connect();
         Connection con = Database.getConnection();
-        String sql = "insert into HoaDon values('" + hd.getMaHD() + "','" + hd.getNgayTao() + "')";
-        Statement statement = con.createStatement();
-        statement.executeUpdate(sql);
+
+        // Chuyển đổi LocalDateTime thành Timestamp
+        java.sql.Timestamp ngayTaoTimestamp = java.sql.Timestamp.valueOf(hd.getNgayTao());
+
+        // Câu lệnh SQL để chèn hóa đơn vào cơ sở dữ liệu (sử dụng PreparedStatement để tránh lỗi SQL Injection và lỗi kiểu dữ liệu)
+        String sql = "INSERT INTO HoaDon (MaHD, NgayTao) VALUES (?, ?)";
+
+        PreparedStatement statement = con.prepareStatement(sql);
+        statement.setString(1, hd.getMaHD());
+        statement.setTimestamp(2, ngayTaoTimestamp);  // Chèn giá trị Timestamp trực tiếp vào câu lệnh SQL
+
+        // Thực thi câu lệnh SQL
+        statement.executeUpdate();
     }
+
+
     //tạo chi tiết hóa đơn
-    public void createCTHD(ChiTietHoaDon cthd) throws SQLException
-    {
+    public void createCTHD(ChiTietHoaDon cthd) throws SQLException {
         Database.getInstance().connect();
         Connection con = Database.getConnection();
-        String sql = "insert into CTHD values('" + cthd.getMaHD() + "','"+ cthd.getMonAn() +"','" + cthd.getSoLuong() + "')";
-        Statement statement = con.createStatement();
-        statement.executeUpdate(sql);
+
+        // Câu lệnh SQL chèn dữ liệu vào bảng CTHD (chỉ rõ tên cột)
+        String sql = "INSERT INTO CTHD (MaHD, MonAn, SoLuong, DonGia) VALUES (?, ?, ?, ?)";
+
+        PreparedStatement statement = con.prepareStatement(sql);
+
+        // Gán giá trị cho các tham số trong câu lệnh SQL
+        statement.setString(1, cthd.getMaHD());  // MaHD
+        statement.setString(2, cthd.getMonAn()); // MonAn
+        statement.setInt(3, cthd.getSoLuong());  // SoLuong
+        statement.setDouble(4, cthd.getDonGia()); // DonGia
+
+        // Thực thi câu lệnh SQL
+        statement.executeUpdate();
     }
+
 
     // hàm getBestSellingDishes trả về danh sách 6 các món ăn bán chạy nhất trong 30 ngày qua lấy tên món
 //    public Map<String, Integer> getBestSellingDishes() throws SQLException {

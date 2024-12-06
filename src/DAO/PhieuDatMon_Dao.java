@@ -8,11 +8,45 @@ import Entity.PhieuDatMon;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class PhieuDatMon_Dao{
     public PhieuDatMon_Dao(){
     }
+
+
+    public ArrayList<PhieuDatMon> getAllPhieuDatMon() throws Exception {
+        ArrayList<PhieuDatMon> dsPhieuDatMon = new ArrayList<>();
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "select * from PhieuDatMon";
+
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+
+        while (rs.next()) {
+            String maPDB = rs.getString(1);
+
+            // Chuyển đổi ngày từ String sang LocalDateTime
+            String ngayDatStr = rs.getString(2);
+            LocalDateTime ngayDat = null;
+
+            if (ngayDatStr != null) {
+                // Giả sử ngày trong database là kiểu 'yyyy-MM-dd HH:mm:ss'
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                ngayDat = LocalDateTime.parse(ngayDatStr, formatter);
+            }
+
+            String ghiChu = rs.getString(3);
+            Ban maBan = new Ban(rs.getString(4), null, 0);
+            String tenNV = rs.getString(5);
+
+            dsPhieuDatMon.add(new PhieuDatMon(maPDB, ngayDat, ghiChu, maBan, tenNV));
+        }
+        return dsPhieuDatMon;
+    }
+
 
     public ArrayList<DonDatBan> getAllDonDatBan() throws SQLException {
         ArrayList<DonDatBan> dsDonDatBan = new ArrayList<>();
