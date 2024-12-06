@@ -169,8 +169,7 @@ public class QuanLyHoaDon extends JPanel {
                 //Lấy món ăn từ chi tiết hóa đơn
                 int TongTien = 0;
                 for (ChiTietHoaDon chiTietHoaDon : chiTietHoaDons) {
-                    monAn_dao.getGiaMonAn(chiTietHoaDon.getMaMon());
-                    TongTien += chiTietHoaDon.getSoLuong() * monAn_dao.getGiaMonAn(chiTietHoaDon.getMaMon());
+                    TongTien += chiTietHoaDon.getSoLuong() * chiTietHoaDon.getDonGia();
                 }
                 hoaDonModel.addRow(new Object[]{
                         hoaDon.getMaHD(),
@@ -197,10 +196,10 @@ public class QuanLyHoaDon extends JPanel {
                 for (ChiTietHoaDon chiTiet : chiTietHoaDons) {
                     chiTietModel.addRow(new Object[]{
                             chiTiet.getMaHD(),
-                            monAn_dao.getTenMon(chiTiet.getMaMon()),
+                            chiTiet.getMonAn(),
                             chiTiet.getSoLuong(),
-                            monAn_dao.getGiaMonAn(chiTiet.getMaMon()),
-                            monAn_dao.getGiaMonAn(chiTiet.getMaMon()) * chiTiet.getSoLuong()
+                            chiTiet.getDonGia(),
+                            chiTiet.getDonGia() * chiTiet.getSoLuong()
                     });
                 }
             } catch (SQLException e) {

@@ -1,17 +1,18 @@
 package Entity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 public class HoaDon
 {
     private String maHD;
-    private Date ngayTao; // Year(+ 1900) - Month(+1) - Date
+    private LocalDateTime ngayTao; // Year(+ 1900) - Month(+1) - Date
     private List<ChiTietHoaDon> chiTietHoaDon;
 
     public HoaDon() {}
 
-    public HoaDon(String maHD, Date ngayTao , List<ChiTietHoaDon> chiTietHoaDon)
+    public HoaDon(String maHD, LocalDateTime ngayTao , List<ChiTietHoaDon> chiTietHoaDon)
     {
         this.maHD = maHD;
         this.ngayTao = ngayTao;
@@ -32,12 +33,12 @@ public class HoaDon
         this.maHD = maHD;
     }
 
-    public Date getNgayTao()
+    public LocalDateTime getNgayTao()
     {
         return ngayTao;
     }
 
-    public void setNgayTao(Date ngayTao)
+    public void setNgayTao(LocalDateTime ngayTao)
     {
         this.ngayTao = ngayTao;
     }

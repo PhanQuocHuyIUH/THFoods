@@ -24,10 +24,11 @@ public class ChiTietHoaDon_Dao
 
         while (rs.next())
         {
-            String maMon = rs.getString(2);
+            String monAn = rs.getString(2);
             int soLuong = rs.getInt(3);
+            double donGia = rs.getDouble(4);
 
-            dsCTHD.add(new ChiTietHoaDon(maHD, maMon, soLuong));
+            dsCTHD.add(new ChiTietHoaDon(maHD, monAn, soLuong,donGia));
         }
 
         return dsCTHD;

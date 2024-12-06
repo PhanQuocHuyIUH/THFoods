@@ -1,22 +1,24 @@
 package Entity;
 
+import java.time.LocalDateTime;
+
 public class PhieuDatMon
 {
     private String maPDB;
-    private String ngayDat;
+    private LocalDateTime ngayDat;
     private String ghiChu;
     private Ban maBan;
-    private NhanVien maNV;
+    private String tenNV;
 
     public PhieuDatMon() {}
 
-    public PhieuDatMon(String maPDB, String ngayDat, String ghiChu, Ban maBan, NhanVien maNV)
+    public PhieuDatMon(String maPDB, LocalDateTime ngayDat, String ghiChu, Ban maBan, String tenNV)
     {
         this.maPDB = maPDB;
         this.ngayDat = ngayDat;
         this.ghiChu = ghiChu;
         this.maBan = maBan;
-        this.maNV = maNV;
+        this.tenNV = tenNV;
     }
 
     public String getMaPDB()
@@ -29,12 +31,12 @@ public class PhieuDatMon
         this.maPDB = maPDB;
     }
 
-    public String getNgayDat()
+    public LocalDateTime getNgayDat()
     {
         return ngayDat;
     }
 
-    public void setNgayDat(String ngayDat)
+    public void setNgayDat(LocalDateTime ngayDat)
     {
         this.ngayDat = ngayDat;
     }
@@ -59,13 +61,11 @@ public class PhieuDatMon
         this.maBan = maBan;
     }
 
-    public String getMaNV()
-    {
-        return maNV.getMaNV();
+    public String getTenNV() {
+        return tenNV;
     }
 
-    public void setMaNV(NhanVien maNV)
-    {
-        this.maNV = maNV;
+    public void setTenNV(String tenNV) {
+        this.tenNV = tenNV;
     }
 }
