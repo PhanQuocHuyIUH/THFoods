@@ -16,7 +16,7 @@ public class PhieuDatMon_Dao{
     }
 
 
-    public ArrayList<PhieuDatMon> getAllPhieuDatMon() throws Exception {
+    public ArrayList<PhieuDatMon> getAllPhieuDatMon() throws SQLException {
         ArrayList<PhieuDatMon> dsPhieuDatMon = new ArrayList<>();
         Database.getInstance();
         Connection con = Database.getConnection();
@@ -80,7 +80,7 @@ public class PhieuDatMon_Dao{
 
 
     //thêm phiếu đặt món vào dâtabase
-    public void addPhieuDatMon(PhieuDatMon phieuDatMon) throws Exception {
+    public void addPhieuDatMon(PhieuDatMon phieuDatMon) throws SQLException{
         Database.getInstance();
         Connection con = Database.getConnection();
 
@@ -120,6 +120,28 @@ public class PhieuDatMon_Dao{
             Ban maBan = new Ban(rs.getString(4), null, 0); // Giả sử cột 4 chứa thông tin mã của `Ban`
             String tenNV = rs.getNString(5);
             return new PhieuDatMon(maPDB, ngayDat, ghiChu, maBan, tenNV);
+        }
+
+        rs.close();
+        preparedStatement.close();
+        con.close();
+
+        return null; // Nếu không tìm thấy kết quả
+    }
+
+    //Lấy tên nhân viên từ mã phiếu
+    public String getTenNVByMaPDB(String maPDB) throws SQLException {
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "SELECT nhanVien FROM PhieuDatMon WHERE MaPDB = ?";
+
+        PreparedStatement preparedStatement = con.prepareStatement(sql);
+        preparedStatement.setString(1, maPDB);
+
+        ResultSet rs = preparedStatement.executeQuery();
+
+        if (rs.next()) {
+            return rs.getString(1);
         }
 
         rs.close();

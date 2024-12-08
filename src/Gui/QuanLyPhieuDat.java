@@ -56,7 +56,7 @@ public class QuanLyPhieuDat extends JPanel {
         setLayout(new BorderLayout());
         // Panel trái chứa bàn
         JPanel leftPanel = new JPanel(new BorderLayout());
-        leftPanel.setPreferredSize(new Dimension(700, getHeight()));
+        leftPanel.setPreferredSize(new Dimension(500, getHeight()));
         leftPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         leftPanel.setBackground(new Color(105, 165, 225));
 
@@ -313,22 +313,66 @@ public class QuanLyPhieuDat extends JPanel {
 
 
     private void xoaChiTiet() {
-        int selectedRow = tableChiTietPhieu.getSelectedRow();
-        if (selectedRow != -1) {
-            tableModel.removeRow(selectedRow);
-            JOptionPane.showMessageDialog(this, "Món đã được xóa!");
+        int row = tableChiTietPhieu.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một món để xóa!");
+            return;
+        }
+        //nếu chỉ có 1 hàng thì thông báo xóa phiếu đặt
+        if (tableModel.getRowCount() == 1) {
+            int dialogButton = JOptionPane.YES_NO_OPTION;
+            int dialogResult = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa phiếu đặt món này?", "Xác nhận", dialogButton);
+            if (dialogResult == JOptionPane.YES_OPTION) {
+                try {
+                    //lấy mã bàn từ label bàn
+                    String maBan = lblBan.getText();
+                    //lấy danh sách mã phiếu theo mã bàn
+                    ArrayList<String> dsPhieu = banDao.getDSPhieu(maBan);
+                    //chạy vòng lặp xóa chi tiết phiếu theo mã phiếu
+                    for (String maPhieu : dsPhieu) {
+                        banDao.deleteCTPhieu(maPhieu);
+                    }
+                    //xóa phiếu theo mã bàn
+                    banDao.deletePhieu(maBan);
+                    //cập nhật trạng thái bàn
+                    banDao.updateTrangThaiBan(maBan, "Trong");
+                    //cập nhật table và danh sách bàn
+                    tableModel.setRowCount(0);
+                    loadBanFromDatabase();
+                    JOptionPane.showMessageDialog(this, "Xóa phiếu đặt món thành công!");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         } else {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn món để xóa!");
+            //nếu có nhiều hơn 1 hàng thì xét đến số lượng món
+            int soLuong = (int) tableModel.getValueAt(row, 1);
+            String maBan = lblBan.getText();
+            ArrayList<String> dsPhieu = new ArrayList<>();
+            try {
+                //lấy phiếu đặt món theo mã bàn
+                dsPhieu = banDao.getDSPhieu(maBan);
+                //lấy mã món ăn từ tên món ăn
+                String tenMon = (String) tableModel.getValueAt(row, 0);
+                String maMon = monAnDao.getMaMonByTenMon(tenMon);
+                //nếu số lượng món = 1 thì xóa chi tiết phiếu
+                if (soLuong == 1) {
+                    for (String maPhieu : dsPhieu) {
+                        banDao.deleteCTPhieuByMaMon(maPhieu, maMon);
+                    }
+                } else {
+                    //nếu số lượng món > 1 thì giảm số lượng món đi 1
+                    for (String maPhieu : dsPhieu) {
+                        banDao.updateCTPhieu(maPhieu, maMon, soLuong - 1);
+                    }
+                }
+                //load lại table chi tiết phiếu
+                loadSampleDataForTable(maBan);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-    }
 
-    private void xoaPhieuDat() {
-        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa phiếu này?");
-        if (confirm == JOptionPane.YES_OPTION) {
-
-            JOptionPane.showMessageDialog(this, "Phiếu đã được xóa!");
-            loadBanFromDatabase();
-        }
     }
 
     private JButton createStyledButton(String text, ActionListener actionListener) {
@@ -422,7 +466,16 @@ public class QuanLyPhieuDat extends JPanel {
         lblSoPhieu.setText(localDate.toString());
         lblGhiChu.setText( ghiChu);
         lblBan.setText( maBan);
-        lblNhanVien.setText("Nhân viên");
+        //lấy tên nhân viên từ mã phiếu đặt món
+        String tenNhanVien = "";
+        for (PhieuDatMon phieuDatMon1 : dsPhieuDatMon) {
+            try {
+                tenNhanVien = phieuDatMonDao.getTenNVByMaPDB(phieuDatMon1.getMaPDB());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        lblNhanVien.setText(tenNhanVien);
     }}
 
 }

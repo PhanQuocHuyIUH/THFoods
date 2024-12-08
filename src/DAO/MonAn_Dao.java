@@ -164,4 +164,19 @@ public class MonAn_Dao {
         Statement statement = con.createStatement();
         return statement.executeUpdate(sql) > 0;
     }
+
+    //Lấy mã món theo tên món
+    public String getMaMonByTenMon(String tenMon) throws SQLException {
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "select MaMon from MonAn where TenMon like N'" + tenMon + "'";
+
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+
+        if (rs.next()) {
+            return rs.getString(1);
+        }
+        return null;
+    }
 }

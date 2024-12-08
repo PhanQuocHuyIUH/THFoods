@@ -226,13 +226,24 @@ public class DatMon extends JPanel {
         tables[0] = "Bàn ăn";
         for (int i = 1; i < dsBan.size(); i++) {
             //nếu bàn đã đặt thì không hiển thị
-            if (dsBan.get(i).getTrangThai() == TrangThaiBan.DaDat) {
-                continue;
+            if (dsBan.get(i-1).getTrangThai() == TrangThaiBan.DaDat) {
+                tables[i] = dsBan.get(i-1).getMaBan() + " - Đã đặt";
+                //màu đỏ cho bàn đã đặt
+                tables[i] = "<html><font color='red'>" + tables[i] + "</font></html>";
             }
-            tables[i] = dsBan.get(i-1).getMaBan();
+            if (dsBan.get(i-1).getTrangThai() == TrangThaiBan.DangDung) {
+                tables[i] = dsBan.get(i-1).getMaBan() + " - Đang dùng";
+                //màu xanh cho bàn đang dùng
+                tables[i] = "<html><font color='blue'>" + tables[i] + "</font></html>";
+            }
+            if (dsBan.get(i-1).getTrangThai() == TrangThaiBan.Trong) {
+                tables[i] = dsBan.get(i-1).getMaBan() + " - Trống";
+                //màu xanh cho bàn trống
+                tables[i] = "<html><font color='green'>" + tables[i] + "</font></html>";
+            }
         }
         tableComboBox = new JComboBox<>(tables);
-        tableComboBox.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        tableComboBox.setFont(new Font("Chalkduster", Font.PLAIN, 14));
         tableComboBox.setBackground(AppColor.xam);
         //set màu cho vien của combobox
         tableComboBox.setBorder(BorderFactory.createLineBorder(AppColor.xanh));
@@ -447,7 +458,10 @@ public class DatMon extends JPanel {
 
     private void placeOrder() {
         // Lấy thông tin từ các trường
-        String table = (String) tableComboBox.getSelectedItem();
+
+        // LẤY THÔNG TIN MÃ BÀN TỪ COMBOBOX LOẠI BỎ CÁC KÍ TỰ KHÔNG PHẢI LÀ CHỮ B VÀ SỐ
+        String table = tableComboBox.getSelectedItem().toString().replaceAll("[^B0-9]", "");
+        System.out.println(table);
         String note = noteField.getText();
         LocalDateTime date = LocalDateTime.now(); // Sử dụng LocalDateTime cho ngày và giờ hiện tại
         String nv = nvField.getText();
