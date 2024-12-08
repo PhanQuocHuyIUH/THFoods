@@ -19,7 +19,7 @@ public class CapTaiKhoanQL extends JPanel implements ActionListener {
     private JTextField mgrNameField, mgrEmailField, mgrPhoneField, mgrIdField, mgrLoginNameField, mgrPasswordField;
     private JTable tableQL;
     private DefaultTableModel tableModelQL;
-    private JButton confirmManagerButton;
+    private JButton confirmManagerButton, editButton, deleteButton;
     QuanLy_Dao quanLy_dao = new QuanLy_Dao();
     private TaiKhoan_Dao taiKhoan_dao = new TaiKhoan_Dao();
 
@@ -44,6 +44,14 @@ public class CapTaiKhoanQL extends JPanel implements ActionListener {
         tableQL.setRowHeight(25);
         JScrollPane scrollPane = new JScrollPane(tableQL);
         add(scrollPane, BorderLayout.CENTER);
+        tableQL.getSelectionModel().addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting()) { // Chỉ xử lý khi sự kiện đã hoàn tất
+                int selectedRow = tableQL.getSelectedRow();
+                if (selectedRow != -1) { // Nếu có dòng được chọn
+                    loadSelectedRowToFields(selectedRow);
+                }
+            }
+        });
 
         // Load employee data
         try {
@@ -54,11 +62,37 @@ public class CapTaiKhoanQL extends JPanel implements ActionListener {
         }
     }
 
+    private void loadSelectedRowToFields(int rowIndex) {
+        // Lấy giá trị từ hàng được chọn
+        String maQL = tableModelQL.getValueAt(rowIndex, 0).toString();
+        String tenNV = tableModelQL.getValueAt(rowIndex, 1).toString();
+        String sdt = tableModelQL.getValueAt(rowIndex, 2).toString();
+        String email = tableModelQL.getValueAt(rowIndex, 3).toString();
+        String tenDangNhap = tableModelQL.getValueAt(rowIndex, 4).toString();
+        String matKhau = tableModelQL.getValueAt(rowIndex, 5).toString();
+
+        // Gán giá trị vào các JTextField
+        mgrIdField.setText(maQL);
+        mgrNameField.setText(tenNV);
+        mgrPhoneField.setText(sdt);
+        mgrEmailField.setText(email);
+        mgrLoginNameField.setText(tenDangNhap);
+        mgrPasswordField.setText(matKhau);
+    }
+
+
     private JPanel createEmployeeInputPanel() {
         JPanel panel = new JPanel(new GridLayout(8, 2, 10, 5));
-        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Thông Tin Nhân Viên",
-                0, 0, new Font("Arial", Font.BOLD, 16), new Color(0, 102, 204)));
+        panel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(),
+                "Thông Tin Quản Lý",
+                0,
+                0,
+                new Font("Arial", Font.BOLD, 16),
+                new Color(0, 102, 204)
+        ));
 
+        // Fields for Employee Information
         panel.add(new JLabel("Mã:"));
         mgrIdField = new JTextField();
         mgrIdField.setEditable(false);
@@ -92,16 +126,40 @@ public class CapTaiKhoanQL extends JPanel implements ActionListener {
             e.printStackTrace();
         }
 
-        // Confirm button
+        // Buttons Panel
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 3, 10, 0));
+
+        // Confirm Button
         confirmManagerButton = new JButton("Xác nhận");
         confirmManagerButton.setBackground(new Color(0, 153, 51));
         confirmManagerButton.setForeground(Color.WHITE);
         confirmManagerButton.setFont(new Font("Arial", Font.BOLD, 14));
         confirmManagerButton.addActionListener(this);
-        panel.add(confirmManagerButton);
+        buttonsPanel.add(confirmManagerButton);
+
+        // Edit Button
+         editButton = new JButton("Chỉnh sửa");
+        editButton.setBackground(new Color(0, 102, 204));
+        editButton.setForeground(Color.WHITE);
+        editButton.setFont(new Font("Arial", Font.BOLD, 14));
+        editButton.addActionListener(this);
+        buttonsPanel.add(editButton);
+
+        // Delete Button
+         deleteButton = new JButton("Xóa");
+        deleteButton.setBackground(new Color(204, 0, 0));
+        deleteButton.setForeground(Color.WHITE);
+        deleteButton.setFont(new Font("Arial", Font.BOLD, 14));
+        deleteButton.addActionListener(this);
+        buttonsPanel.add(deleteButton);
+
+        // Add Buttons Panel to Main Panel
+        panel.add(new JLabel()); // Empty cell to align buttons in grid
+        panel.add(buttonsPanel);
 
         return panel;
     }
+
 
     private void setIDQL() throws SQLException {
         String newMaNV = quanLy_dao.getIDMax();
@@ -126,8 +184,19 @@ public class CapTaiKhoanQL extends JPanel implements ActionListener {
                     confirmManagerButton.setEnabled(true); // Re-enable button after processing
                 }
             }
+        }else if (e.getSource() == deleteButton) {
+            deleteEmployee();
+        }else {
+            updateQuanLy();
+            try {
+                setIDQL();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
+
+
 
     private boolean validateEmployeeFields() {
         // Validate Name
@@ -182,4 +251,65 @@ public class CapTaiKhoanQL extends JPanel implements ActionListener {
         mgrEmailField.setText("");
         mgrPasswordField.setText("");
     }
+
+    private void deleteEmployee() {
+        int selectedRow = tableQL.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn quản lý để xóa.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String maNV = (String) tableModelQL.getValueAt(selectedRow, 0); // Lấy Mã NV từ bảng
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Bạn có chắc muốn xóa nhân viên này?",
+                "Xác nhận xóa",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                quanLy_dao.deleteTaiKhoanAndQuanLy(maNV); // Gọi DAO để xóa nhân viên
+                JOptionPane.showMessageDialog(this, "Xóa quản lý thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                taiKhoan_dao.loadQuanLyData(tableModelQL); // Reload danh sách quản lý
+                xoaRongEmployee(); // Clear các trường nhập liệu
+                setIDQL(); // Reset ID
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Xóa quản lý thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private void updateQuanLy() {
+        // Lấy dữ liệu từ các JTextField
+        String maQL = mgrIdField.getText();
+        String tenNV = mgrNameField.getText();
+        String sdt = mgrPhoneField.getText();
+        String email = mgrEmailField.getText();
+        String matKhau = mgrPasswordField.getText();
+
+        // Kiểm tra dữ liệu đầu vào
+        if (!validateEmployeeFields()) {
+            return; // Nếu không hợp lệ, dừng xử lý
+        }
+
+        // Gọi DAO để cập nhật thông tin quản lý
+        try {
+            quanLy_dao.updateQuanLy(maQL, tenNV, sdt, email, matKhau);
+            JOptionPane.showMessageDialog(this, "Cập nhật thông tin quản lý thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+
+            // Reload dữ liệu lên bảng
+            taiKhoan_dao.loadQuanLyData(tableModelQL);
+
+            // Xóa rỗng các trường nhập liệu
+            xoaRongEmployee();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Cập nhật thông tin quản lý thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+
+
 }

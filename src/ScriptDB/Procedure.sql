@@ -22,8 +22,7 @@ EXECUTE getInforTkQL
 
 
 
-Delete from TaiKhoan
-where tenDangNhap = 'QL02'
+
 
 
 

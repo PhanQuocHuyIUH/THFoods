@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -159,31 +160,46 @@ public class QuanLyHoaDon extends JPanel {
 
     private void refreshHoaDon() {
         try {
+            // Lấy tất cả hóa đơn
             List<HoaDon> hoaDons = hoaDon_dao.getAllHD();
+
+            // Sắp xếp các hóa đơn theo ngày tạo (mới nhất trước)
+            hoaDons.sort((hd1, hd2) -> hd2.getNgayTao().compareTo(hd1.getNgayTao())); // Sắp xếp giảm dần
+
             DefaultTableModel hoaDonModel = (DefaultTableModel) hoaDonTable.getModel();
-            hoaDonModel.setRowCount(0);
-            //đếm số chi tiết hóa đơn
-            int count = 0;
+            hoaDonModel.setRowCount(0); // Xóa tất cả các dòng trong bảng
+
+            // Lặp qua từng hóa đơn
             for (HoaDon hoaDon : hoaDons) {
+                // Lấy chi tiết hóa đơn cho mỗi hóa đơn
                 List<ChiTietHoaDon> chiTietHoaDons = chiTietHoaDon_dao.getCTHDByMaHD(hoaDon.getMaHD());
-                //Lấy món ăn từ chi tiết hóa đơn
-                int TongTien = 0;
+
+                // Tính tổng tiền cho hóa đơn
+                int tongTien = 0;
                 for (ChiTietHoaDon chiTietHoaDon : chiTietHoaDons) {
-                    TongTien += chiTietHoaDon.getSoLuong() * chiTietHoaDon.getDonGia();
+                    tongTien += chiTietHoaDon.getSoLuong() * chiTietHoaDon.getDonGia();
                 }
+
+                // Định dạng ngày tạo hóa đơn (nếu là LocalDateTime)
+                String ngayTao = hoaDon.getNgayTao().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+                // Thêm thông tin vào bảng
                 hoaDonModel.addRow(new Object[]{
                         hoaDon.getMaHD(),
                         chiTietHoaDons.size(),
-                        hoaDon.getNgayTao(),
-                        TongTien
+                        ngayTao, // Sử dụng ngày giờ đã định dạng
+                        tongTien
                 });
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu hóa đơn từ database: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
+
+        // Reset các trường tìm kiếm
         searchField.setText("");
         tableComboBox.setSelectedIndex(0);
     }
+
 
     private void showChiTietHoaDon() {
         int selectedRow = hoaDonTable.getSelectedRow();

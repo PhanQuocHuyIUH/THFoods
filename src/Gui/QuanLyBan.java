@@ -332,9 +332,11 @@ private JButton createStyledButton(String text, ActionListener action) { // Thê
             for (Ban ban : danhSachBan) {
                 if(ban.getTrangThai() == TrangThaiBan.Trong) {
                     trangThai = "Trống";
-                } else if(ban.getTrangThai() == TrangThaiBan.DaDat) {
-                    trangThai = "Đã đặt";
-                } else if(ban.getTrangThai() == TrangThaiBan.DangDung) {
+                }
+//                else if(ban.getTrangThai() == TrangThaiBan.DaDat) {
+//                    trangThai = "Đã đặt";
+//                }
+                else if(ban.getTrangThai() == TrangThaiBan.DangDung) {
                     trangThai = "Đang dùng";
                 }
                 tableModel.addRow(new Object[] { ban.getMaBan(), ban.getSoGhe(), trangThai });

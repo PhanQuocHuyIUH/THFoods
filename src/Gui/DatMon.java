@@ -225,12 +225,6 @@ public class DatMon extends JPanel {
         String[] tables = new String[dsBan.size()];
         tables[0] = "Bàn ăn";
         for (int i = 1; i < dsBan.size(); i++) {
-            //nếu bàn đã đặt thì không hiển thị
-            if (dsBan.get(i-1).getTrangThai() == TrangThaiBan.DaDat) {
-                tables[i] = dsBan.get(i-1).getMaBan() + " - Đã đặt";
-                //màu đỏ cho bàn đã đặt
-                tables[i] = "<html><font color='red'>" + tables[i] + "</font></html>";
-            }
             if (dsBan.get(i-1).getTrangThai() == TrangThaiBan.DangDung) {
                 tables[i] = dsBan.get(i-1).getMaBan() + " - Đang dùng";
                 //màu xanh cho bàn đang dùng
