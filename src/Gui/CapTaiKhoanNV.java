@@ -17,7 +17,7 @@ public class CapTaiKhoanNV extends JPanel implements ActionListener {
     private JTextField empNameField, empEmailField, empPhoneField, empBirthDateField, empIdField, empLoginNameField, empPasswordField;
     private JTable tableNV;
     private DefaultTableModel tableModelNV;
-    private JButton confirmEmployeeButton;
+    private JButton confirmEmployeeButton, editEmployeeButton;
     private NhanVien_Dao nhanVien_dao = new NhanVien_Dao();
     private TaiKhoan_Dao taiKhoan_dao = new TaiKhoan_Dao();
 
@@ -42,6 +42,14 @@ public class CapTaiKhoanNV extends JPanel implements ActionListener {
         tableNV.setRowHeight(25);
         JScrollPane scrollPane = new JScrollPane(tableNV);
         add(scrollPane, BorderLayout.CENTER);
+        tableNV.getSelectionModel().addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting()) { // Chỉ xử lý khi sự kiện đã hoàn tất
+                int selectedRow = tableNV.getSelectedRow();
+                if (selectedRow != -1) { // Nếu có dòng được chọn
+                    loadSelectedRowToFields(selectedRow);
+                }
+            }
+        });
 
         // Load employee data
         try {
@@ -52,8 +60,28 @@ public class CapTaiKhoanNV extends JPanel implements ActionListener {
         }
     }
 
+    private void loadSelectedRowToFields(int rowIndex) {
+        // Lấy giá trị từ hàng được chọn
+        String maQL = tableModelNV.getValueAt(rowIndex, 0).toString();
+        String tenNV = tableModelNV.getValueAt(rowIndex, 1).toString();
+        String sdt = tableModelNV.getValueAt(rowIndex, 2).toString();
+        String email = tableModelNV.getValueAt(rowIndex, 3).toString();
+        String ngaySinh = tableModelNV.getValueAt(rowIndex,4).toString();
+        String tenDangNhap = tableModelNV.getValueAt(rowIndex, 5).toString();
+        String matKhau = tableModelNV.getValueAt(rowIndex, 6).toString();
+
+        // Gán giá trị vào các JTextField
+        empIdField.setText(maQL);
+        empNameField.setText(tenNV);
+        empPhoneField.setText(sdt);
+        empEmailField.setText(email);
+        empBirthDateField.setText(ngaySinh);
+        empLoginNameField.setText(tenDangNhap);
+        empPasswordField.setText(matKhau);
+    }
+
     private JPanel createEmployeeInputPanel() {
-        JPanel panel = new JPanel(new GridLayout(8, 2, 10, 5));
+        JPanel panel = new JPanel(new GridLayout(9, 2, 10, 5)); // Thay đổi số hàng từ 8 lên 9
         panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Thông Tin Nhân Viên",
                 0, 0, new Font("Arial", Font.BOLD, 16), new Color(0, 102, 204)));
 
@@ -94,7 +122,7 @@ public class CapTaiKhoanNV extends JPanel implements ActionListener {
             e.printStackTrace();
         }
 
-        // Confirm button
+        // Nút "Xác nhận"
         confirmEmployeeButton = new JButton("Xác nhận");
         confirmEmployeeButton.setBackground(new Color(0, 153, 51));
         confirmEmployeeButton.setForeground(Color.WHITE);
@@ -102,8 +130,17 @@ public class CapTaiKhoanNV extends JPanel implements ActionListener {
         confirmEmployeeButton.addActionListener(this);
         panel.add(confirmEmployeeButton);
 
+        // Nút "Chỉnh sửa"
+        editEmployeeButton = new JButton("Chỉnh sửa");
+        editEmployeeButton.setBackground(new Color(255, 153, 0));
+        editEmployeeButton.setForeground(Color.WHITE);
+        editEmployeeButton.setFont(new Font("Arial", Font.BOLD, 14));
+        editEmployeeButton.addActionListener(this);
+        panel.add(editEmployeeButton);
+
         return panel;
     }
+
 
     private void setIDNV() throws SQLException {
         String newMaNV = nhanVien_dao.getIDMax();
@@ -128,8 +165,16 @@ public class CapTaiKhoanNV extends JPanel implements ActionListener {
                     confirmEmployeeButton.setEnabled(true); // Re-enable button after processing
                 }
             }
+        }else {
+            updateEmployee();
+            try {
+                setIDNV();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
+
 
     private boolean validateEmployeeFields() {
         // Validate Name
@@ -194,6 +239,44 @@ public class CapTaiKhoanNV extends JPanel implements ActionListener {
 
         nhanVien_dao.addTaiKhoanAndNhanVien(tenDangNhap, matKhau, id, tenNV, numberPhone, email, ngaySinh);
     }
+
+    private void updateEmployee() {
+        // Lấy dữ liệu từ các JTextField
+        String maNV = empIdField.getText();
+        String tenNV = empNameField.getText();
+        String sdt = empPhoneField.getText();
+        String email = empEmailField.getText();
+        String ngaySinh = empBirthDateField.getText();
+        String matKhau = empPasswordField.getText();
+
+        // Kiểm tra dữ liệu đầu vào
+        if (!validateEmployeeFields()) {
+            return; // Nếu không hợp lệ, dừng xử lý
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Bạn có chắc muốn chỉnh sửa thông tin này?",
+                "Xác nhận chỉnh sửa",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        // Gọi DAO để cập nhật thông tin nhân viên
+        try {
+            nhanVien_dao.updateNhanVien(maNV, tenNV, sdt, email, ngaySinh, matKhau);
+            JOptionPane.showMessageDialog(this, "Cập nhật thông tin nhân viên thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+
+            // Reload dữ liệu lên bảng
+            taiKhoan_dao.loadNhanVienData(tableModelNV);
+
+            // Xóa rỗng các trường nhập liệu
+            xoaRongEmployee();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Cập nhật thông tin nhân viên thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
 
     public void xoaRongEmployee() {
         empNameField.setText("");

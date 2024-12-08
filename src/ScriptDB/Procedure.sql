@@ -8,8 +8,6 @@ BEGIN
     JOIN TaiKhoan tk ON nv.tenDangNhap= tk.tenDangNhap;
 END;
 
-EXECUTE getInforTkNV
-
 CREATE PROCEDURE getInforTkQL
 AS
 BEGIN
@@ -19,6 +17,7 @@ BEGIN
 END;
 
 EXECUTE getInforTkQL
+EXECUTE getInforTkNV
 
 
 

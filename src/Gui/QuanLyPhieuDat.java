@@ -56,7 +56,7 @@ public class QuanLyPhieuDat extends JPanel {
         setLayout(new BorderLayout());
         // Panel trái chứa bàn
         JPanel leftPanel = new JPanel(new BorderLayout());
-        leftPanel.setPreferredSize(new Dimension(500, getHeight()));
+        leftPanel.setPreferredSize(new Dimension(900, getHeight()));
         leftPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         leftPanel.setBackground(new Color(105, 165, 225));
 
@@ -79,7 +79,7 @@ public class QuanLyPhieuDat extends JPanel {
 
         // Phần hiển thị các bàn với cuộn dọc
         panelBan = new JPanel();
-        panelBan.setLayout(new GridLayout(0, 2, 10, 10));
+        panelBan.setLayout(new GridLayout(0, 3, 10, 10));
         JScrollPane scrollPaneBan = new JScrollPane(panelBan);
         scrollPaneBan.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPaneBan.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -157,9 +157,9 @@ public class QuanLyPhieuDat extends JPanel {
         btnXoaChiTiet.setForeground(new Color(255, 0, 0));
 
         panelButtons.add(btnThemMon);
-        panelButtons.add(Box.createRigidArea(new Dimension(10, 0)));
+        panelButtons.add(Box.createRigidArea(new Dimension(7, 0)));
         panelButtons.add(btnThanhToan);
-        panelButtons.add(Box.createRigidArea(new Dimension(10, 0)));
+        panelButtons.add(Box.createRigidArea(new Dimension(7, 0)));
         panelButtons.add(btnXoaChiTiet);
         rightPanel.add(panelButtons, BorderLayout.SOUTH);
 
@@ -324,8 +324,6 @@ public class QuanLyPhieuDat extends JPanel {
             e.printStackTrace();
         }
     }
-
-
 
     private void xoaChiTiet() {
         int row = tableChiTietPhieu.getSelectedRow();
