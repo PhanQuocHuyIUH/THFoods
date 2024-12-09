@@ -294,6 +294,13 @@ public class CapTaiKhoanQL extends JPanel implements ActionListener {
             return; // Nếu không hợp lệ, dừng xử lý
         }
 
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Bạn có chắc muốn chỉnh sửa thông tin này?",
+                "Xác nhận chỉnh sửa",
+                JOptionPane.YES_NO_OPTION
+        );
+
         // Gọi DAO để cập nhật thông tin quản lý
         try {
             quanLy_dao.updateQuanLy(maQL, tenNV, sdt, email, matKhau);
