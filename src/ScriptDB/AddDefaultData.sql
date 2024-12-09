@@ -156,6 +156,28 @@ INSERT INTO HoaDon (maHD, ngayTao) VALUES
 ('HD19', '2024-10-16 00:00:00'),
 ('HD20', '2024-10-16 00:00:00');
 
+INSERT INTO HoaDon (maHD, ngayTao) VALUES
+('HD21', '2024-11-01 10:30:00'),
+('HD22', '2024-11-03 14:20:00'),
+('HD23', '2024-11-05 19:45:00'),
+('HD24', '2024-11-06 08:15:00'),
+('HD25', '2024-11-07 13:50:00'),
+('HD26', '2024-11-10 18:05:00'),
+('HD27', '2024-11-11 09:30:00'),
+('HD28', '2024-11-12 12:00:00'),
+('HD29', '2024-11-14 20:10:00'),
+('HD30', '2024-11-15 16:25:00'),
+('HD31', '2024-11-16 11:40:00'),
+('HD32', '2024-11-18 17:30:00'),
+('HD33', '2024-11-19 08:00:00'),
+('HD34', '2024-11-21 15:45:00'),
+('HD35', '2024-11-22 10:50:00'),
+('HD36', '2024-11-24 19:30:00'),
+('HD37', '2024-11-25 13:20:00'),
+('HD38', '2024-11-27 18:00:00'),
+('HD39', '2024-11-28 11:15:00'),
+('HD40', '2024-11-30 14:35:00');
+
 -- Thêm dữ liệu vào bảng Phiếu đặt món
 INSERT INTO PhieuDatMon (maPDB, ngayDat, ghiChu, maBan, nhanVien) VALUES
 ('PDB21', '2024-10-16 00:00:00', N'Không nấu cay', 'B11', N'Phan Nhật Tiến'),
@@ -258,6 +280,80 @@ INSERT INTO CTHD (maHD, monAn, soLuong, donGia) VALUES
 ('HD20', N'Khoai tây chiên', 4, 25000),
 ('HD20', N'Kem vani', 1, 30000),
 ('HD20', N'Cá kho tộ', 1, 80000);
+
+INSERT INTO CTHD (maHD, monAn, soLuong, donGia) VALUES
+-- HD21
+('HD21', N'Phở bò', 1, 60000),
+('HD21', N'Cà phê sữa', 2, 35000),
+('HD21', N'Bánh mì', 3, 30000),
+-- HD22
+('HD22', N'Bún bò Huế', 2, 60000),
+('HD22', N'Sinh tố dâu', 1, 30000),
+('HD22', N'Gỏi cuốn', 2, 35000),
+-- HD23
+('HD23', N'Kem dừa', 3, 30000),
+('HD23', N'Nước cam ép', 1, 30000),
+-- HD24
+('HD24', N'Bánh flan', 2, 30000),
+('HD24', N'Salad trộn', 1, 30000),
+-- HD25
+('HD25', N'Cơm gà', 2, 65000),
+('HD25', N'Trà sữa trân châu', 1, 35000),
+('HD25', N'Bánh mì', 3, 30000),
+-- HD26
+('HD26', N'Bánh xèo', 2, 45000),
+('HD26', N'Chè đậu xanh', 1, 30000),
+-- HD27
+('HD27', N'Nước cam ép', 2, 30000),
+('HD27', N'Cơm tấm sườn', 3, 55000),
+('HD27', N'Nước dừa', 1, 25000),
+-- HD28
+('HD28', N'Bún thịt nướng', 1, 55000),
+('HD28', N'Kem chocolate', 2, 25000),
+-- HD29
+('HD29', N'Lẩu gà', 1, 120000),
+('HD29', N'Nước sâm', 2, 20000),
+('HD29', N'Chả giò', 3, 40000),
+-- HD30
+('HD30', N'Mì xào bò', 2, 50000),
+('HD30', N'Xôi gà', 2, 35000),
+('HD30', N'Bắp rang bơ', 1, 20000),
+-- HD31
+('HD31', N'Hủ tiếu Nam Vang', 3, 60000),
+('HD31', N'Bánh flan', 2, 30000),
+('HD31', N'Nước ép cà rốt', 1, 30000),
+-- HD32
+('HD32', N'Bún mắm', 2, 70000),
+('HD32', N'Khoai tây chiên', 1, 25000),
+('HD32', N'Nước chanh tươi', 1, 15000),
+-- HD33
+('HD33', N'Canh chua cá lóc', 1, 75000),
+('HD33', N'Bánh bèo', 2, 30000),
+-- HD34
+('HD34', N'Kem vani', 2, 30000),
+('HD34', N'Bánh pudding', 1, 20000),
+('HD34', N'Tiramisu', 1, 50000),
+-- HD35
+('HD35', N'Cá kho tộ', 1, 80000),
+('HD35', N'Nước ép cà rốt', 2, 30000),
+('HD35', N'Salad trộn', 2, 30000),
+-- HD36
+('HD36', N'Bún chả Hà Nội', 1, 70000),
+('HD36', N'Sữa đậu nành', 3, 10000),
+-- HD37
+('HD37', N'Kem chocolate', 2, 25000),
+('HD37', N'Bánh da lợn', 1, 15000),
+('HD37', N'Bánh tráng trộn', 1, 25000),
+-- HD38
+('HD38', N'Rau câu dừa', 2, 15000),
+('HD38', N'Trái cây tươi', 3, 30000),
+-- HD39
+('HD39', N'Lẩu gà', 1, 120000),
+('HD39', N'Nước dừa', 2, 25000),
+-- HD40
+('HD40', N'Bánh xèo', 2, 45000),
+('HD40', N'Trá sữa trân châu', 1, 35000),
+('HD40', N'Bún thịt nướng', 1, 55000);
 
 -- Thêm dữ liệu vào bảng Đơn đặt bàn
 INSERT INTO DonDatBan (maDDB, ngayDatBan, soGhe, ghiChu, maBan) VALUES

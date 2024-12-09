@@ -102,7 +102,7 @@ public class TrangChuQL extends JFrame {
         mainPanel.add(new QuanLyNhanVien(), "\uD83D\uDC68\u200D NHÂN VIÊN");
         mainPanel.add(new QuanLyPhieuDat(), "\uD83D\uDCDD PHIẾU ĐẶT");
         mainPanel.add(new QuanLyThucDon(), "\uD83C\uDF72 THỰC ĐƠN");
-//        mainPanel.add(new BaoCaoThongKe(), "\uD83D\uDCCA THỐNG KÊ");
+        mainPanel.add(new BaoCaoThongKe(), "\uD83D\uDCCA THỐNG KÊ");
 
         // Tạo JSplitPane để chia khu vực bên trái và bên phải, bỏ đi thanh điều chỉnh kích thước
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, mainPanel);
