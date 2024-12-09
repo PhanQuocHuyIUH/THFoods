@@ -245,6 +245,12 @@ public class QuanLyPhieuDat extends JPanel {
 
     private void thanhToan() {
         try {
+            //HỎI CÓ MUỐN THANH TOÁN
+            int dialogButton = JOptionPane.YES_NO_OPTION;
+            int dialogResult = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn thanh toán?", "Xác nhận", dialogButton);
+            if (dialogResult == JOptionPane.NO_OPTION) {
+                return;
+            }
             // Tạo hóa đơn mới
             hoaDon = new HoaDon();
             LocalDateTime current = LocalDateTime.now();
@@ -303,6 +309,15 @@ public class QuanLyPhieuDat extends JPanel {
             // Cập nhật table và danh sách bàn
             tableModel.setRowCount(0);
             loadBanFromDatabase();
+
+            //xuất hóa đơn thành một frame mới
+            JFrame frame = new JFrame("Hóa đơn");
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.setSize(400, 600);
+            frame.setLocationRelativeTo(null);
+            frame.setLayout(new BorderLayout());
+            frame.add(new HoaDonPanel(hoaDon));
+            frame.setVisible(true);
 
             JOptionPane.showMessageDialog(this, "Thanh toán thành công!");
         } catch (SQLException e) {
