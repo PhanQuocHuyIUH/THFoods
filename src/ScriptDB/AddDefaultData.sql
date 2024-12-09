@@ -48,36 +48,36 @@ INSERT INTO KhachHang (maKH, tenKH, sdt) VALUES
 
 -- Thêm dữ liệu vào bảng Bàn
 INSERT INTO Ban (maBan, trangThai, soGhe) VALUES 
-('B1', 'Trong', 4),
-('B2', 'Trong', 6),
+('B1', 'Trong', 2),
+('B2', 'Trong', 2),
 ('B3', 'DangDung', 2),
-('B4', 'DaDat', 8),
-('B5', 'Trong', 4),
-('B6', 'DangDung', 4),
-('B7', 'Trong', 4),
+('B4', 'Trong', 2),
+('B5', 'Trong', 2),
+('B6', 'DangDung', 2),
+('B7', 'Trong', 2),
 ('B8', 'DangDung', 2),
-('B9', 'Trong', 8),
-('B10', 'Trong', 10),
+('B9', 'Trong', 4),
+('B10', 'Trong', 4),
 ('B11', 'DangDung', 4),
 ('B12', 'Trong', 4),
-('B13', 'Trong', 2),
-('B14', 'DangDung', 8),
-('B15', 'Trong', 10),
-('B16', 'DaDat', 4),
+('B13', 'Trong', 4),
+('B14', 'DangDung', 4),
+('B15', 'Trong', 4),
+('B16', 'Trong', 4),
 ('B17', 'Trong', 6),
-('B18', 'DangDung', 2),
-('B19', 'Trong', 8),
-('B20', 'Trong', 10),
-('B21', 'DangDung', 4),
-('B22', 'Trong', 6),
-('B23', 'DaDat', 2),
+('B18', 'DangDung', 6),
+('B19', 'Trong', 6),
+('B20', 'Trong', 6),
+('B21', 'DangDung', 6),
+('B22', 'Trong', 8),
+('B23', 'Trong', 8),
 ('B24', 'DangDung', 8),
-('B25', 'Trong', 10),
-('B26', 'DaDat', 4),
-('B27', 'DangDung', 4),
-('B28', 'Trong', 2),
-('B29', 'DaDat', 8),
-('B30', 'DangDung', 4);
+('B25', 'Trong', 8),
+('B26', 'Trong', 10),
+('B27', 'DangDung', 10),
+('B28', 'Trong', 10),
+('B29', 'Trong', 10),
+('B30', 'DangDung', 10);
 
 -- Thêm dữ liệu vào bảng Món ăn
 INSERT INTO MonAn (maMon, tenMon, loaiMon, donGia, moTa) VALUES
@@ -261,11 +261,11 @@ INSERT INTO CTHD (maHD, monAn, soLuong, donGia) VALUES
 
 -- Thêm dữ liệu vào bảng Đơn đặt bàn
 INSERT INTO DonDatBan (maDDB, ngayDatBan, soGhe, ghiChu, maBan) VALUES
-('DDB1', '2024-10-17', 2, N'Bàn gần cửa sổ, 18-19h đến' , 'B3'),
-('DDB2', '2024-10-17', 10, N'Bàn rộng 12h đến' , 'B20'),
-('DDB3', '2024-10-17', 4, N'10h đến' , 'B5'),
-('DDB4', '2024-10-17', 4, N'20h đến' , 'B6'),
-('DDB5', '2024-10-17', 4, N'19h đến' , 'B7');
+('DDB1', '2024-10-17 12:00:00', 2, N'Bàn gần cửa sổ, 18-19h đến' , 'B3'),
+('DDB2', '2024-10-17 12:00:00', 10, N'Bàn rộng 12h đến' , 'B20'),
+('DDB3', '2024-10-17 12:00:00', 4, N'10h đến' , 'B5'),
+('DDB4', '2024-10-17 12:00:00', 4, N'20h đến' , 'B6'),
+('DDB5', '2024-10-17 12:00:00', 4, N'19h đến' , 'B7');
 
 
 select * from TaiKhoan

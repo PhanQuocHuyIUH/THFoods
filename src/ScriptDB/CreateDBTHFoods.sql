@@ -94,7 +94,7 @@ CREATE TABLE CTHD (
 -- Tạo bảng Đơn đặt bàn
 CREATE TABLE DonDatBan (
     maDDB VARCHAR(20) PRIMARY KEY,
-    ngayDatBan DATE,
+    ngayDatBan DATETIME,
     soGhe INT,
 	ghiChu NVARCHAR(MAX),
     maBan VARCHAR(15) FOREIGN KEY REFERENCES Ban(maBan)
