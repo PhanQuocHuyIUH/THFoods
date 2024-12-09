@@ -80,10 +80,10 @@ public class QuanLyDatBan extends JPanel {
                     btnBanDangDung = button;
                     btnBanDangDung.addActionListener(e -> locBan(TrangThaiBan.DangDung));
                     break;
-                case "Bàn đã đặt":
-                    btnBanDaDat = button;
-                    btnBanDaDat.addActionListener(e -> locBan(TrangThaiBan.DaDat));
-                    break;
+//                case "Bàn đã đặt":
+//                    btnBanDaDat = button;
+//                    btnBanDaDat.addActionListener(e -> locBan(TrangThaiBan.DaDat));
+//                    break;
                 case "Hiện tất cả":
                     btnTatCa = button;
                     btnTatCa.addActionListener(e -> hienThiTatCaBan());
@@ -352,10 +352,11 @@ public class QuanLyDatBan extends JPanel {
 
         // Cập nhật trạng thái bàn
         JLabel statusLabel;
-        if (ban.getTrangThai() == TrangThaiBan.DaDat) {
-            statusLabel = new JLabel("Đã đặt", SwingConstants.CENTER);
-            statusLabel.setForeground(Color.RED);
-        } else if (ban.getTrangThai() == TrangThaiBan.DangDung) {
+//        if (ban.getTrangThai() == TrangThaiBan.DaDat) {
+//            statusLabel = new JLabel("Đã đặt", SwingConstants.CENTER);
+//            statusLabel.setForeground(Color.RED);
+//        } else
+            if (ban.getTrangThai() == TrangThaiBan.DangDung) {
             statusLabel = new JLabel("Đang dùng", SwingConstants.CENTER);
             statusLabel.setForeground(Color.ORANGE);
         } else {
