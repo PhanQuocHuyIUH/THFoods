@@ -265,4 +265,33 @@ public class NhanVien_Dao {
             throw e; // Ném lại ngoại lệ để xử lý bên ngoài nếu cần
         }
     }
+
+    public void updateNhanVien(String maNV, String tenNV, String sdt, String email, String ngaySinh, String matKhau) throws SQLException {
+        Connection con = Database.getConnection();
+
+        try {
+            String updateNVSQL = "UPDATE NhanVien SET tenNV = ?, sdt = ?, email = ?, ngaySinh = ? WHERE maNV = ?";
+            PreparedStatement updateNVStmt = con.prepareStatement(updateNVSQL);
+            updateNVStmt.setString(1, tenNV);
+            updateNVStmt.setString(2, sdt);
+            updateNVStmt.setString(3, email);
+            updateNVStmt.setString(4, ngaySinh);
+            updateNVStmt.setString(5, maNV);
+            updateNVStmt.executeUpdate();
+
+            String updateTKSQL = "UPDATE TaiKhoan SET matKhau = ? WHERE tenDangNhap = ?";
+            PreparedStatement updateTKStmt = con.prepareStatement(updateTKSQL);
+            updateTKStmt.setString(1, matKhau);
+            updateTKStmt.setString(2, maNV); // Sử dụng maNV làm tenDangNhap
+            updateTKStmt.executeUpdate();
+
+            // Đóng statement
+            updateNVStmt.close();
+            updateTKStmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException("Lỗi khi cập nhật thông tin nhân viên: " + e.getMessage());
+        }
+    }
+
 }

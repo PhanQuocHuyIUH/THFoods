@@ -310,8 +310,6 @@ public class QuanLyPhieuDat extends JPanel {
         }
     }
 
-
-
     private void xoaChiTiet() {
         int row = tableChiTietPhieu.getSelectedRow();
         if (row == -1) {
