@@ -83,6 +83,14 @@ public class Ban_Dao {
         statement.executeUpdate(sql);
     }
 
+    public void deleteCTPhieuByMaMon(String maPhieu, String maMon) throws SQLException {
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "delete from CTDM where MaPDB = '" + maPhieu + "' and MaMon = '" + maMon + "'";
+        Statement statement = con.createStatement();
+        statement.executeUpdate(sql);
+    }
+
     // lấy danh sách phiếu theo mã bàn
     public ArrayList<String> getDSPhieu(String maBan) throws SQLException {
         ArrayList<String> dsPhieu = new ArrayList<>();
@@ -219,5 +227,13 @@ public class Ban_Dao {
             dsBan.add(new Ban(maBan, trangThaiBan, soGhe));
         }
         return dsBan;
+    }
+
+    public void updateCTPhieu(String maPhieu, String maMon, int soLuong) throws SQLException {
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "update CTDM set SoLuong = " + soLuong + " where MaPDB = '" + maPhieu + "' and MaMon = '" + maMon + "'";
+        Statement statement = con.createStatement();
+        statement.executeUpdate(sql);
     }
 }

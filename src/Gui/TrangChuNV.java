@@ -247,6 +247,7 @@ public class TrangChuNV extends JFrame {
                 case "\uD83D\uDCDD PHIẾU ĐẶT":
                     cl.show(mainPanel, "\uD83D\uDCDD PHIẾU ĐẶT");
                     mainPanel.add(new QuanLyPhieuDat(), "\uD83D\uDCDD PHIẾU ĐẶT");
+                    qlpd.loadBanFromDatabase();
                     break;
             }
         }
