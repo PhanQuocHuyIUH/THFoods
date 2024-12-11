@@ -5,6 +5,7 @@ import DAO.TaiKhoan_Dao;
 import DB.Database;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -17,7 +18,7 @@ public class CapTaiKhoanNV extends JPanel implements ActionListener {
     private JTextField empNameField, empEmailField, empPhoneField, empBirthDateField, empIdField, empLoginNameField, empPasswordField;
     private JTable tableNV;
     private DefaultTableModel tableModelNV;
-    private JButton confirmEmployeeButton, editEmployeeButton;
+    private JButton confirmEmployeeButton, editEmployeeButton, resetButton;
     private NhanVien_Dao nhanVien_dao = new NhanVien_Dao();
     private TaiKhoan_Dao taiKhoan_dao = new TaiKhoan_Dao();
 
@@ -35,13 +36,51 @@ public class CapTaiKhoanNV extends JPanel implements ActionListener {
         JPanel inputPanel = createEmployeeInputPanel();
         add(inputPanel, BorderLayout.NORTH);
 
-        // Create employee table
-        tableModelNV = new DefaultTableModel(new Object[]{"Mã", "Họ Tên", "SDT", "Email", "Ngày Sinh", "Tên Đăng Nhập", "Mật Khẩu"}, 0);
+        // Tạo DefaultTableModel tùy chỉnh để không cho phép chỉnh sửa
+        tableModelNV = new DefaultTableModel(
+                new Object[]{"Mã", "Họ Tên", "SDT", "Email", "Ngày Sinh", "Tên Đăng Nhập", "Mật Khẩu"},
+                0
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Trả về false để ngăn chỉnh sửa mọi ô
+                return false;
+            }
+        };
+
         tableNV = new JTable(tableModelNV);
+
+// Tăng kích thước font và chiều cao hàng
         tableNV.setFont(new Font("Arial", Font.PLAIN, 16));
         tableNV.setRowHeight(25);
+
+// Tạo renderer tùy chỉnh để đổi màu từng dòng
+        tableNV.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(
+                    JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                if (isSelected) {
+                    c.setBackground(new Color(184, 207, 229)); // Màu khi chọn dòng
+                    c.setForeground(Color.BLACK);
+                } else {
+                    if (row % 2 == 0) {
+                        c.setBackground(new Color(240, 240, 240)); // Màu xám nhạt cho dòng chẵn
+                    } else {
+                        c.setBackground(Color.WHITE); // Màu trắng cho dòng lẻ
+                    }
+                    c.setForeground(Color.BLACK);
+                }
+                return c;
+            }
+        });
+
+// Thêm JScrollPane để cuộn bảng
         JScrollPane scrollPane = new JScrollPane(tableNV);
         add(scrollPane, BorderLayout.CENTER);
+
+
         tableNV.getSelectionModel().addListSelectionListener(event -> {
             if (!event.getValueIsAdjusting()) { // Chỉ xử lý khi sự kiện đã hoàn tất
                 int selectedRow = tableNV.getSelectedRow();
@@ -81,38 +120,77 @@ public class CapTaiKhoanNV extends JPanel implements ActionListener {
     }
 
     private JPanel createEmployeeInputPanel() {
-        JPanel panel = new JPanel(new GridLayout(9, 2, 10, 5)); // Thay đổi số hàng từ 8 lên 9
-        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Thông Tin Nhân Viên",
-                0, 0, new Font("Arial", Font.BOLD, 16), new Color(0, 102, 204)));
+        JPanel panel = new JPanel(new GridLayout(8, 2, 10, 5));
+        panel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(),
+                "Thông Tin Nhân Viên",
+                0,
+                0,
+                new Font("Arial", Font.BOLD, 16),
+                new Color(0, 102, 204)
+        ));
 
-        panel.add(new JLabel("Mã:"));
+        // Định dạng font cho JLabel và JTextField
+        Font labelFont = new Font("Arial", Font.BOLD, 14);  // Tăng kích thước font chữ cho JLabel
+        Font textFieldFont = new Font("Arial", Font.PLAIN, 14); // Font chữ cho JTextField
+
+        // Fields for Employee Information
+        JLabel empIdLabel = new JLabel("Mã:");
+        empIdLabel.setFont(labelFont); // Áp dụng font chữ cho JLabel
+        panel.add(empIdLabel);
+
         empIdField = new JTextField();
         empIdField.setEditable(false);
+        empIdField.setFont(textFieldFont); // Áp dụng font chữ cho JTextField
         panel.add(empIdField);
 
-        panel.add(new JLabel("Họ Tên:"));
+        JLabel empNameLabel = new JLabel("Họ Tên:");
+        empNameLabel.setFont(labelFont);
+        panel.add(empNameLabel);
+
         empNameField = new JTextField();
+        empNameField.setFont(textFieldFont);
         panel.add(empNameField);
 
-        panel.add(new JLabel("SDT:"));
+        JLabel empPhoneLabel = new JLabel("SDT:");
+        empPhoneLabel.setFont(labelFont);
+        panel.add(empPhoneLabel);
+
         empPhoneField = new JTextField();
+        empPhoneField.setFont(textFieldFont);
         panel.add(empPhoneField);
 
-        panel.add(new JLabel("Email:"));
+        JLabel empEmailLabel = new JLabel("Email:");
+        empEmailLabel.setFont(labelFont);
+        panel.add(empEmailLabel);
+
         empEmailField = new JTextField();
+        empEmailField.setFont(textFieldFont);
         panel.add(empEmailField);
 
-        panel.add(new JLabel("Ngày Sinh:"));
+        JLabel empBirthDateLabel = new JLabel("Ngày Sinh:");
+        empBirthDateLabel.setFont(labelFont);
+        panel.add(empBirthDateLabel);
+
         empBirthDateField = new JTextField();
+        empBirthDateField.setFont(textFieldFont);
         panel.add(empBirthDateField);
 
-        panel.add(new JLabel("Tên Đăng Nhập:"));
+        JLabel empLoginNameLabel = new JLabel("Tên Đăng Nhập:");
+        empLoginNameLabel.setFont(labelFont);
+        panel.add(empLoginNameLabel);
+
         empLoginNameField = new JTextField();
         empLoginNameField.setEditable(false);
+        empLoginNameField.setFont(textFieldFont);
         panel.add(empLoginNameField);
 
-        panel.add(new JLabel("Mật Khẩu:"));
+        JLabel empPasswordLabel = new JLabel("Mật Khẩu:");
+        empPasswordLabel.setFont(labelFont);
+        panel.add(empPasswordLabel);
+
         empPasswordField = new JTextField();
+        empPasswordField.setFont(textFieldFont);
         panel.add(empPasswordField);
 
         // Set Employee ID and Login Name
@@ -122,23 +200,61 @@ public class CapTaiKhoanNV extends JPanel implements ActionListener {
             e.printStackTrace();
         }
 
-        // Nút "Xác nhận"
-        confirmEmployeeButton = new JButton("Xác nhận");
-        confirmEmployeeButton.setBackground(new Color(0, 153, 51));
-        confirmEmployeeButton.setForeground(Color.WHITE);
-        confirmEmployeeButton.setFont(new Font("Arial", Font.BOLD, 14));
+        // Buttons Panel
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 3, 10, 0));
+
+// Tạo nút với hiệu ứng hover và nhấn
+        confirmEmployeeButton = createCustomButton("Thêm", new Color(0, 153, 51));
+        buttonsPanel.add(confirmEmployeeButton);
+
+        editEmployeeButton = createCustomButton("Chỉnh sửa", new Color(0, 102, 204));
+        buttonsPanel.add(editEmployeeButton);
+
+        resetButton = createCustomButton("Làm mới", AppColor.xanh);
+        buttonsPanel.add(resetButton);
+
+// Add Buttons Panel to Main Panel
+        panel.add(new JLabel()); // Empty cell to align buttons in grid
+        panel.add(buttonsPanel);
         confirmEmployeeButton.addActionListener(this);
-        panel.add(confirmEmployeeButton);
-
-        // Nút "Chỉnh sửa"
-        editEmployeeButton = new JButton("Chỉnh sửa");
-        editEmployeeButton.setBackground(new Color(255, 153, 0));
-        editEmployeeButton.setForeground(Color.WHITE);
-        editEmployeeButton.setFont(new Font("Arial", Font.BOLD, 14));
         editEmployeeButton.addActionListener(this);
-        panel.add(editEmployeeButton);
-
+        resetButton.addActionListener(this);
         return panel;
+    }
+
+    // Hàm tạo nút tùy chỉnh
+    private JButton createCustomButton(String text, Color baseColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Arial Unicode MS", Font.BOLD, 14));
+        button.setForeground(Color.WHITE);
+        button.setBackground(baseColor);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        // Thêm hiệu ứng hover
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(baseColor.brighter()); // Màu sáng hơn khi hover
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(baseColor); // Trở lại màu gốc khi không hover
+            }
+
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                button.setBackground(baseColor.darker()); // Màu tối hơn khi nhấn
+            }
+
+            @Override
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                button.setBackground(baseColor); // Trở lại màu gốc khi thả nút
+            }
+        });
+
+        return button;
     }
 
 
@@ -165,8 +281,15 @@ public class CapTaiKhoanNV extends JPanel implements ActionListener {
                     confirmEmployeeButton.setEnabled(true); // Re-enable button after processing
                 }
             }
-        }else {
+        }else if(e.getSource() == editEmployeeButton) {
             updateEmployee();
+            try {
+                setIDNV();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }else {
+            xoaRongEmployee();
             try {
                 setIDNV();
             } catch (SQLException ex) {
