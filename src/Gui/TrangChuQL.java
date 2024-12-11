@@ -106,7 +106,7 @@ public class TrangChuQL extends JFrame {
         mainPanel.add(new QuanLyBan(), "\u25A4 BÀN ĂN");
         mainPanel.add(new QuanLyThucDon(), "\uD83C\uDF72 THỰC ĐƠN");
         mainPanel.add(new QuanLyNhanVien(), "\uD83D\uDC68\u200D NHÂN VIÊN");
-//        mainPanel.add(new BaoCaoThongKe(), "\uD83D\uDCCA THỐNG KÊ");
+        mainPanel.add(new BaoCaoThongKe(), "\uD83D\uDCCA THỐNG KÊ");
 
         // Tạo JSplitPane để chia khu vực bên trái và bên phải, bỏ đi thanh điều chỉnh kích thước
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, mainPanel);
@@ -217,9 +217,13 @@ public class TrangChuQL extends JFrame {
                     cl.show(mainPanel, "\uD83D\uDCDD HÓA ĐƠN");
                     break;
                 case "\uD83D\uDC68\u200D NHÂN VIÊN":
+                    cl.show(mainPanel, "\uD83D\uDC68\u200D NHÂN VIÊN");
+                    break;
                 case "\uD83C\uDF72 THỰC ĐƠN":
+                    cl.show(mainPanel, "\uD83C\uDF72 THỰC ĐƠN");
+                    break;
                 case "\uD83D\uDCCA THỐNG KÊ":
-                    JOptionPane.showMessageDialog(this, "Chức năng dành cho quản lý");
+                    cl.show(mainPanel, "\uD83D\uDCCA THỐNG KÊ");
                     break;
                 case "\uD83D\uDCDD PHIẾU ĐẶT":
                     cl.show(mainPanel, "\uD83D\uDCDD PHIẾU ĐẶT");
