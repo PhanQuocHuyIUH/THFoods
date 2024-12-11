@@ -49,13 +49,16 @@ public class TrangChuNV extends JFrame {
 
         // Tạo 8 nút chức năng với màu nền
         String[] buttonLabels = {
-                "\uD83C\uDF7D ĐẶT MÓN", // 🍽️ (Plate with Cutlery)
-                "\uD83D\uDCC5 ĐẶT BÀN", // 📅 (Calendar)
+                "\uD83C\uDF7D ĐẶT MÓN",
+                "\uD83D\uDCDD PHIẾU ĐẶT",// 🍽️ (Plate with Cutlery)
+                "\uD83D\uDCC5 ĐẶT BÀN",
+                "\uD83D\uDCDD HÓA ĐƠN",// 📅 (Calendar)
                 "\u25A4 BÀN ĂN", // 🪑 (Chair)
-                "\uD83D\uDCDD HÓA ĐƠN", // 🧾 (Receipt)
+                 // 🧾 (Receipt)
+                "\uD83C\uDF72 THỰC ĐƠN",
                 "\uD83D\uDC68\u200D NHÂN VIÊN", // 👨‍💼 (Businessman)
-                "\uD83D\uDCDD PHIẾU ĐẶT", // 📝 (Memo)
-                "\uD83C\uDF72 THỰC ĐƠN", // 🍲 (Bowl of Food)
+                 // 📝 (Memo)
+                 // 🍲 (Bowl of Food)
                 "\uD83D\uDCCA THỐNG KÊ", // 📊 (Bar Chart)
         };
         // Tạo một biến để lưu nút ĐẶT MÓN
@@ -118,12 +121,12 @@ public class TrangChuNV extends JFrame {
 
         // Thêm các nội dung tương ứng cho mỗi chức năng
         mainPanel.add(dm = new DatMon(), "\uD83C\uDF7D ĐẶT MÓN");
-        mainPanel.add(new QuanLyDatBan(), "\uD83D\uDCC5 ĐẶT BÀN");
-        mainPanel.add(new QuanLyBan(), "\u25A4 BÀN ĂN");
-        mainPanel.add(new QuanLyHoaDon(), "\uD83D\uDCDD HÓA ĐƠN");
-        mainPanel.add(new QuanLyNhanVien(), "\uD83D\uDC68\u200D NHÂN VIÊN");
         mainPanel.add(qlpd = new QuanLyPhieuDat(), "\uD83D\uDCDD PHIẾU ĐẶT");
+        mainPanel.add(new QuanLyDatBan(), "\uD83D\uDCC5 ĐẶT BÀN");
+        mainPanel.add(new QuanLyHoaDon(), "\uD83D\uDCDD HÓA ĐƠN");
+        mainPanel.add(new QuanLyBan(), "\u25A4 BÀN ĂN");
         mainPanel.add(new QuanLyThucDon(), "\uD83C\uDF72 THỰC ĐƠN");
+        mainPanel.add(new QuanLyNhanVien(), "\uD83D\uDC68\u200D NHÂN VIÊN");
 //        mainPanel.add(new BaoCaoThongKe(), "\uD83D\uDCCA THỐNG KÊ");
 
         // Tạo JSplitPane để chia khu vực bên trái và bên phải, bỏ đi thanh điều chỉnh kích thước
