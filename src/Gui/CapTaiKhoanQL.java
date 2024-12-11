@@ -6,10 +6,13 @@ import DAO.TaiKhoan_Dao;
 import DB.Database;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -19,7 +22,7 @@ public class CapTaiKhoanQL extends JPanel implements ActionListener {
     private JTextField mgrNameField, mgrEmailField, mgrPhoneField, mgrIdField, mgrLoginNameField, mgrPasswordField;
     private JTable tableQL;
     private DefaultTableModel tableModelQL;
-    private JButton confirmManagerButton, editButton, deleteButton;
+    private JButton confirmManagerButton, editButton, deleteButton, resetButton;
     QuanLy_Dao quanLy_dao = new QuanLy_Dao();
     private TaiKhoan_Dao taiKhoan_dao = new TaiKhoan_Dao();
 
@@ -37,13 +40,51 @@ public class CapTaiKhoanQL extends JPanel implements ActionListener {
         JPanel inputPanel = createEmployeeInputPanel();
         add(inputPanel, BorderLayout.NORTH);
 
-        // Create employee table
-        tableModelQL = new DefaultTableModel(new Object[]{"Mã", "Họ Tên", "SDT", "Email", "Tên Đăng Nhập", "Mật Khẩu"}, 0);
+        // Create manager table
+        // Tạo DefaultTableModel tùy chỉnh để không cho phép chỉnh sửa
+        tableModelQL = new DefaultTableModel(
+                new Object[]{"Mã", "Họ Tên", "SDT", "Email", "Tên Đăng Nhập", "Mật Khẩu"},
+                0
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Trả về false để ngăn chỉnh sửa mọi ô
+                return false;
+            }
+        };
+
         tableQL = new JTable(tableModelQL);
+
+// Tăng kích thước font và chiều cao hàng
         tableQL.setFont(new Font("Arial", Font.PLAIN, 16));
         tableQL.setRowHeight(25);
+
+// Tạo renderer tùy chỉnh để đổi màu từng dòng
+        tableQL.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(
+                    JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                if (isSelected) {
+                    c.setBackground(new Color(184, 207, 229)); // Màu khi chọn dòng
+                    c.setForeground(Color.BLACK);
+                } else {
+                    if (row % 2 == 0) {
+                        c.setBackground(new Color(240, 240, 240)); // Màu xám nhạt cho dòng chẵn
+                    } else {
+                        c.setBackground(Color.WHITE); // Màu trắng cho dòng lẻ
+                    }
+                    c.setForeground(Color.BLACK);
+                }
+                return c;
+            }
+        });
+
+// Thêm JScrollPane để cuộn bảng
         JScrollPane scrollPane = new JScrollPane(tableQL);
         add(scrollPane, BorderLayout.CENTER);
+
         tableQL.getSelectionModel().addListSelectionListener(event -> {
             if (!event.getValueIsAdjusting()) { // Chỉ xử lý khi sự kiện đã hoàn tất
                 int selectedRow = tableQL.getSelectedRow();
@@ -82,44 +123,73 @@ public class CapTaiKhoanQL extends JPanel implements ActionListener {
 
 
     private JPanel createEmployeeInputPanel() {
-        JPanel panel = new JPanel(new GridLayout(8, 2, 10, 5));
+        JPanel panel = new JPanel(new GridLayout(8, 2, 15, 10)); // Tăng khoảng cách giữa các hàng và cột
         panel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createEtchedBorder(),
                 "Thông Tin Quản Lý",
                 0,
                 0,
-                new Font("Arial", Font.BOLD, 16),
+                new Font("Arial", Font.BOLD, 18), // Font lớn hơn cho tiêu đề
                 new Color(0, 102, 204)
         ));
 
-        // Fields for Employee Information
-        panel.add(new JLabel("Mã:"));
+        // Định dạng font chữ lớn hơn
+        Font labelFont = new Font("Arial", Font.BOLD, 14); // Tăng kích thước chữ của JLabel
+        Font textFieldFont = new Font("Arial", Font.PLAIN, 14); // Font chữ lớn hơn cho JTextField
+        Font buttonFont = new Font("Arial Unicode MS", Font.BOLD, 14); // Font chữ lớn hơn cho JButton
+
+        // Fields for Manager Information
+        JLabel mgrIdLabel = new JLabel("Mã:");
+        mgrIdLabel.setFont(labelFont);
+        panel.add(mgrIdLabel);
+
         mgrIdField = new JTextField();
         mgrIdField.setEditable(false);
+        mgrIdField.setFont(textFieldFont);
         panel.add(mgrIdField);
 
-        panel.add(new JLabel("Họ Tên:"));
+        JLabel mgrNameLabel = new JLabel("Họ Tên:");
+        mgrNameLabel.setFont(labelFont);
+        panel.add(mgrNameLabel);
+
         mgrNameField = new JTextField();
+        mgrNameField.setFont(textFieldFont);
         panel.add(mgrNameField);
 
-        panel.add(new JLabel("SDT:"));
+        JLabel mgrPhoneLabel = new JLabel("SDT:");
+        mgrPhoneLabel.setFont(labelFont);
+        panel.add(mgrPhoneLabel);
+
         mgrPhoneField = new JTextField();
+        mgrPhoneField.setFont(textFieldFont);
         panel.add(mgrPhoneField);
 
-        panel.add(new JLabel("Email:"));
+        JLabel mgrEmailLabel = new JLabel("Email:");
+        mgrEmailLabel.setFont(labelFont);
+        panel.add(mgrEmailLabel);
+
         mgrEmailField = new JTextField();
+        mgrEmailField.setFont(textFieldFont);
         panel.add(mgrEmailField);
 
-        panel.add(new JLabel("Tên Đăng Nhập:"));
+        JLabel mgrLoginNameLabel = new JLabel("Tên Đăng Nhập:");
+        mgrLoginNameLabel.setFont(labelFont);
+        panel.add(mgrLoginNameLabel);
+
         mgrLoginNameField = new JTextField();
         mgrLoginNameField.setEditable(false);
+        mgrLoginNameField.setFont(textFieldFont);
         panel.add(mgrLoginNameField);
 
-        panel.add(new JLabel("Mật Khẩu:"));
+        JLabel mgrPasswordLabel = new JLabel("Mật Khẩu:");
+        mgrPasswordLabel.setFont(labelFont);
+        panel.add(mgrPasswordLabel);
+
         mgrPasswordField = new JTextField();
+        mgrPasswordField.setFont(textFieldFont);
         panel.add(mgrPasswordField);
 
-        // Set Employee ID and Login Name
+        // Set Manager ID and Login Name
         try {
             setIDQL();
         } catch (SQLException e) {
@@ -127,38 +197,68 @@ public class CapTaiKhoanQL extends JPanel implements ActionListener {
         }
 
         // Buttons Panel
-        JPanel buttonsPanel = new JPanel(new GridLayout(1, 3, 10, 0));
+        JPanel buttonsPanel = new JPanel(new GridLayout(1, 4, 15, 0)); // Tăng khoảng cách giữa các nút
 
-        // Confirm Button
-        confirmManagerButton = new JButton("Xác nhận");
-        confirmManagerButton.setBackground(new Color(0, 153, 51));
-        confirmManagerButton.setForeground(Color.WHITE);
-        confirmManagerButton.setFont(new Font("Arial", Font.BOLD, 14));
-        confirmManagerButton.addActionListener(this);
+        // Create custom buttons with hover and press effects
+        confirmManagerButton = createCustomButton("Thêm", new Color(0, 153, 51));
+        editButton = createCustomButton("Chỉnh sửa", new Color(0, 102, 204));
+        deleteButton = createCustomButton("Xóa", new Color(204, 0, 0));
+        resetButton = createCustomButton("Làm mới", AppColor.xanh);
+
         buttonsPanel.add(confirmManagerButton);
-
-        // Edit Button
-         editButton = new JButton("Chỉnh sửa");
-        editButton.setBackground(new Color(0, 102, 204));
-        editButton.setForeground(Color.WHITE);
-        editButton.setFont(new Font("Arial", Font.BOLD, 14));
-        editButton.addActionListener(this);
         buttonsPanel.add(editButton);
-
-        // Delete Button
-         deleteButton = new JButton("Xóa");
-        deleteButton.setBackground(new Color(204, 0, 0));
-        deleteButton.setForeground(Color.WHITE);
-        deleteButton.setFont(new Font("Arial", Font.BOLD, 14));
-        deleteButton.addActionListener(this);
         buttonsPanel.add(deleteButton);
+        buttonsPanel.add(resetButton);
+
+        // Đăng kí sự kiện
+        confirmManagerButton.addActionListener(this);
+        editButton.addActionListener(this);
+        deleteButton.addActionListener(this);
+        resetButton.addActionListener(this);
 
         // Add Buttons Panel to Main Panel
-        panel.add(new JLabel()); // Empty cell to align buttons in grid
+        panel.add(new JLabel()); // Ô trống để căn chỉnh lưới
         panel.add(buttonsPanel);
 
         return panel;
     }
+
+    // Helper method to create custom buttons with hover and click effects
+    private JButton createCustomButton(String text, Color backgroundColor) {
+        JButton button = new JButton(text);
+        button.setFont(new Font("Arial Unicode MS", Font.BOLD, 14));
+        button.setForeground(Color.WHITE);
+        button.setBackground(backgroundColor);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        // Mouse hover effect
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(backgroundColor.darker()); // Màu tối hơn khi hover
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(backgroundColor); // Màu gốc khi không hover
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                button.setBackground(backgroundColor.brighter()); // Màu sáng hơn khi nhấn
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                button.setBackground(backgroundColor.darker()); // Màu tối hơn khi nhả chuột
+            }
+        });
+
+        return button;
+    }
+
+
 
 
     private void setIDQL() throws SQLException {
@@ -186,8 +286,15 @@ public class CapTaiKhoanQL extends JPanel implements ActionListener {
             }
         }else if (e.getSource() == deleteButton) {
             deleteEmployee();
-        }else {
+        }else if(e.getSource() == editButton) {
             updateQuanLy();
+            try {
+                setIDQL();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        }else {
+            xoaRongEmployee();
             try {
                 setIDQL();
             } catch (SQLException ex) {
