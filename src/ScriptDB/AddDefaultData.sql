@@ -23,28 +23,7 @@ INSERT INTO NhanVien (maNV, tenNV, sdt, email, ngaySinh, tenDangNhap) VALUES
 ('NV04', N'Nguyễn Đinh Xuân Trường', '0912345680', 'ntdx000@gmail.com', '2004-02-20', 'NV04');
 
 -- Thêm dữ liệu vào bảng Khách hàng
-INSERT INTO KhachHang (maKH, tenKH, sdt) VALUES 
-('KH0', '', ''),
-('KH1', N'Trần Thị B', '012345681'),
-('KH2', N'Lê Văn C', '012345682'),
-('KH3', N'Nguyễn Thị D', '012345683'),
-('KH4', N'Nguyễn Văn A', '012345684'),
-('KH5', N'Trần Thị B', '012345685'),
-('KH6', N'Lê Văn C', '012345686'),
-('KH7', N'Nguyễn Thị D', '012345687'),
-('KH8', N'Nguyễn Văn A', '012345688'),
-('KH9', N'Trần Thị B', '012345689'),
-('KH10', N'Lê Văn C', '012345690'),
-('KH11', N'Nguyễn Thị D', '012345691'),
-('KH12', N'Nguyễn Văn A', '012345692'),
-('KH13', N'Trần Thị B', '012345693'),
-('KH14', N'Lê Văn C', '012345694'),
-('KH15', N'Nguyễn Thị D', '012345695'),
-('KH16', N'Nguyễn Văn A', '012345696'),
-('KH17', N'Trần Thị B', '012345697'),
-('KH18', N'Lê Văn C', '012345698'),
-('KH19', N'Nguyễn Thị D', '012345699'),
-('KH20', N'Nguyễn Văn A', '012345700');
+
 
 -- Thêm dữ liệu vào bảng Bàn
 INSERT INTO Ban (maBan, trangThai, soGhe) VALUES 
@@ -355,13 +334,6 @@ INSERT INTO CTHD (maHD, monAn, soLuong, donGia) VALUES
 ('HD40', N'Trá sữa trân châu', 1, 35000),
 ('HD40', N'Bún thịt nướng', 1, 55000);
 
--- Thêm dữ liệu vào bảng Đơn đặt bàn
-INSERT INTO DonDatBan (maDDB, ngayDatBan, soGhe, ghiChu, maBan) VALUES
-('DDB1', '2024-10-17 12:00:00', 2, N'Bàn gần cửa sổ, 18-19h đến' , 'B3'),
-('DDB2', '2024-10-17 12:00:00', 10, N'Bàn rộng 12h đến' , 'B20'),
-('DDB3', '2024-10-17 12:00:00', 4, N'10h đến' , 'B5'),
-('DDB4', '2024-10-17 12:00:00', 4, N'20h đến' , 'B6'),
-('DDB5', '2024-10-17 12:00:00', 4, N'19h đến' , 'B7');
 
 
 select * from TaiKhoan

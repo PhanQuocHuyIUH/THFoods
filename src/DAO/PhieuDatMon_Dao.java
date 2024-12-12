@@ -2,8 +2,6 @@ package DAO;
 
 import DB.Database;
 import Entity.Ban;
-import Entity.DonDatBan;
-import Entity.NhanVien;
 import Entity.PhieuDatMon;
 
 import java.sql.*;
@@ -11,7 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-public class PhieuDatMon_Dao{
+public class PhieuDatMon_Dao {
     public PhieuDatMon_Dao(){
     }
 
@@ -48,35 +46,35 @@ public class PhieuDatMon_Dao{
     }
 
 
-    public ArrayList<DonDatBan> getAllDonDatBan() throws SQLException {
-        ArrayList<DonDatBan> dsDonDatBan = new ArrayList<>();
-        Database.getInstance();
-        Connection con = Database.getConnection();
-        String sql = "SELECT * FROM DonDatBan";
-
-        Statement statement = con.createStatement();
-        ResultSet rs = statement.executeQuery(sql);
-
-        while (rs.next()) {
-            String maDDB = rs.getString(1);
-            String ngayDatBan = rs.getString(2);
-            int soGhe = rs.getInt(3);
-            String ghiChu = rs.getString(4);
-
-            // Giả sử cột 5 chứa thông tin mã của Ban cần khởi tạo
-            Ban maBan = new Ban(rs.getString(5), null, 0);
-
-            String khachHang = rs.getString(6);
-            String sdt = rs.getString(7);
-
-            // Thêm DonDatBan vào danh sách
-            dsDonDatBan.add(new DonDatBan(maDDB, ngayDatBan, soGhe, ghiChu, maBan, khachHang, sdt));
-        }
-        rs.close();
-
-
-        return dsDonDatBan;
-    }
+//    public ArrayList<DonDatBan> getAllDonDatBan() throws SQLException {
+//        ArrayList<DonDatBan> dsDonDatBan = new ArrayList<>();
+//        Database.getInstance();
+//        Connection con = Database.getConnection();
+//        String sql = "SELECT * FROM DonDatBan";
+//
+//        Statement statement = con.createStatement();
+//        ResultSet rs = statement.executeQuery(sql);
+//
+//        while (rs.next()) {
+//            String maDDB = rs.getString(1);
+//            String ngayDatBan = rs.getString(2);
+//            int soGhe = rs.getInt(3);
+//            String ghiChu = rs.getString(4);
+//
+//            // Giả sử cột 5 chứa thông tin mã của Ban cần khởi tạo
+//            Ban maBan = new Ban(rs.getString(5), null, 0);
+//
+//            String khachHang = rs.getString(6);
+//            String sdt = rs.getString(7);
+//
+//            // Thêm DonDatBan vào danh sách
+//            dsDonDatBan.add(new DonDatBan(maDDB, ngayDatBan, soGhe, ghiChu, maBan, khachHang, sdt));
+//        }
+//        rs.close();
+//
+//
+//        return dsDonDatBan;
+//    }
 
 
     //thêm phiếu đặt món vào dâtabase

@@ -34,13 +34,6 @@ CREATE TABLE NhanVien (
     tenDangNhap VARCHAR(20) FOREIGN KEY REFERENCES TaiKhoan(tenDangNhap)
 );
 
--- Tạo bảng Khách hàng
-CREATE TABLE KhachHang (
-    maKH VARCHAR(15) PRIMARY KEY,
-    tenKH NVARCHAR(50) NOT NULL,
-    sdt VARCHAR(12)
-);
-
 -- Tạo bảng Bàn
 CREATE TABLE Ban (
     maBan VARCHAR(15) PRIMARY KEY,
@@ -91,12 +84,25 @@ CREATE TABLE CTHD (
     PRIMARY KEY (maHD, monAn),
 );
 
+-- Tạo bảng Khách hàng
+CREATE TABLE KhachHang (
+    maKH VARCHAR(50) PRIMARY KEY,
+    tenKH NVARCHAR(50) NOT NULL,
+    sdt VARCHAR(12)
+);
+
 -- Tạo bảng Đơn đặt bàn
 CREATE TABLE DonDatBan (
-    maDDB VARCHAR(20) PRIMARY KEY,
+    maDDB VARCHAR(50) PRIMARY KEY,
+    tenKH NVARCHAR(50) NOT NULL,
+    sdt VARCHAR(12),
     ngayDatBan DATETIME,
     soGhe INT,
-	ghiChu NVARCHAR(MAX),
-    maBan VARCHAR(15) FOREIGN KEY REFERENCES Ban(maBan)
+    ghiChu NVARCHAR(MAX),
+    maBan VARCHAR(15) FOREIGN KEY REFERENCES Ban(maBan),
+    trangThaiDonDat VARCHAR(20),
+    maKH VARCHAR(50) FOREIGN KEY REFERENCES KhachHang(maKH)
 );
+
+
 

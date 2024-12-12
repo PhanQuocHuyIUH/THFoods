@@ -58,11 +58,10 @@ public class HoaDon_Dao
 
         for (HoaDon hd : dsHD) {
             LocalDateTime ngayTao = hd.getNgayTao();
-            LocalDateTime today = LocalDateTime.now();
-//            LocalDateTime today = LocalDateTime.of(2024, 10, 16, 0, 0, 0);
+//            LocalDateTime today = LocalDateTime.now();
+            LocalDateTime today = LocalDateTime.of(2024, 11, 20, 0, 0, 0);
             long diffDays = ChronoUnit.DAYS.between(ngayTao.toLocalDate(), today.toLocalDate());
-            System.out.println(diffDays);
-            if (diffDays <= 7) {
+            if (diffDays <= 7 && diffDays >= 0) {
                 String date = ngayTao.getYear() + "-" + ngayTao.getMonthValue() + "-" + ngayTao.getDayOfMonth();
                 if (revenueLast7Days.containsKey(date)) {
                     revenueLast7Days.put(date, revenueLast7Days.get(date) + getTongTienHD(hd));
@@ -167,7 +166,7 @@ public class HoaDon_Dao
             LocalDateTime ngayTao = hd.getNgayTao();
             LocalDateTime today = LocalDateTime.now();
             long diffDays = ChronoUnit.DAYS.between(ngayTao.toLocalDate(), today.toLocalDate());
-            if (diffDays <= 30) {
+            if (diffDays <= 30 && diffDays >= 0) {
                 List<ChiTietHoaDon> dsCTHD = hd.getChiTietHoaDon();
                 for (ChiTietHoaDon cthd : dsCTHD) {
                     String tenMon = cthd.getMonAn();
@@ -211,7 +210,7 @@ public class HoaDon_Dao
             LocalDateTime ngayTao = hd.getNgayTao();
             LocalDateTime today = LocalDateTime.now();
             long diffDays = ChronoUnit.DAYS.between(ngayTao.toLocalDate(), today.toLocalDate());
-            if (diffDays <= 30) {
+            if (diffDays <= 30 && diffDays >= 0) {
                 List<ChiTietHoaDon> dsCTHD = hd.getChiTietHoaDon();
                 for (ChiTietHoaDon cthd : dsCTHD) {
                     String tenMon = cthd.getMonAn();
