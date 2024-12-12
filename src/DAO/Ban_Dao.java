@@ -2,14 +2,10 @@ package DAO;
 
 import DB.Database;
 import Entity.Ban;
-import Entity.TrangThaiBan;
 import Entity.ChiTietDatMon;
+import Entity.TrangThaiBan;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class Ban_Dao {
@@ -235,5 +231,24 @@ public class Ban_Dao {
         String sql = "update CTDM set SoLuong = " + soLuong + " where MaPDB = '" + maPhieu + "' and MaMon = '" + maMon + "'";
         Statement statement = con.createStatement();
         statement.executeUpdate(sql);
+    }
+
+    public ArrayList<Ban> getAllBan_Sort() throws SQLException {
+        ArrayList<Ban> dsBan = new ArrayList<>();
+        Database.getInstance();
+        Connection con = Database.getConnection();
+        String sql = "SELECT * FROM Ban ORDER BY CAST(SUBSTRING(maBan, 2, LEN(maBan) - 1) AS INT) ASC;\n";
+
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+
+        while (rs.next()) {
+            String maBan = rs.getString(1);
+            TrangThaiBan trangThai = TrangThaiBan.valueOf(rs.getString(2));
+            int soCho = rs.getInt(3);
+
+            dsBan.add(new Ban(maBan, trangThai, soCho));
+        }
+        return dsBan;
     }
 }

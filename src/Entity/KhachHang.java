@@ -17,6 +17,10 @@ public class KhachHang
         this.sdt = sdt;
     }
 
+    public KhachHang(String maKH) {
+        this.maKH = maKH;
+    }
+
     public String getMaKH() {
         return maKH;
     }

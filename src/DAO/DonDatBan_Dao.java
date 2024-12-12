@@ -3,109 +3,79 @@ package DAO;
 import DB.Database;
 import Entity.Ban;
 import Entity.DonDatBan;
-import Entity.PhieuDatMon;
-import Entity.TrangThaiBan;
+import Entity.KhachHang;
+import Entity.TrangThaiDonDat;
 
 import java.sql.*;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class DonDatBan_Dao {
     public DonDatBan_Dao() {
     }
 
-    public ArrayList<DonDatBan> getAllDonDatBan() throws SQLException {
+    public ArrayList<DonDatBan> getAll_DonDatBan() throws SQLException {
         ArrayList<DonDatBan> dsDonDatBan = new ArrayList<>();
+
         Database.getInstance();
         Connection con = Database.getConnection();
         String sql = "SELECT * FROM DonDatBan";
 
         Statement statement = con.createStatement();
         ResultSet rs = statement.executeQuery(sql);
-
-        while (rs.next()) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        while (rs.next()){
             String maDDB = rs.getString(1);
-            String ngayDatBan = rs.getString(2);
-            int soGhe = rs.getInt(3);
-            String ghiChu = rs.getString(4);
+            KhachHang tenKH = new KhachHang("", rs.getString(2), "");
+            KhachHang sDT = new KhachHang("", "", rs.getString(3));
+            String ngayDatStr = rs.getString(4);
+            LocalDateTime ngayDat = LocalDateTime.parse(ngayDatStr, formatter);
+            int soGhe = rs.getInt(5);
+            String ghiChu = rs.getString(6);
+            Ban maBan = new Ban(rs.getString(7), null, 0);
+            TrangThaiDonDat trangThai = TrangThaiDonDat.valueOf(rs.getString(8));
+            KhachHang maKH = new KhachHang(rs.getString(9), "", "");
 
-            // Giả sử cột 5 chứa thông tin mã của `Ban` cần khởi tạo
-            Ban maBan = new Ban(rs.getString(5), null, 0);
-
-            String khachHang = rs.getString(6);
-            String sdt = rs.getString(7);
-
-            // Thêm `DonDatBan` vào danh sách
-            dsDonDatBan.add(new DonDatBan(maDDB, ngayDatBan, soGhe, ghiChu, maBan, khachHang, sdt));
+            dsDonDatBan.add(new DonDatBan(maDDB, tenKH, sDT, ngayDat,soGhe, ghiChu,maBan,trangThai,maKH));
         }
-        rs.close();
-
-
         return dsDonDatBan;
     }
 
-    public int getSoLuongDonDat() throws SQLException {
+    public boolean addDonDatBan(DonDatBan donDatBan) throws Exception {
         Database.getInstance();
         Connection con = Database.getConnection();
+        String sql = "INSERT INTO DonDatBan (maDDB, tenKH, sdt, ngayDatBan, soGhe, ghiChu, maBan, trangThaiDonDat, " +
+                "maKH) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        // Sử dụng COUNT để lấy tổng số lượng bàn
-        String sql = "SELECT COUNT(maDDB) FROM DonDatBan";
-        Statement statement = con.createStatement();
-        ResultSet rs = statement.executeQuery(sql);
+        try (PreparedStatement preparedStatement = con.prepareStatement(sql)) {
+            preparedStatement.setString(1, donDatBan.getMaDD());
+            preparedStatement.setString(2, donDatBan.getTenKH() != null ? donDatBan.getTenKH().getTenKH() : null);
+            preparedStatement.setString(3, donDatBan.getsDT() != null ? donDatBan.getsDT().getSdt() : null);
 
-        // Kiểm tra kết quả và trả về số lượng
-        int soLuongDonDat = 0;
-        if (rs.next()) {
-            soLuongDonDat = rs.getInt(1); // Lấy tổng số lượng từ cột đầu tiên
-        }
+            // Kiểm tra nếu ngayDat là null trước khi gọi format
+            if (donDatBan.getNgayDat() != null) {
+                preparedStatement.setString(4, donDatBan.getNgayDat().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            } else {
+                preparedStatement.setNull(4, Types.TIMESTAMP); // Đặt giá trị null cho cột ngày nếu ngayDat là null
+            }
 
-        rs.close();
-        statement.close();
+            preparedStatement.setInt(5, donDatBan.getSoGhe());
+            preparedStatement.setString(6, donDatBan.getGhiChu());
+            preparedStatement.setString(7, donDatBan.getMaBan() != null ? donDatBan.getMaBan().getMaBan() : null);
+            preparedStatement.setString(8, donDatBan.getTrangThaiDDB() != null ? donDatBan.getTrangThaiDDB().name() : null);
+            preparedStatement.setString(9, donDatBan.getMaKH() != null ? donDatBan.getMaKH().getMaKH() : null);
 
-        return soLuongDonDat;
-    }
-
-    public void deleteDonDatBan(String maDon) throws SQLException {
-        Database.getInstance();
-        Connection con = Database.getConnection();
-        String sql = "delete from DonDatBan where maDDB = '"+maDon+"'";
-        Statement statement = con.createStatement();
-        statement.executeUpdate(sql);
-    }
-
-    public void addDonDatBan(DonDatBan donDat) throws Exception {
-        Database.getInstance();
-        Connection con = Database.getConnection();
-
-        String sql = "INSERT INTO DonDatBan (maDDB, ngayDatBan, soGhe, ghiChu, maBan, khachHang, sdt) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        Statement statement = con.createStatement();
-        PreparedStatement preparedStatement = con.prepareStatement(sql);
-
-        try {
-            preparedStatement.setString(1, donDat.getMaDDB());
-
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            java.util.Date parsedDate = format.parse(donDat.getNgayDatBan());
-            java.sql.Date sqlDate = new java.sql.Date(parsedDate.getTime());
-            preparedStatement.setDate(2, sqlDate);
-
-            preparedStatement.setInt(3, donDat.getSoGhe());
-            preparedStatement.setString(4, donDat.getGhiChu());
-            preparedStatement.setString(5, donDat.getBan().getMaBan());
-            preparedStatement.setString(6, donDat.getKhachHang());
-            preparedStatement.setString(7, donDat.getSdt());
-
-            preparedStatement.executeUpdate();
-
+            int rowsInserted = preparedStatement.executeUpdate();
+            return rowsInserted > 0; // Trả về true nếu thêm thành công
         } catch (SQLException e) {
-            System.out.println("SQL State: " + e.getSQLState());
-            System.out.println("Error Code: " + e.getErrorCode());
-            System.out.println("Message: " + e.getMessage());
-            throw new Exception("Insert failed", e); // Ghi log và ném ngoại lệ lại
-        } finally {
-            preparedStatement.close();
-            statement.close();
-            con.close();
+            e.printStackTrace();
+            return false; // Trả về false nếu có lỗi
         }
     }
+
 }
+
+
+
+
