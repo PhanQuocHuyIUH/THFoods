@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -315,7 +316,7 @@ public class QuanLyPhieuDat extends JPanel {
             frame.setSize(400, 600);
             frame.setLocationRelativeTo(null);
             frame.setLayout(new BorderLayout());
-            frame.add(new HoaDonPanel(hoaDon));
+            frame.add(new HoaDonPanel(hoaDon,lblBan.getText()));
             frame.setVisible(true);
 
             // Xuất hóa đơn ra file PDF
@@ -327,7 +328,7 @@ public class QuanLyPhieuDat extends JPanel {
             if (userSelection == JFileChooser.APPROVE_OPTION) {
                 String filePath = fileChooser.getSelectedFile().getAbsolutePath();
                 HoaDonPDFExporter pdfExporter = new HoaDonPDFExporter();
-                pdfExporter.exportHoaDon(hoaDon, filePath);
+                pdfExporter.exportHoaDon(hoaDon, filePath, lblBan.getText());
                 JOptionPane.showMessageDialog(this, "Hóa đơn đã được lưu thành công tại: " + filePath, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             }
 
@@ -341,12 +342,69 @@ public class QuanLyPhieuDat extends JPanel {
 
     private void xoaChiTiet() {
         int row = tableChiTietPhieu.getSelectedRow();
+        int soLuong = (int) tableModel.getValueAt(row, 1);
         if (row == -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn một món để xóa!");
             return;
         }
         //nếu chỉ có 1 hàng thì thông báo xóa phiếu đặt
         if (tableModel.getRowCount() == 1) {
+            if( soLuong >1){
+                //nếu có nhiều hơn 1 hàng thì xét đến số lượng món
+                String maBan = lblBan.getText();
+                ArrayList<String> dsPhieu = new ArrayList<>();
+                ArrayList<ChiTietDatMon> dsct = new ArrayList<>();
+                try {
+                    //lấy phiếu đặt món theo mã bàn
+                    dsPhieu = banDao.getDSPhieu(maBan);
+                    //lấy mã món ăn từ tên món ăn
+                    String tenMon = (String) tableModel.getValueAt(row, 0);
+                    String maMon = monAnDao.getMaMonByTenMon(tenMon);
+                    //nếu số lượng món = 1 thì xóa chi tiết phiếu
+                    if (soLuong == 1) {
+                        for (String maPhieu : dsPhieu) {
+                            banDao.deleteCTPhieuByMaMon(maPhieu, maMon);
+                            System.out.println("1");
+                        }
+                    } else {
+                        boolean isProcessed = false; // Cờ kiểm tra xem món đã được xử lý chưa
+
+                        // nếu số lượng món > 1 thì giảm số lượng món đi 1
+                        for (String maPhieu : dsPhieu) {
+                            // lấy chi tiết phiếu theo mã phiếu
+                            dsct = banDao.getDSCTPhieu(maPhieu);
+
+                            for (ChiTietDatMon ct : dsct) {
+                                if (ct.getMaMon().equals(maMon)) {
+                                    if (ct.getSoLuong() > 1 && !isProcessed) {
+                                        // Giảm số lượng món đi 1
+                                        banDao.updateCTPhieu(maPhieu, maMon, ct.getSoLuong() - 1);
+                                        System.out.println("2");
+                                        isProcessed = true;  // Đánh dấu là đã xử lý món này
+                                        break; // Thoát khỏi vòng lặp ChiTietDatMon ngay khi cập nhật
+                                    } else if (ct.getSoLuong() == 1 && !isProcessed) {
+                                        // Xóa món khi số lượng là 1
+                                        banDao.deleteCTPhieuByMaMon(maPhieu, maMon);
+                                        System.out.println("3");
+                                        isProcessed = true;  // Đánh dấu là đã xử lý món này
+                                        break; // Thoát khỏi vòng lặp ChiTietDatMon ngay khi xóa
+                                    }
+                                }
+                            }
+
+                            if (isProcessed) {
+                                break; // Thoát khỏi vòng lặp dsPhieu sau khi xử lý món đầu tiên
+                            }
+                        }
+                    }
+
+
+                    //load lại table chi tiết phiếu
+                    loadSampleDataForTable(maBan);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }else{
             int dialogButton = JOptionPane.YES_NO_OPTION;
             int dialogResult = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa phiếu đặt món này?", "Xác nhận", dialogButton);
             if (dialogResult == JOptionPane.YES_OPTION) {
@@ -370,12 +428,12 @@ public class QuanLyPhieuDat extends JPanel {
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
-            }
+            }}
         } else {
             //nếu có nhiều hơn 1 hàng thì xét đến số lượng món
-            int soLuong = (int) tableModel.getValueAt(row, 1);
             String maBan = lblBan.getText();
             ArrayList<String> dsPhieu = new ArrayList<>();
+            ArrayList<ChiTietDatMon> dsct = new ArrayList<>();
             try {
                 //lấy phiếu đặt món theo mã bàn
                 dsPhieu = banDao.getDSPhieu(maBan);
@@ -386,13 +444,40 @@ public class QuanLyPhieuDat extends JPanel {
                 if (soLuong == 1) {
                     for (String maPhieu : dsPhieu) {
                         banDao.deleteCTPhieuByMaMon(maPhieu, maMon);
+                        System.out.println("1");
                     }
                 } else {
-                    //nếu số lượng món > 1 thì giảm số lượng món đi 1
+                    boolean isProcessed = false; // Cờ kiểm tra xem món đã được xử lý chưa
+
+                    // nếu số lượng món > 1 thì giảm số lượng món đi 1
                     for (String maPhieu : dsPhieu) {
-                        banDao.updateCTPhieu(maPhieu, maMon, soLuong - 1);
+                        // lấy chi tiết phiếu theo mã phiếu
+                        dsct = banDao.getDSCTPhieu(maPhieu);
+
+                        for (ChiTietDatMon ct : dsct) {
+                            if (ct.getMaMon().equals(maMon)) {
+                                if (ct.getSoLuong() > 1 && !isProcessed) {
+                                    // Giảm số lượng món đi 1
+                                    banDao.updateCTPhieu(maPhieu, maMon, ct.getSoLuong() - 1);
+                                    System.out.println("2");
+                                    isProcessed = true;  // Đánh dấu là đã xử lý món này
+                                    break; // Thoát khỏi vòng lặp ChiTietDatMon ngay khi cập nhật
+                                } else if (ct.getSoLuong() == 1 && !isProcessed) {
+                                    // Xóa món khi số lượng là 1
+                                    banDao.deleteCTPhieuByMaMon(maPhieu, maMon);
+                                    System.out.println("3");
+                                    isProcessed = true;  // Đánh dấu là đã xử lý món này
+                                    break; // Thoát khỏi vòng lặp ChiTietDatMon ngay khi xóa
+                                }
+                            }
+                        }
+
+                        if (isProcessed) {
+                            break; // Thoát khỏi vòng lặp dsPhieu sau khi xử lý món đầu tiên
+                        }
                     }
                 }
+
                 //load lại table chi tiết phiếu
                 loadSampleDataForTable(maBan);
             } catch (SQLException e) {
