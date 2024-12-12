@@ -455,7 +455,6 @@ public class DatMon extends JPanel {
 
         // LẤY THÔNG TIN MÃ BÀN TỪ COMBOBOX LOẠI BỎ CÁC KÍ TỰ KHÔNG PHẢI LÀ CHỮ B VÀ SỐ
         String table = tableComboBox.getSelectedItem().toString().replaceAll("[^B0-9]", "");
-        System.out.println(table);
         String note = noteField.getText();
         LocalDateTime date = LocalDateTime.now(); // Sử dụng LocalDateTime cho ngày và giờ hiện tại
         String nv = nvField.getText();

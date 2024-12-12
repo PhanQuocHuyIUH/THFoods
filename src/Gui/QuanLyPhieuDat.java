@@ -364,7 +364,6 @@ public class QuanLyPhieuDat extends JPanel {
                     if (soLuong == 1) {
                         for (String maPhieu : dsPhieu) {
                             banDao.deleteCTPhieuByMaMon(maPhieu, maMon);
-                            System.out.println("1");
                         }
                     } else {
                         boolean isProcessed = false; // Cờ kiểm tra xem món đã được xử lý chưa
@@ -379,13 +378,11 @@ public class QuanLyPhieuDat extends JPanel {
                                     if (ct.getSoLuong() > 1 && !isProcessed) {
                                         // Giảm số lượng món đi 1
                                         banDao.updateCTPhieu(maPhieu, maMon, ct.getSoLuong() - 1);
-                                        System.out.println("2");
                                         isProcessed = true;  // Đánh dấu là đã xử lý món này
                                         break; // Thoát khỏi vòng lặp ChiTietDatMon ngay khi cập nhật
                                     } else if (ct.getSoLuong() == 1 && !isProcessed) {
                                         // Xóa món khi số lượng là 1
                                         banDao.deleteCTPhieuByMaMon(maPhieu, maMon);
-                                        System.out.println("3");
                                         isProcessed = true;  // Đánh dấu là đã xử lý món này
                                         break; // Thoát khỏi vòng lặp ChiTietDatMon ngay khi xóa
                                     }
@@ -444,7 +441,6 @@ public class QuanLyPhieuDat extends JPanel {
                 if (soLuong == 1) {
                     for (String maPhieu : dsPhieu) {
                         banDao.deleteCTPhieuByMaMon(maPhieu, maMon);
-                        System.out.println("1");
                     }
                 } else {
                     boolean isProcessed = false; // Cờ kiểm tra xem món đã được xử lý chưa
@@ -459,13 +455,11 @@ public class QuanLyPhieuDat extends JPanel {
                                 if (ct.getSoLuong() > 1 && !isProcessed) {
                                     // Giảm số lượng món đi 1
                                     banDao.updateCTPhieu(maPhieu, maMon, ct.getSoLuong() - 1);
-                                    System.out.println("2");
                                     isProcessed = true;  // Đánh dấu là đã xử lý món này
                                     break; // Thoát khỏi vòng lặp ChiTietDatMon ngay khi cập nhật
                                 } else if (ct.getSoLuong() == 1 && !isProcessed) {
                                     // Xóa món khi số lượng là 1
                                     banDao.deleteCTPhieuByMaMon(maPhieu, maMon);
-                                    System.out.println("3");
                                     isProcessed = true;  // Đánh dấu là đã xử lý món này
                                     break; // Thoát khỏi vòng lặp ChiTietDatMon ngay khi xóa
                                 }
