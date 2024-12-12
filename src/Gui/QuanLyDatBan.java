@@ -2,691 +2,650 @@ package Gui;
 
 import DAO.Ban_Dao;
 import DAO.DonDatBan_Dao;
+import DAO.KhachHang_Dao;
 import DB.Database;
 import Entity.Ban;
 import Entity.DonDatBan;
-import Entity.TrangThaiBan;
-import org.jdatepicker.impl.DateComponentFormatter;
-import org.jdatepicker.impl.JDatePanelImpl;
-import org.jdatepicker.impl.JDatePickerImpl;
-import org.jdatepicker.impl.SqlDateModel;
+import Entity.KhachHang;
+import Entity.TrangThaiDonDat;
 
-import java.awt.event.ActionListener;
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.table.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Properties;
+
 
 public class QuanLyDatBan extends JPanel {
-    private DefaultTableModel danhSachDatBantableModel;
-    private JTable danhSachDatBantableList;
-    private  int SO_BAN; // Số lượng bàn
-    private TrangThaiBan[] trangThaiBan; // Trạng thái của mỗi bàn
-    private JTextField searchField; // Trường tìm kiếm
-    private JButton searchButton;   // Nút tìm kiếm
-    private JButton lastClickedButton; // Nút được nhấn gần đây (cho hover hiệu ứng)
-    private JList<String> danhSachDatBanList; // Danh sách các bàn đã đặt
-    private JButton btnBanTrong, btnBanDaDat, btnTatCa, btnBanDangDung; // Các nút thêm
-    private JPanel gridPanel;
-    private int columns = 4; // Số cột cố định
-    private ActionListener actionListener;
-    Ban_Dao dataBan = new Ban_Dao();
-    DonDatBan_Dao dataDonDatBan = new DonDatBan_Dao();
-    private ArrayList<Ban> dsBan;
-    private ArrayList<DonDatBan> dsDonDatBan;
-    private JFrame danhSachFrameInstance = null;
-    private DatBanDialog datBanDialogInstance = null;
+    private JButton btn_XacNhanDon;
+    private DefaultTableModel ds_DatBan_TableModel;
+    private JTable ds_DatBan_TableList;
+    final boolean[] isToday = {true};
+    private JButton btn_DatBan;
+    private JButton btn_HuyChonBan;
+    private JButton tableButton;
+    final JButton[] selectedButton = {null}; // Biến duy nhất lưu nút đã chọn
+    private JPanel buttonPanel;
+    private JComboBox<String> timeComboBox;
+    private JComboBox<String> dateComboBox;
+    private JTextField tableTextField;
+    private JTextField phoneTextField;
+    private JTextField nameTextField;
+    private JTextField notesTextField;
+    private JComboBox<String> chonBanComboBox;
+    private JTextField soGheTextField;
+    private JButton resetButton;
+    private KhachHang_Dao ds_KhachHang_dao;
+    private DonDatBan_Dao ds_DonDat_dao;
 
-    public QuanLyDatBan() {
+    QuanLyDatBan(){
         try {
             Database.getInstance().connect();
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        setLayout(new BorderLayout());
 
-        JPanel northPanel = new JPanel(new BorderLayout());
-        this.add(northPanel, BorderLayout.NORTH);
+        this.setLayout(new BorderLayout());
 
-        JPanel leftPanel = new JPanel();
-        leftPanel.setBackground(Color.WHITE);
-        leftPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        // Phần bảng danh sách đặt bàn
+        JPanel dsDatBan_mainPanel = new JPanel(new BorderLayout());
+
+        // Thêm padding cho dsDatBan_mainPanel
+        dsDatBan_mainPanel.setBorder(new EmptyBorder(15, 10, 0, 10)); // Thêm padding
+
+        this.add(dsDatBan_mainPanel, BorderLayout.CENTER);
+        dsDatBan_mainPanel.add(createTable(), BorderLayout.CENTER);
+
+        JPanel dsDatBan_ButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        dsDatBan_ButtonPanel.setBorder(new EmptyBorder(15, 0, 15, 0));
+        dsDatBan_mainPanel.add(dsDatBan_ButtonPanel, BorderLayout.SOUTH);
+
+        btn_XacNhanDon = new JButton();
+        btn_XacNhanDon = createStyledButton("Xác nhận đơn đặt");
+        dsDatBan_ButtonPanel.add(btn_XacNhanDon);
 
 
-        JLabel menuLabel = new JLabel(" \u2630 MENU   ");
-        menuLabel.setFont(new Font("Arial Unicode MS", Font.BOLD, 24));
-        menuLabel.setForeground(AppColor.den);
-        leftPanel.add(menuLabel);
-        // Mảng các tên nút
-        String[] buttonNames = {"Danh sách đặt bàn","Bàn trống", "Bàn đang dùng","Bàn đã đặt", "Hiện tất cả"};
+        // Phần tạo đơn đặt bàn
 
-        // Vòng lặp để tạo nút cho mỗi tên trong mảng buttonNames và áp dụng createStyledButton
-        for (String name : buttonNames) {
-            JButton button = createCategoryButton(name);
-            leftPanel.add(button);
-
-            switch (name) {
-                case "Bàn trống":
-                    btnBanTrong = button;
-                    btnBanTrong.addActionListener(e -> locBan(TrangThaiBan.Trong));
-                    break;
-                case "Bàn đang dùng":
-                    btnBanDangDung = button;
-                    btnBanDangDung.addActionListener(e -> locBan(TrangThaiBan.DangDung));
-                    break;
-//                case "Bàn đã đặt":
-//                    btnBanDaDat = button;
-//                    btnBanDaDat.addActionListener(e -> locBan(TrangThaiBan.DaDat));
-//                    break;
-                case "Hiện tất cả":
-                    btnTatCa = button;
-                    btnTatCa.addActionListener(e -> hienThiTatCaBan());
-                    break;
-                case "Danh sách đặt bàn":
-                    button.addActionListener(e -> hienThiDanhSachDatBan());
-                    break;
-            }
-        }
-
-        lastClickedButton = (JButton) leftPanel.getComponent(5); // Mặc định chọn nút đầu tiên
-        // Đổi màu nền cho nút đầu tiên
-        lastClickedButton.setBackground(AppColor.xanhNhat);
-        leftPanel.add(Box.createRigidArea(new Dimension(270, 0)));
-
-        // Thanh tìm kiếm
-        searchField = new JTextField(15);
-        searchField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        searchField.setBackground(AppColor.xam);
-        leftPanel.add(searchField);
-
-        // Nút tìm kiếm
-        JButton searchButton = createStyledButton("\uD83D\uDD0D Tìm kiếm");
-        searchButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 14));
-        searchButton.setBackground(AppColor.xanh);
-        leftPanel.add(searchButton);
-
-        northPanel.add(leftPanel, BorderLayout.WEST);
-
-        // Khởi tạo trạng thái các bàn (ban đầu tất cả đều trống)
-        try {
-            SO_BAN = dataBan.getSoLuongBan();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        trangThaiBan = new TrangThaiBan[SO_BAN];
-        for (int i = 0; i < SO_BAN; i++) {
-            trangThaiBan[i] = TrangThaiBan.Trong;
-        }
-
-        // Khởi tạo gridPanel với GridLayout và thêm vào mainPanel
-        gridPanel = new JPanel(new GridLayout(0, columns, 20, 20)); // 0 hàng, số cột cố định
-        gridPanel.setBackground(AppColor.trang);
-        JPanel mainPanel = new JPanel(new BorderLayout()); // Main panel chứa gridPanel
-        mainPanel.setBackground(AppColor.trang);
-        mainPanel.add(gridPanel, BorderLayout.NORTH); // Đặt gridPanel ở phía trên
-
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Thêm padding
-        this.add(mainPanel, BorderLayout.CENTER);
-
-        capNhatGiaoDien(); // Gọi hàm cập nhật giao diện ban đầu
-
-        JScrollPane scrollPane = new JScrollPane(mainPanel);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-
-        add(scrollPane, BorderLayout.CENTER);
-
-        setVisible(true);
+        JPanel panel_Bill = new JPanel(new BorderLayout());
+        panel_Bill.setBorder(BorderFactory.createMatteBorder(0, 2, 0, 0, Color.BLACK));
+        this.add(panel_Bill, BorderLayout.EAST);
+        panel_Bill.add(panel_CreateBill());
 
 
     }
 
-    // Phương thức tự động điều chỉnh độ rộng của các cột
-    private void packColumn(JTable table, int columnIndex, int margin) {
-        DefaultTableColumnModel columnModel = (DefaultTableColumnModel) table.getColumnModel();
-        TableColumn column = columnModel.getColumn(columnIndex);
-        int width = 0;
+    private JPanel panel_CreateBill() {
+        JPanel panel_CreateBill = new JPanel();
+        panel_CreateBill.setLayout(new BorderLayout());
+        panel_CreateBill.setBackground(AppColor.trang);
+        panel_CreateBill.setBorder(new EmptyBorder(15, 10, 0, 10));
 
-        // Lấy chiều rộng tối đa của các ô trong cột
-        for (int row = 0; row < table.getRowCount(); row++) {
-            TableCellRenderer renderer = table.getCellRenderer(row, columnIndex);
-            Component comp = table.prepareRenderer(renderer, row, columnIndex);
-            width = Math.max(comp.getPreferredSize().width + margin, width);
-        }
+        // Tạo JPanel cho phần North và thiết lập GridBagLayout
+        JPanel northPanel = new JPanel();
+        northPanel.setBackground(AppColor.trang);
+        GridBagLayout gridBagLayout = new GridBagLayout();
+        northPanel.setLayout(gridBagLayout);
 
-        // Thiết lập độ rộng của tiêu đề
-        TableCellRenderer headerRenderer = table.getTableHeader().getDefaultRenderer();
-        Component headerComp = headerRenderer.getTableCellRendererComponent(table, column.getHeaderValue(), false, false, 0, columnIndex);
-        width = Math.max(headerComp.getPreferredSize().width + margin, width);
+        // GridBagConstraints để kiểm soát vị trí các phần tử
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Thiết lập độ rộng cho cột
-        column.setPreferredWidth(width);
-    }
+        // Tăng kích thước margin và padding
+        gbc.insets = new Insets(10, 10, 10, 10);  // Khoảng cách giữa các phần tử, tăng lên 10px
+
+        // Cập nhật cỡ chữ cho JLabel
+        Font labelFont = new Font("Arial Unicode MS", Font.BOLD, 16);
+
+        // 1. ComboBox chọn ngày
+        JLabel lblDate = new JLabel("\uD83D\uDCC5 Chọn ngày đặt:");
+        lblDate.setFont(labelFont); // Cập nhật font cho JLabel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        northPanel.add(lblDate, gbc);
+
+        dateComboBox = new JComboBox<>(generateDateOptions());
+        dateComboBox.setPreferredSize(new Dimension(200, 30)); // Cập nhật kích thước cho ComboBox
+        dateComboBox.setFont(new Font("Arial", Font.PLAIN, 14)); // Cập nhật cỡ chữ cho ComboBox
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        northPanel.add(dateComboBox, gbc);
+
+        // 2. ComboBox chọn giờ
+        JLabel lblTime = new JLabel("\ud83d\udd5f Chọn giờ:");
+        lblTime.setFont(labelFont); // Cập nhật font cho JLabel
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        northPanel.add(lblTime, gbc);
+
+        timeComboBox = new JComboBox<>(generateHourOptions(isToday[0]));
+        timeComboBox.setPreferredSize(new Dimension(200, 30)); // Cập nhật kích thước cho ComboBox
+        timeComboBox.setFont(new Font("Arial", Font.PLAIN, 14)); // Cập nhật cỡ chữ cho ComboBox
+        dateComboBox.addActionListener(e -> {
+            int selectedIndex = dateComboBox.getSelectedIndex();
+            isToday[0] = (selectedIndex == 0); // Ngày đầu tiên trong danh sách là hôm nay
+            timeComboBox.setModel(new DefaultComboBoxModel<>(generateHourOptions(isToday[0])));
+        });
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        northPanel.add(timeComboBox, gbc);
+
+        // 3. TextField nhập số điện thoại
+        JLabel lblPhone = new JLabel("\u260e\ufe0f Số điện thoại:");
+        lblPhone.setFont(labelFont); // Cập nhật font cho JLabel
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        northPanel.add(lblPhone, gbc);
+
+        phoneTextField = new JTextField(20);
+        phoneTextField.setPreferredSize(new Dimension(200, 30)); // Cập nhật kích thước cho TextField
+        phoneTextField.setFont(new Font("Arial", Font.PLAIN, 14)); // Cập nhật cỡ chữ cho TextField
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        northPanel.add(phoneTextField, gbc);
+
+        // 4. TextField nhập tên khách hàng
+        JLabel lblName = new JLabel("\uD83D\uDC68\u200D Tên khách hàng:");
+        lblName.setFont(labelFont); // Cập nhật font cho JLabel
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        northPanel.add(lblName, gbc);
+
+        nameTextField = new JTextField(20);
+        nameTextField.setPreferredSize(new Dimension(200, 30)); // Cập nhật kích thước cho TextField
+        nameTextField.setFont(new Font("Arial", Font.PLAIN, 14)); // Cập nhật cỡ chữ cho TextField
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        northPanel.add(nameTextField, gbc);
+
+        // 5. TextField nhập số ghế
+        JLabel lblsoGhe = new JLabel("\u2795 Số người:");
+        lblsoGhe.setFont(labelFont); // Cập nhật font cho JLabel
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        northPanel.add(lblsoGhe, gbc);
+
+        soGheTextField = new JTextField(20);
+        soGheTextField.setPreferredSize(new Dimension(200, 30)); // Cập nhật kích thước cho TextField
+        soGheTextField.setFont(new Font("Arial", Font.PLAIN, 14)); // Cập nhật cỡ chữ cho TextField
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        northPanel.add(soGheTextField, gbc);
+
+        // 6. TextField nhập ghi chú
+        JLabel lblNotes = new JLabel("\uD83D\uDCDD Ghi chú:");
+        lblNotes.setFont(labelFont); // Cập nhật font cho JLabel
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        northPanel.add(lblNotes, gbc);
+
+        notesTextField = new JTextField();
+        notesTextField.setPreferredSize(new Dimension(200, 30)); // Cập nhật kích thước cho TextField
+        notesTextField.setFont(new Font("Arial", Font.PLAIN, 14)); // Cập nhật cỡ chữ cho TextField
+        gbc.gridx = 1;
+        gbc.gridy = 5;
+        northPanel.add(notesTextField, gbc);
+
+        // Thêm combobox để chọn bàn
+        JLabel lblSlectTable = new JLabel("\u25A4 Chọn bàn:");
+        lblSlectTable.setFont(labelFont); // Cập nhật font cho JLabel
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        northPanel.add(lblSlectTable, gbc);
+
+        chonBanComboBox = new JComboBox<>(new String[]{
+                "Tất cả",
+                "Bàn 2",
+                "Bàn 4",
+                "Bàn 6",
+                "Bàn 8",
+                "Bàn 10"
+        });
+        chonBanComboBox.setPreferredSize(new Dimension(200, 30)); // Cập nhật kích thước cho ComboBox
+        chonBanComboBox.setFont(new Font("Arial", Font.PLAIN, 14)); // Cập nhật cỡ chữ cho ComboBox
+        gbc.gridx = 1;
+        gbc.gridy = 6;
+        northPanel.add(chonBanComboBox, gbc);
+
+        // TextFile khi chọn bàn đặt
+        tableTextField = new JTextField(20);
+        tableTextField.setEditable(false);
+        tableTextField.setPreferredSize(new Dimension(200, 30)); // Cập nhật kích thước cho TextField
+        tableTextField.setFont(new Font("Arial", Font.PLAIN, 14)); // Cập nhật cỡ chữ cho TextField
+        gbc.gridx = 1;
+        gbc.gridy = 7;
+        northPanel.add(tableTextField, gbc);
 
 
-    // Phương thức để tải dữ liệu từ cơ sở dữ liệu và hiển thị vào bảng
-    private void loadDataToTable() {
+        // Thêm northPanel vào phần North của panel_CreateBill
+        panel_CreateBill.add(northPanel, BorderLayout.NORTH);
+
+        // Phần center
+        JScrollPane centerPanelScroll = new JScrollPane();
+        centerPanelScroll.setBackground(AppColor.trang);
+        panel_CreateBill.add(centerPanelScroll, BorderLayout.CENTER);
+        centerPanelScroll.setWheelScrollingEnabled(true);
+        centerPanelScroll.getVerticalScrollBar().setUnitIncrement(16); // Tăng tốc cuộn dọc
+
+        // Thêm panel chứa các button vào JScrollPane
+        buttonPanel = null;
         try {
-            dsDonDatBan = dataDonDatBan.getAllDonDatBan(); // Gọi DAO để lấy dữ liệu từ SQL
-            danhSachDatBantableModel.setRowCount(0); // Xóa dữ liệu cũ trong bảng
+            // Xác định số bàn cần hiển thị dựa trên lựa chọn của combobox
+            buttonPanel = list_BanPanel("Tất cả"); // Truyền trực tiếp selectedOption vào hàm list_BanPanel
+            centerPanelScroll.setViewportView(buttonPanel);
+        } catch (SQLException e1) {
+            throw new RuntimeException(e1);
+        }
 
-            for (DonDatBan ddb : dsDonDatBan) {
-                Object[] row = new Object[]{
-                        ddb.getMaDDB(),
-                        ddb.getNgayDatBan(),
-                        ddb.getSoGhe(),
-                        ddb.getGhiChu(),
-                        ddb.getBan().getMaBan(),
-                        ddb.getKhachHang(),
-                        ddb.getSdt()
-                };
-                danhSachDatBantableModel.addRow(row); // Thêm từng hàng vào model của bảng
+        // Xử lý hành động cho combobox chọn bàn
+        chonBanComboBox.addActionListener(e -> {
+            String selectedOption = (String) chonBanComboBox.getSelectedItem();
+            if (selectedOption != null && selectedOption.length() > 4 && selectedOption != "Tất cả") {
+                selectedOption = selectedOption.substring(4); // Cắt 4 ký tự đầu
+            } else {
+                selectedOption = selectedOption != null ? selectedOption : "";
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu từ CSDL: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
 
-    private void hienThiDanhSachDatBan() {
-        try {
-            Database.getInstance().connect();
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        // Kiểm tra nếu JFrame hiện tại đã tồn tại thì đóng nó lại trước khi tạo JFrame mới
-        if (danhSachFrameInstance != null) {
-            danhSachFrameInstance.dispose();
-        }
-
-        String[] columnNames = {"Mã đơn", "Ngày đặt", "Số ghế", "Ghi chú", "Mã bàn", "Tên KH", "SĐT"};
-        danhSachDatBantableModel = new DefaultTableModel(columnNames, 0) {
-            // Override phương thức này để cho phép sửa đổi trong bảng
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                // Cho phép sửa đổi các cột 1, 2, 3, 5, và 6
-                return column == 1 || column == 2 || column == 3 || column == 5 || column == 6;
+            try {
+                // Xác định số bàn cần hiển thị dựa trên lựa chọn của combobox
+                buttonPanel = list_BanPanel(selectedOption); // Truyền trực tiếp selectedOption vào hàm list_BanPanel
+                centerPanelScroll.setViewportView(buttonPanel);
+            } catch (SQLException e1) {
+                throw new RuntimeException(e1);
             }
-        };
-
-        danhSachDatBantableList = new JTable(danhSachDatBantableModel);
-        danhSachDatBantableList.setFont(new Font("Arial", Font.BOLD, 18));
-        danhSachDatBantableList.getTableHeader().setBackground(new Color(52, 152, 219));
-        danhSachDatBantableList.getTableHeader().setForeground(Color.WHITE);
-        danhSachDatBantableList.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        danhSachDatBantableList.getTableHeader().setResizingAllowed(true);
-        customizeTable();
-        loadDataToTable();
-
-        // Tạo JFrame mới để hiển thị danh sách đặt bàn
-        danhSachFrameInstance = new JFrame("Danh Sách Đặt Bàn");
-        danhSachFrameInstance.setSize(1000, 400);
-        danhSachFrameInstance.setLayout(new BorderLayout());
-
-        // Tạo bảng chứa danh sách đặt bàn với thanh cuộn
-        JScrollPane danhSachScrollPane = new JScrollPane(danhSachDatBantableList);
-        danhSachFrameInstance.add(danhSachScrollPane, BorderLayout.CENTER);
-
-        // Tạo panel dưới để chứa nút xác nhận
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT)); // Nút nằm ở góc dưới bên phải
-        JButton xacNhanButton = new JButton("Xác nhận");
-
-        // Tùy chỉnh nút "Xác nhận" nếu cần thiết
-        xacNhanButton.setFont(new Font("Arial", Font.PLAIN, 14)); // Đặt phông chữ
-        xacNhanButton.setBackground(AppColor.xanh); // Màu nền
-        xacNhanButton.setForeground(Color.WHITE); // Màu chữ
-
-        // Thêm nút vào panel
-        buttonPanel.add(xacNhanButton);
-
-        // Thêm panel nút vào vị trí dưới của JFrame
-        danhSachFrameInstance.add(buttonPanel, BorderLayout.SOUTH);
-
-        // Đặt vị trí của cửa sổ và hiển thị
-        danhSachFrameInstance.setLocationRelativeTo(null);
-        danhSachFrameInstance.setVisible(true);
-
-
-        xacNhanButton.addActionListener(e -> {
-            doi_Trang_Thai(); // Gọi phương thức doi_Trang_Thai() khi nút được nhấn
-            delete_rowTable(); // Gọi phương thức delete_rowTable() ngay sau đó
         });
 
-    }
+        // Phần south
+        JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        southPanel.setBackground(AppColor.trang);
+        southPanel.setBorder(new EmptyBorder(15, 0, 15, 0));
+        panel_CreateBill.add(southPanel, BorderLayout.SOUTH);
+        btn_DatBan = new JButton();
+        btn_DatBan = createStyledButton("Đặt bàn");
 
+        btn_DatBan.addActionListener(e -> {
+            addRowToTable();
+            resetFields();
+            resizeColumns();
+            if (selectedButton[0] != null) {
+                // Đặt lại màu của nút đã chọn về màu gốc
+                selectedButton[0].setBackground(AppColor.xanh); // Màu gốc
+                selectedButton[0] = null; // Xóa nút đã chọn
 
-    private void delete_rowTable() {
-        int selectRow = danhSachDatBantableList.getSelectedRow();
-
-        // Kiểm tra xem có hàng nào được chọn không
-        if (selectRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hang");
-            return; // Dừng lại nếu chưa chọn hàng nào
-        }
-
-        // Lấy mã đơn từ dòng đã chọn
-        Object maDonObj = danhSachDatBantableList.getValueAt(selectRow, 0); // Cột thứ 0 là mã đơn
-        if (maDonObj == null || maDonObj.toString().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Mã đơn không hợp lệ, không thể xóa!");
-            return; // Dừng lại nếu mã đơn null hoặc rỗng
-        }
-
-        String maDon = maDonObj.toString();
-
-
-
-        // Xóa hàng khỏi model bảng
-        danhSachDatBantableModel.removeRow(selectRow);
-
-        //Xóa đơn đặt bàn khỏi cơ sở dữ liệu
-
-        try {
-            dataDonDatBan.deleteDonDatBan(maDon);
-            JOptionPane.showMessageDialog(this, "Xóa đơn đặt bàn thành công!");
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi xóa đơn đặt bàn: " + e.getMessage());
-            e.printStackTrace(); // In chi tiết lỗi ra console để dễ debug hơn
-        }
-    }
-
-
-    private void doi_Trang_Thai() {
-        int selectRow = danhSachDatBantableList.getSelectedRow(); // Lấy dòng được chọn
-
-        // Kiểm tra xem có hàng nào được chọn không
-        if (selectRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một hàng trước khi thay đổi trạng thái!");
-            return; // Dừng lại nếu chưa chọn hàng nào
-        }
-
-        // Lấy mã bàn từ dòng đã chọn và kiểm tra nếu null
-        Object maBanObj = danhSachDatBantableList.getValueAt(selectRow, 4); // Cột thứ 4 là mã bàn
-        if (maBanObj == null || maBanObj.toString().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Mã bàn không hợp lệ!");
-            return; // Dừng lại nếu mã bàn null hoặc rỗng
-        }
-
-        String maBan = maBanObj.toString(); // Chuyển mã bàn sang chuỗi
-
-        try {
-            // Cập nhật trạng thái bàn thành "Đang dùng"
-            dataBan.updateTrangThaiBan(maBan, "DangDung");
-            JOptionPane.showMessageDialog(this, "Trạng thái bàn đã được cập nhật thành 'Đang dùng'!");
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi thay đổi trạng thái bàn: " + e.getMessage());
-            e.printStackTrace(); // In chi tiết lỗi ra console để dễ debug hơn
-        }
-    }
-
-
-
-
-    // Hàm tạo panel cho từng bàn ăn
-    private JPanel createTablePanel(Ban ban) {
-        JPanel panel = new JPanel(new BorderLayout(10, 20));
-        panel.setBorder(new RoundedLineBorder(15));
-        panel.setPreferredSize(new Dimension(200, 350));
-
-        // Kiểm tra đường dẫn hình ảnh và xử lý
-        ImageIcon icon = new ImageIcon("src/img/datban.jpg");
-        if (icon.getIconWidth() == -1) {
-            // Xử lý nếu không tìm thấy hình ảnh
-            icon = new ImageIcon(); // Hoặc sử dụng một hình ảnh mặc định
-        }
-        Image img = icon.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
-        JLabel imageLabel = new JLabel(new ImageIcon(img));
-        imageLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        panel.add(imageLabel, BorderLayout.CENTER);
-
-        JLabel tableLabel = new JLabel("Mã bàn: " + ban.getMaBan(), SwingConstants.CENTER);
-        tableLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        panel.add(tableLabel, BorderLayout.NORTH);
-
-        // Cập nhật trạng thái bàn
-        JLabel statusLabel;
-//        if (ban.getTrangThai() == TrangThaiBan.DaDat) {
-//            statusLabel = new JLabel("Đã đặt", SwingConstants.CENTER);
-//            statusLabel.setForeground(Color.RED);
-//        } else
-            if (ban.getTrangThai() == TrangThaiBan.DangDung) {
-            statusLabel = new JLabel("Đang dùng", SwingConstants.CENTER);
-            statusLabel.setForeground(Color.ORANGE);
-        } else {
-            JButton datBanButton = createStyledButton("Đặt bàn");
-            datBanButton.addActionListener(e -> new DatBanDialog(ban));
-            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            buttonPanel.add(datBanButton);
-            panel.add(buttonPanel, BorderLayout.SOUTH);
-            return panel; // Trả về ngay nếu bàn đang trống
-        }
-        statusLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        panel.add(statusLabel, BorderLayout.SOUTH);
-
-        return panel;
-    }
-
-    // Hàm cập nhật lại giao diện sau khi đặt bàn
-    private void capNhatGiaoDien() {
-        try {
-            dsBan = dataBan.getAllBan();  // Lấy tất cả bàn từ CSDL
-            if (dsBan != null && !dsBan.isEmpty()) {
-                hienThiBan(dsBan);  // Hiển thị danh sách bàn lên giao diện
-            } else {
-                JOptionPane.showMessageDialog(this, "Không có bàn nào để hiển thị.");
+                // Vô hiệu hóa nút Hủy khi không còn bàn được chọn
+                btn_HuyChonBan.setEnabled(false); // Vô hiệu hóa nút hủy
+                tableTextField.setText("");
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi lấy dữ liệu từ CSDL: " + e.getMessage());
-            e.printStackTrace(); // In lỗi ra console để debug
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi: " + e.getMessage());
-            e.printStackTrace(); // Xử lý các lỗi không mong muốn
-        }
+        });
+        southPanel.add(btn_DatBan);
+
+        // Nút reset
+        resetButton = new JButton();
+        resetButton = createStyledButtonAc("\u21BA", e -> resetFields());
+        resetButton.setFont(new Font("Arial Unicode MS", Font.BOLD, 26));
+        resetButton.setBackground(AppColor.trang);
+        resetButton.setForeground(Color.BLUE);
+        resetButton.addActionListener(e -> {
+            // Kiểm tra nếu có nút đã chọn
+            if (selectedButton[0] != null) {
+                // Đặt lại màu của nút đã chọn về màu gốc
+                selectedButton[0].setBackground(AppColor.xanh); // Màu gốc
+                selectedButton[0] = null; // Xóa nút đã chọn
+
+                // Vô hiệu hóa nút Hủy khi không còn bàn được chọn
+                btn_HuyChonBan.setEnabled(false); // Vô hiệu hóa nút hủy
+                tableTextField.setText("");
+            }
+        });
+        southPanel.add(resetButton);
+
+        btn_HuyChonBan = new JButton("Hủy chọn");
+        btn_HuyChonBan.setBackground(AppColor.red);
+        btn_HuyChonBan.setForeground(AppColor.trang);
+        btn_HuyChonBan.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        btn_HuyChonBan.setFocusPainted(false);
+        btn_HuyChonBan.setBorderPainted(false);
+        btn_HuyChonBan.setEnabled(false);
+        southPanel.add(btn_HuyChonBan);
+        btn_HuyChonBan.addActionListener(e -> {
+            // Kiểm tra nếu có nút đã chọn
+            if (selectedButton[0] != null) {
+                // Đặt lại màu của nút đã chọn về màu gốc
+                selectedButton[0].setBackground(AppColor.xanh); // Màu gốc
+                selectedButton[0] = null; // Xóa nút đã chọn
+
+                // Vô hiệu hóa nút Hủy khi không còn bàn được chọn
+                btn_HuyChonBan.setEnabled(false); // Vô hiệu hóa nút hủy
+                tableTextField.setText("");
+            } else {
+                // Nếu không có bàn nào được chọn, thông báo cho người dùng
+                JOptionPane.showMessageDialog(null, "Vui lòng chọn một bàn trước khi hủy chọn!");
+            }
+        });
+        return panel_CreateBill;
     }
 
 
-    // Phương thức hiển thị các bàn theo danh sách truyền vào
-    private void hienThiBan(ArrayList<Ban> danhSachBan) {
-        gridPanel.removeAll(); // Xóa các bàn cũ
-        int soBanHienThi = 0;
+    public JPanel list_BanPanel(String selectedBanType) throws SQLException {
+        // Lấy danh sách bàn từ cơ sở dữ liệu và lọc theo loại bàn
+        ArrayList<Ban> listBans = new Ban_Dao().getAllBan_Sort();
+        ArrayList<Ban> filteredBans = new ArrayList<>();
 
-        for (Ban ban : danhSachBan) {
-            JPanel tablePanel = createTablePanel(ban);  // Tạo panel cho từng bàn
-            gridPanel.add(tablePanel);  // Thêm panel của bàn vào gridPanel
-            soBanHienThi++;
+        for (Ban ban : listBans) {
+            if (selectedBanType.equals("Tất cả") || Integer.toString(ban.getSoGhe()).equals(selectedBanType)) {
+                filteredBans.add(ban);
+            }
         }
 
-        // Tính số lượng ô trống cần thêm để lấp đầy hàng cuối cùng
-        if (columns > 0) {
-            int soBanDu = columns - (soBanHienThi % columns);
-            if (soBanDu < columns) { // Thêm các ô trống để lấp đầy hàng cuối
-                for (int i = 0; i < soBanDu; i++) {
-                    JPanel emptyPanel = new JPanel();
-                    emptyPanel.setOpaque(false);
-                    emptyPanel.setPreferredSize(new Dimension(200, 350));
-                    gridPanel.add(emptyPanel);
+        // Tạo panel chính với GridBagLayout
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10); // Khoảng cách giữa các nút
+        gbc.fill = GridBagConstraints.NONE; // Kích thước nút không giãn
+        gbc.anchor = GridBagConstraints.FIRST_LINE_START; // Căn về góc trái trên
+
+        int columns = 3; // Số cột cố định
+
+        // Thêm các nút vào panel
+        for (int i = 0; i < filteredBans.size(); i++) {
+            Ban ban = filteredBans.get(i);
+
+            JButton tableButton = new JButton(ban.getMaBan());
+            tableButton.setPreferredSize(new Dimension(100, 100)); // Kích thước cố định cho nút bàn
+            tableButton.setFont(new Font("Arial", Font.PLAIN, 16));
+            tableButton.setBackground(AppColor.xanh); // Màu xanh nhạt
+            tableButton.setForeground(Color.BLACK);
+            tableButton.setFocusPainted(false);
+            tableButton.setBorderPainted(true);
+
+            // Thêm sự kiện click cho mỗi nút
+            tableButton.addActionListener(e -> {
+                // Nếu có nút đã chọn trước đó, đặt lại màu gốc
+                if (selectedButton[0] != null) {
+                    selectedButton[0].setBackground(AppColor.xanh); // Đặt lại màu gốc
                 }
-            }
+
+                // Đổi màu cho nút hiện tại
+                tableButton.setBackground(AppColor.red); // Đổi màu nút được chọn
+                btn_HuyChonBan.setEnabled(true); // Kích hoạt nút hủy chọn
+                selectedButton[0] = tableButton; // Lưu nút đã chọn
+
+                // Cập nhật mã bàn vào tableTextField
+                tableTextField.setText(tableButton.getText());
+            });
+
+
+            // Vị trí của nút trên lưới
+            gbc.gridx = i % columns; // Cột
+            gbc.gridy = i / columns; // Hàng
+            mainPanel.add(tableButton, gbc);
+        }
+
+        // Thêm các ô trống nếu cần thiết để giữ bố cục cố định
+        int totalCells = ((filteredBans.size() + columns - 1) / columns) * columns;
+        for (int i = filteredBans.size(); i < totalCells; i++) {
+            gbc.gridx = i % columns;
+            gbc.gridy = i / columns;
+            mainPanel.add(Box.createRigidArea(new Dimension(100, 100)), gbc); // Ô trống giữ chỗ
+        }
+
+        // Tạo panel bọc với FlowLayout để căn chỉnh mainPanel về góc trái trên
+        JPanel wrapperPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        wrapperPanel.add(mainPanel);
+
+        return wrapperPanel;
+    }
+
+    private String[] generateHourOptions(boolean isToday) {
+        int startHour;
+        int endHour = 22; // Giờ kết thúc là 10 giờ tối
+
+        if (isToday) {
+            // Nếu là ngày hôm nay, bắt đầu từ giờ hiện tại
+            startHour = LocalTime.now().getHour();
+            // Thêm 1 giờ vào giờ hiện tại
+            startHour = (startHour + 1) % 24;
         } else {
-            JOptionPane.showMessageDialog(this, "Số cột không hợp lệ.");
+            // Nếu là ngày khác, bắt đầu từ 6 giờ sáng
+            startHour = 6;
         }
 
-        gridPanel.revalidate();
-        gridPanel.repaint(); // Cập nhật giao diện
-    }
-
-
-    // Hàm lọc các bàn dựa trên trạng thái
-
-    private void locBan(TrangThaiBan tr_thai) {
-        gridPanel.removeAll(); // Xóa các bàn cũ
-        try {
-            dsBan = dataBan.getDanhSachBanTheoTrangThai(tr_thai); // Lọc bàn theo trạng thái
-            hienThiBan(dsBan); // Cập nhật giao diện với danh sách bàn theo trạng thái đã chọn
-        } catch (SQLException e) {
-            e.printStackTrace();
+        // Đảm bảo giờ bắt đầu không vượt quá giờ kết thúc
+        if (startHour > endHour) {
+            startHour = endHour;
         }
-    }
 
-    // Hàm hiển thị tất cả các bàn
-
-    private void hienThiTatCaBan() {
-        try {
-            // Lấy danh sách tất cả các bàn từ cơ sở dữ liệu
-            dsBan = dataBan.getAllBan();
-
-            if (dsBan != null && !dsBan.isEmpty()) {
-                // Gọi hàm hienThiBan với danh sách bàn lấy được từ CSDL
-                hienThiBan(dsBan);
-            } else {
-                JOptionPane.showMessageDialog(this, "Không có bàn nào để hiển thị.");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi lấy dữ liệu từ CSDL: " + e.getMessage());
+        // Tạo danh sách giờ từ startHour đến endHour
+        String[] hours = new String[endHour - startHour + 1];
+        for (int i = startHour, idx = 0; i <= endHour; i++, idx++) {
+            hours[idx] = String.format("%02d:00", i); // Định dạng giờ
         }
+
+        return hours;
     }
 
-    // Phương thức để tạo button với kiểu tùy chỉnh
+    private String[] generateDateOptions() {
+        String[] dates = new String[8]; // Mảng chứa 8 ngày
+        LocalDate today = LocalDate.now(); // Ngày hiện tại
+
+        // Lấy ngày hôm nay và 7 ngày tiếp theo
+        for (int i = 0; i < 8; i++) {
+            dates[i] = today.plusDays(i).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        }
+
+        return dates;
+    }
+
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
         button.setBackground(AppColor.xanh);
-        button.setForeground(Color.WHITE);
+        button.setForeground(AppColor.trang);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 18));
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+
+        return button;
+    }
+
+    private JButton createStyledButtonAc(String text, ActionListener actionListener) {
+        JButton button = new JButton(text);
+        button.setBackground(AppColor.xanh);
+        button.setForeground(AppColor.trang);
         button.setFont(new Font("Segoe UI", Font.BOLD, 14));
         button.addActionListener(actionListener);
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         return button;
     }
+    // Hàm làm mới
+    private void resetFields() {
+        // Đặt lại tên khách hàng
+        nameTextField.setText("");
 
-    private JButton createCategoryButton(String category) {
-        JButton button = createStyledButton(category);
-        button.setBackground(AppColor.trang);
-        button.setForeground(AppColor.den);
+        // Đặt lại số điện thoại
+        phoneTextField.setText("");
 
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setBackground(AppColor.xanhNhat); // Đổi màu nền khi rê chuột vào
-            }
+        // Đặt lại comboBox ngày
+        dateComboBox.setModel(new DefaultComboBoxModel<>(generateDateOptions()));
 
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                if (button != lastClickedButton) {
-                    button.setBackground(AppColor.trang); // Màu nền trở lại
-                }
-            }
-        });
+        // Đặt lại comboBox giờ
+        timeComboBox.setModel(new DefaultComboBoxModel<>(generateHourOptions(isToday[0])));
 
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (lastClickedButton != null) {
-                    lastClickedButton.setBackground(AppColor.trang); // Đổi màu nền của nút trước đó
-                }
-                button.setBackground(AppColor.xanhNhat); // Đổi màu nền của nút được nhấn
-                lastClickedButton = button; // Cập nhật nút được nhấn
-            }
-        });
+        // Đặt lại số người
+        soGheTextField.setText("");
 
-        return button;
-    }
-    // Inner class for custom border
-    class RoundedLineBorder implements Border {
-        private final int radius;
+        // Đặt lại ghi chú
+        notesTextField.setText("");
 
-        RoundedLineBorder(int radius) {
-            this.radius = radius;
-        }
-
-        @Override
-        public Insets getBorderInsets(Component c) {
-            return new Insets(radius + 1, radius + 1, radius + 1, radius + 1);
-        }
-
-        @Override
-        public boolean isBorderOpaque() {
-            return true;
-        }
-
-        @Override
-        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-            g.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
-        }
+        // Đặt lại mã bàn
+        tableTextField.setText("");
     }
 
-    // Lớp để hiển thị hộp thoại thông tin khách hàng
+    // Khởi tạo bảng danh sách đon đặt bàn
+    private JScrollPane createTable() {
+        String[] columnNames = {"Tên khách hàng", "SĐT", "Ngày đặt", "Số người", "Ghi chú",
+                "Mã Bàn", "Tình trạng đơn"};
+        ds_DatBan_TableModel = new DefaultTableModel(columnNames, 0);
+        ds_DatBan_TableList = new JTable(ds_DatBan_TableModel);
 
-    public class DatBanDialog extends JDialog {
-        private JTextField maDonField, soGheField, ghiChuField, maBanField, tenKhachHangField, soDienThoaiField;
-        private JDatePickerImpl ngayDatPicker;
-        private JButton xacNhanButton, huyButton;
-        private Ban ban;
+        // Cấu hình bảng để các cột không thể thay đổi vị trí hoặc kích thước
+        ds_DatBan_TableList.getTableHeader().setReorderingAllowed(false); // Ngừng cho phép di chuyển cột
+        ds_DatBan_TableList.getTableHeader().setResizingAllowed(false);   // Ngừng cho phép thay đổi kích thước cột
 
-        public DatBanDialog(Ban ban) {
-            this.ban = ban; // Lưu đối tượng Ban vào biến instance để sử dụng trong dialog
+        // Tùy chỉnh cuộn
+        JScrollPane scrollPane = new JScrollPane(ds_DatBan_TableList);
+        scrollPane.setWheelScrollingEnabled(true); // Kích hoạt cuộn mượt
 
-            setTitle("Thông tin đặt bàn");
-            setSize(400, 350);
-            setLayout(new GridBagLayout());
+        // Tăng tốc độ cuộn
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16); // Tăng tốc cuộn dọc
+        scrollPane.getHorizontalScrollBar().setUnitIncrement(16); // Tăng tốc cuộn ngang (nếu cần)
 
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.insets = new Insets(10, 10, 5, 10); // Điều chỉnh khoảng cách giữa các thành phần
-            gbc.fill = GridBagConstraints.HORIZONTAL;
+        // Tự động điều chỉnh chiều rộng cột sau khi thêm dữ liệu
+        resizeColumns();
 
-            // Các trường nhập thông tin khách hàng
-            maDonField = new JTextField(String.format("DDB"), 15);
-            maDonField.setEditable(true);
+        // Gọi hàm tùy chỉnh bảng (nếu cần thêm các tùy chỉnh)
+        customizeTable();
 
-            // Tạo model cho JDatePicker
-            SqlDateModel model = new SqlDateModel();
-            Properties p = new Properties();
-            p.put("text.today", "Today");
-            p.put("text.month", "Month");
-            p.put("text.year", "Year");
-            JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
-            ngayDatPicker = new JDatePickerImpl(datePanel, new DateComponentFormatter());
+        return scrollPane;
+    }
 
-            soGheField = new JTextField(15);
-            ghiChuField = new JTextField(15);
+    private void resizeColumns() {
+        // Tính chiều rộng tối đa cho mỗi cột dựa trên dữ liệu và tiêu đề
+        for (int columnIndex = 0; columnIndex < ds_DatBan_TableList.getColumnCount(); columnIndex++) {
+            int maxWidth = 0;
 
-            // Hiển thị mã bàn từ đối tượng ban truyền vào
-            maBanField = new JTextField(ban.getMaBan(), 15);
-            maBanField.setEditable(false);  // Không cho phép chỉnh sửa mã bàn
+            // Tính chiều rộng của tiêu đề cột
+            String header = ds_DatBan_TableList.getColumnName(columnIndex);
+            maxWidth = Math.max(maxWidth, header.length() * 10);  // Giả sử 10 là độ rộng mỗi ký tự
 
-            tenKhachHangField = new JTextField(15);
-            soDienThoaiField = new JTextField(15);
+            // Duyệt qua tất cả các hàng để tìm chiều rộng tối đa của mỗi cột
+            for (int rowIndex = 0; rowIndex < ds_DatBan_TableList.getRowCount(); rowIndex++) {
+                Object value = ds_DatBan_TableList.getValueAt(rowIndex, columnIndex);
+                int cellWidth = value != null ? value.toString().length() * 10 : 0; // Tính chiều dài chuỗi và nhân với độ rộng mỗi ký tự
+                maxWidth = Math.max(maxWidth, cellWidth);
+            }
 
-            // Thêm các label và component vào giao diện
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.anchor = GridBagConstraints.WEST;
-            add(new JLabel("Mã đơn:"), gbc);
-            gbc.gridx = 1;
-            add(maDonField, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 1;
-            add(new JLabel("Ngày đặt:"), gbc);
-            gbc.gridx = 1;
-            add(ngayDatPicker, gbc); // Sử dụng JDatePicker thay vì JTextField
-
-            gbc.gridx = 0;
-            gbc.gridy = 2;
-            add(new JLabel("Số ghế:"), gbc);
-            gbc.gridx = 1;
-            add(soGheField, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 3;
-            add(new JLabel("Ghi chú:"), gbc);
-            gbc.gridx = 1;
-            add(ghiChuField, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 4;
-            add(new JLabel("Mã bàn:"), gbc);
-            gbc.gridx = 1;
-            add(maBanField, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 5;
-            add(new JLabel("Tên KH:"), gbc);
-            gbc.gridx = 1;
-            add(tenKhachHangField, gbc);
-
-            gbc.gridx = 0;
-            gbc.gridy = 6;
-            add(new JLabel("SĐT:"), gbc);
-            gbc.gridx = 1;
-            add(soDienThoaiField, gbc);
-
-            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-            xacNhanButton = createStyledButton("Xác nhận");
-            huyButton = createStyledButton("Hủy");
-
-//            xacNhanButton.setPreferredSize(new Dimension(100, 30));
-//            huyButton.setPreferredSize(new Dimension(100, 30));
-
-            buttonPanel.add(xacNhanButton);
-            buttonPanel.add(huyButton);
-
-            gbc.gridx = 0;
-            gbc.gridy = 7;
-            gbc.gridwidth = 2;
-            gbc.anchor = GridBagConstraints.SOUTHEAST;
-            gbc.insets = new Insets(15, 10, 10, 10);
-            add(buttonPanel, gbc);
-
-            // Sự kiện cho nút xác nhận
-            xacNhanButton.addActionListener(e -> {
-                String maDon = maDonField.getText();
-                Date selectedDate = (Date) ngayDatPicker.getModel().getValue(); // Lấy ngày từ JDatePicker
-                String soGhe = soGheField.getText();
-                String ghiChu = ghiChuField.getText();
-                String tenKhachHang = tenKhachHangField.getText();
-                String soDienThoai = soDienThoaiField.getText();
-
-                if (!maDon.isEmpty() && selectedDate != null && !soGhe.isEmpty() && !tenKhachHang.isEmpty() && !soDienThoai.isEmpty()) {
-                    DonDatBan donDatBan = new DonDatBan(maDon, selectedDate.toString(), Integer.parseInt(soGhe), ghiChu, ban, tenKhachHang, soDienThoai);
-
-                    try {
-                        dataBan.updateTrangThaiBan(ban.getMaBan(), "DaDat");
-                        capNhatGiaoDien();
-                        try {
-                            dataDonDatBan.addDonDatBan(donDatBan);
-                        } catch (Exception ex) {
-                            throw new RuntimeException(ex);
-                        }
-                        JOptionPane.showMessageDialog(this, "Đơn đặt bàn đã được thêm thành công!");
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(this, "Lỗi khi thêm đơn đặt bàn: " + ex.getMessage());
-                        ex.printStackTrace();
-                    }
+            // Cập nhật chiều rộng cột dựa trên chiều rộng tối đa (cả tiêu đề và dữ liệu)
+            ds_DatBan_TableList.getColumnModel().getColumn(columnIndex).setPreferredWidth(maxWidth);
+        }
+        ds_DatBan_TableList.revalidate();
+        ds_DatBan_TableList.repaint();
+    }
 
 
-                    dispose(); // Đóng dialog sau khi xác nhận
-                } else {
-                    JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!");
+
+
+    private void addRowToTable() {
+        ds_KhachHang_dao = new KhachHang_Dao();
+        ds_DonDat_dao = new DonDatBan_Dao();
+        try {
+            String maDonDat = "MDD" + taoMaTuDong();
+            if (maDonDat == null || maDonDat.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Mã đơn đặt không hợp lệ!", "Lỗi",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Retrieve values from input fields
+            String tenKhachHang = nameTextField.getText();
+            String soDienThoai = phoneTextField.getText();
+            String ngayDat = dateComboBox.getSelectedItem().toString();
+            String gioDat = timeComboBox.getSelectedItem().toString();
+            String ngayGioDat = ngayDat + " " + gioDat;
+            int soNguoi = Integer.parseInt(soGheTextField.getText());
+            String ghiChu = notesTextField.getText();
+            String maBan = tableTextField.getText();
+
+            // Set default status to "Chờ xử lý"
+            TrangThaiDonDat tinhTrangDon = TrangThaiDonDat.ChoXuLy;
+
+            // Check if customer exists in the database
+            KhachHang khachHang = ds_KhachHang_dao.getKhachHangBySoDienThoai(soDienThoai);
+            boolean isNewCustomer = false;
+
+            if (khachHang == null) {
+                // Customer does not exist, create a new one
+                String maKhachHang = "KH" + taoMaTuDong();
+                khachHang = new KhachHang(maKhachHang, tenKhachHang, soDienThoai);
+                isNewCustomer = true; // Mark as new customer
+            }
+
+            // Create a new DonDatBan object
+            LocalDateTime parsedNgayGioDat = LocalDateTime.parse(ngayGioDat, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+            DonDatBan donDatBan = new DonDatBan(
+                    maDonDat,
+                    khachHang,
+                    soDienThoai,
+                    parsedNgayGioDat,
+                    soNguoi,
+                    ghiChu,
+                    new Ban(maBan),
+                    tinhTrangDon
+            );
+
+            // Add DonDatBan to the database
+            boolean addedOrder = ds_DonDat_dao.addDonDatBan(donDatBan);
+            if (!addedOrder) {
+                JOptionPane.showMessageDialog(null, "Thêm đơn đặt bàn thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // If the customer is new and the order was added successfully, add the customer
+            if (isNewCustomer) {
+                boolean addedCustomer = ds_KhachHang_dao.addKhachHang(khachHang);
+                if (!addedCustomer) {
+                    JOptionPane.showMessageDialog(null, "Thêm khách hàng thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
+            }
+
+            // Add row to the table on the UI
+            ds_DatBan_TableModel.addRow(new Object[]{
+                    tenKhachHang,
+                    soDienThoai,
+                    ngayGioDat,
+                    soNguoi,
+                    ghiChu,
+                    maBan,
+                    tinhTrangDon
             });
 
-            // Sự kiện cho nút hủy
-            huyButton.addActionListener(e -> dispose());
+            JOptionPane.showMessageDialog(null, "Thêm đơn đặt bàn thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 
-            setLocationRelativeTo(null);
-            setVisible(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Có lỗi xảy ra: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
+
     }
 
-
-
     private void customizeTable() {
-        danhSachDatBantableList.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        danhSachDatBantableList.setRowHeight(30);
-        danhSachDatBantableList.setBackground(AppColor.trang);
-        danhSachDatBantableList.setForeground(AppColor.den);
-        danhSachDatBantableList.setGridColor(AppColor.xanh);
-        danhSachDatBantableList.setFillsViewportHeight(true);
-        danhSachDatBantableList.setDefaultEditor(Object.class, null);
-
-        // Tự động điều chỉnh độ rộng của từng cột
-        for (int i = 0; i < danhSachDatBantableList.getColumnCount(); i++) {
-            packColumn(danhSachDatBantableList, i, 10); // 10 là lề cho mỗi cột
-        }
-
-        danhSachDatBantableList.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+        ds_DatBan_TableList.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        ds_DatBan_TableList.setRowHeight(30);
+        ds_DatBan_TableList.setBackground(AppColor.trang);
+        ds_DatBan_TableList.setForeground(AppColor.den);
+        ds_DatBan_TableList.setGridColor(AppColor.xanh);
+        //MÀU CỦA BẢNG KHI CHƯA CÓ CÁC DÒNG
+        ds_DatBan_TableList.setFillsViewportHeight(true);
+        //set editable = false
+        ds_DatBan_TableList.setDefaultEditor(Object.class, null);
+        ds_DatBan_TableList.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 if(isSelected){
                     c.setBackground(AppColor.xanhNhat);
-                } else if (row % 2 == 0) {
+                }
+                else if (row % 2 == 0) {
                     c.setBackground(AppColor.xam);
                 } else {
                     c.setBackground(AppColor.trang);
@@ -694,13 +653,27 @@ public class QuanLyDatBan extends JPanel {
                 return c;
             }
         });
+        //đổi màu dòng khi có event click
 
-        JTableHeader header = danhSachDatBantableList.getTableHeader();
+        JTableHeader header =  ds_DatBan_TableList.getTableHeader();
         header.setBackground(AppColor.xanh);
         header.setForeground(Color.WHITE);
         header.setFont(new Font("Arial", Font.BOLD, 14));
     }
 
+    public String taoMaTuDong() {
+        // Lấy thời gian hiện tại
+        LocalDateTime now = LocalDateTime.now();
+
+        // Định dạng thời gian thành chuỗi
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String formattedDateTime = now.format(formatter);
+
+        // Tạo mã tự động
+        String maTuDong = formattedDateTime;
+
+        return maTuDong;
+    }
 
 }
 

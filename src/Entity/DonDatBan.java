@@ -1,95 +1,117 @@
 package Entity;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class DonDatBan
-{
-    private String maDDB;
-    private String ngayDatBan;
+public class DonDatBan {
+    private String maDD;
+    private KhachHang tenKH;
+    private KhachHang sDT;
+    private LocalDateTime ngayDat;
     private int soGhe;
     private String ghiChu;
-    private Ban ban;
-    private String khachHang;
-    private String sdt;
+    private Ban maBan;
+    private TrangThaiDonDat trangThaiDDB;
+    private KhachHang maKH;
 
-    public DonDatBan() {}
+    public DonDatBan(String maDonDat, KhachHang khachHang, String soDienThoai, LocalDateTime parse, int soNguoi, String ghiChu, Ban maBan, TrangThaiDonDat tinhTrangDon) {
+    }
 
-    public DonDatBan(String maDDB, String ngayDatBan, int soGhe, String ghiChu, Ban ban, String khachHang, String sdt) {
-        this.maDDB = maDDB;
-        this.ngayDatBan = ngayDatBan;
+    public DonDatBan(String maDD, KhachHang tenKH, KhachHang sDT, LocalDateTime ngayDat, int soGhe,
+                     String ghiChu, Ban maBan, TrangThaiDonDat trangThaiDDB, KhachHang maKH) {
+        this.maDD = maDD;
+        this.tenKH = tenKH;
+        this.sDT = sDT;
+        this.ngayDat = ngayDat;
         this.soGhe = soGhe;
-        this.ban = ban;
         this.ghiChu = ghiChu;
-        this.khachHang = khachHang;
-        this.sdt = sdt;
+        this.maBan = maBan;
+        this.trangThaiDDB = trangThaiDDB;
+        this.maKH = maKH;
     }
 
-    public String getSdt() {
-        return sdt;
+    public DonDatBan(String maDD, KhachHang tenKH, KhachHang sDT, LocalDateTime ngayDat, int soGhe,
+                     String ghiChu, Ban maBan, TrangThaiDonDat trangThaiDDB) {
+        this.maDD = maDD;
+        this.tenKH = tenKH;
+        this.sDT = sDT;
+        this.ngayDat = ngayDat;
+        this.soGhe = soGhe;
+        this.ghiChu = ghiChu;
+        this.maBan = maBan;
+        this.trangThaiDDB = trangThaiDDB;
     }
 
-    public void setSdt(String sdt) {
-        this.sdt = sdt;
+    public String getMaDD() {
+        return maDD;
     }
 
-    public String getMaDDB()
-    {
-        return maDDB;
+    public KhachHang getTenKH() {
+        return tenKH;
     }
 
-    public void setMaDDB(String maDDB)
-    {
-        this.maDDB = maDDB;
+    public KhachHang getsDT() {
+        return sDT;
     }
 
-    public String getNgayDatBan()
-    {
-        return ngayDatBan;
+    public LocalDateTime getNgayDat() {
+        return ngayDat;
     }
 
-    public void setNgayDatBan(String ngayDatBan)
-    {
-        this.ngayDatBan = ngayDatBan;
-    }
-
-    public int getSoGhe()
-    {
+    public int getSoGhe() {
         return soGhe;
     }
 
-    public void setSoGhe(int soGhe)
-    {
-        this.soGhe = soGhe;
-    }
-
-    public String getGhiChu()
-    {
+    public String getGhiChu() {
         return ghiChu;
     }
 
-    public void setGhiChu(String ghiChu)
-    {
+    public Ban getMaBan() {
+        return maBan;
+    }
+
+    public TrangThaiDonDat getTrangThaiDDB() {
+        return trangThaiDDB;
+    }
+
+    public KhachHang getMaKH() {
+        return maKH;
+    }
+
+    public void setNgayDat(LocalDateTime ngayDat) {
+        this.ngayDat = ngayDat;
+    }
+
+    public void setMaDD(String maDD) {
+        this.maDD = maDD;
+    }
+
+    public void setTenKH(KhachHang tenKH) {
+        this.tenKH = tenKH;
+    }
+
+    public void setsDT(KhachHang sDT) {
+        this.sDT = sDT;
+    }
+
+    public void setSoGhe(int soGhe) {
+        this.soGhe = soGhe;
+    }
+
+    public void setGhiChu(String ghiChu) {
         this.ghiChu = ghiChu;
     }
 
-    public Ban getBan()
-    {
-        return ban;
+    public void setMaBan(Ban maBan) {
+        this.maBan = maBan;
     }
 
-    public void setBan(Ban maBan)
-    {
-        this.ban = maBan;
+    public void setTrangThaiDDB(TrangThaiDonDat trangThaiDDB) {
+        this.trangThaiDDB = trangThaiDDB;
     }
 
-    public String getKhachHang()
-    {
-        return khachHang;
-    }
-
-    public void setKhachHang(String khachHang)
-    {
-        this.khachHang = khachHang;
+    public void setMaKH(KhachHang maKH) {
+        this.maKH = maKH;
     }
 
     @Override
@@ -97,11 +119,11 @@ public class DonDatBan
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DonDatBan donDatBan = (DonDatBan) o;
-        return Objects.equals(maDDB, donDatBan.maDDB);
+        return Objects.equals(maDD, donDatBan.maDD);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(maDDB);
+        return Objects.hashCode(maDD);
     }
 }
