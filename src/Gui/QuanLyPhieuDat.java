@@ -245,12 +245,13 @@ public class QuanLyPhieuDat extends JPanel {
 
     private void thanhToan() {
         try {
-            //HỎI CÓ MUỐN THANH TOÁN
+            // HỎI CÓ MUỐN THANH TOÁN
             int dialogButton = JOptionPane.YES_NO_OPTION;
             int dialogResult = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn thanh toán?", "Xác nhận", dialogButton);
             if (dialogResult == JOptionPane.NO_OPTION) {
                 return;
             }
+
             // Tạo hóa đơn mới
             hoaDon = new HoaDon();
             LocalDateTime current = LocalDateTime.now();
@@ -265,13 +266,12 @@ public class QuanLyPhieuDat extends JPanel {
                 String tenMon = (String) tableModel.getValueAt(i, 0);
 
                 // Lấy đơn giá và chuyển sang kiểu double
-                // Kiểm tra xem giá trị có phải là Double hay không và ép kiểu phù hợp
                 Object donGiaObject = tableModel.getValueAt(i, 2);
                 double donGia = 0.0;
                 if (donGiaObject instanceof Double) {
-                    donGia = (Double) donGiaObject; // Nếu là Double, lấy trực tiếp
+                    donGia = (Double) donGiaObject;
                 } else if (donGiaObject instanceof String) {
-                    donGia = Double.parseDouble((String) donGiaObject); // Nếu là String, chuyển thành Double
+                    donGia = Double.parseDouble((String) donGiaObject);
                 }
 
                 int soLuong = (int) tableModel.getValueAt(i, 1);
@@ -293,7 +293,6 @@ public class QuanLyPhieuDat extends JPanel {
 
             // Lấy danh sách mã phiếu theo mã bàn
             ArrayList<String> dsPhieu = banDao.getDSPhieu(maBan);
-            System.out.println(dsPhieu);
 
             // Chạy vòng lập xóa chi tiết phiếu theo mã phiếu
             for (String maPhieu : dsPhieu) {
@@ -304,13 +303,13 @@ public class QuanLyPhieuDat extends JPanel {
             banDao.deletePhieu(maBan);
 
             // Cập nhật trạng thái bàn
-            banDao.updateTrangThaiBan(maBan,"Trong");
+            banDao.updateTrangThaiBan(maBan, "Trong");
 
             // Cập nhật table và danh sách bàn
             tableModel.setRowCount(0);
             loadBanFromDatabase();
 
-            //xuất hóa đơn thành một frame mới
+            // Xuất hóa đơn thành một frame mới
             JFrame frame = new JFrame("Hóa đơn");
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setSize(400, 600);
@@ -319,11 +318,26 @@ public class QuanLyPhieuDat extends JPanel {
             frame.add(new HoaDonPanel(hoaDon));
             frame.setVisible(true);
 
+            // Xuất hóa đơn ra file PDF
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Chọn nơi lưu hóa đơn");
+            fileChooser.setSelectedFile(new java.io.File("HoaDon_" + hoaDon.getMaHD() + ".pdf"));
+
+            int userSelection = fileChooser.showSaveDialog(this);
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+                HoaDonPDFExporter pdfExporter = new HoaDonPDFExporter();
+                pdfExporter.exportHoaDon(hoaDon, filePath);
+                JOptionPane.showMessageDialog(this, "Hóa đơn đã được lưu thành công tại: " + filePath, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Đã xảy ra lỗi khi xuất hóa đơn: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 
     private void xoaChiTiet() {
         int row = tableChiTietPhieu.getSelectedRow();

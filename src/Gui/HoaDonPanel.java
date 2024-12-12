@@ -132,3 +132,4 @@ public class HoaDonPanel extends JPanel {
         add(thankYouLabel);
     }
 }
+

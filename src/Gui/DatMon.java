@@ -467,7 +467,7 @@ public class DatMon extends JPanel {
         }
 
         // Kiểm tra chọn bàn
-        if (table.equals("Bàn ăn")) {  // Dùng equals thay vì '=='
+        if (table.equals("B")) {  // Dùng equals thay vì '=='
             JOptionPane.showMessageDialog(this, "Vui lòng chọn bàn trước khi đặt!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
