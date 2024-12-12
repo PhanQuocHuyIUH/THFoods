@@ -89,7 +89,13 @@ public class QuanLyHoaDon extends JPanel {
         // Bảng hiển thị hóa đơn
         hoaDonTable = new JTable(new DefaultTableModel(
                 new Object[]{"Mã Hóa Đơn", "Số Lượng Món", "Ngày", "Tổng Tiền"}, 0
-        ));
+        )) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Trả về false để ngăn chỉnh sửa mọi ô
+                return false;
+            }
+        };;
         JScrollPane hoaDonScrollPane = new JScrollPane(hoaDonTable);
         hoaDonScrollPane.setPreferredSize(new Dimension(600, 150));
         hoaDonScrollPane.setBorder(new EmptyBorder(10, 0, 0, 0)); // Cách phần header ra một đoạn
@@ -112,7 +118,13 @@ public class QuanLyHoaDon extends JPanel {
         // Bảng chi tiết hóa đơn
         chiTietTable = new JTable(new DefaultTableModel(
                 new Object[]{"Mã Hóa Đơn", "Tên Món", "Số Lượng", "Giá", "Thành Tiền"}, 0
-        ));
+        )) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Trả về false để ngăn chỉnh sửa mọi ô
+                return false;
+            }
+        };;
         JScrollPane chiTietScrollPane = new JScrollPane(chiTietTable);
         chiTietScrollPane.setPreferredSize(new Dimension(600, 150));
 
