@@ -225,13 +225,48 @@ public class Ban_Dao {
         return dsBan;
     }
 
-    public void updateCTPhieu(String maPhieu, String maMon, int soLuong) throws SQLException {
-        Database.getInstance();
-        Connection con = Database.getConnection();
-        String sql = "update CTDM set SoLuong = " + soLuong + " where MaPDB = '" + maPhieu + "' and MaMon = '" + maMon + "'";
-        Statement statement = con.createStatement();
-        statement.executeUpdate(sql);
+    public void updateCTPhieu(String maPhieu, String maMon, int soluong) throws SQLException {
+        Connection con = null;
+        PreparedStatement statement = null;
+
+        try {
+            System.out.println(soluong);
+            // Kết nối tới cơ sở dữ liệu
+            con = Database.getConnection();
+
+            // Câu lệnh SQL sử dụng dấu ? để tránh SQL Injection
+            String sql = "UPDATE CTDM SET SoLuong = ? WHERE MaPDB = ? AND MaMon = ?";
+
+            // Sử dụng PreparedStatement để tránh SQL Injection
+            statement = con.prepareStatement(sql);
+
+            // Thiết lập các tham số cho câu lệnh
+            statement.setInt(1, soluong);          // Set giá trị cho SoLuong
+            statement.setString(2, maPhieu);      // Set giá trị cho MaPDB
+            statement.setString(3, maMon);        // Set giá trị cho MaMon
+
+            // Thực thi câu lệnh update
+            int rowsAffected = statement.executeUpdate();
+
+            if (rowsAffected == 0) {
+                System.out.println("Không tìm thấy bản ghi để cập nhật");
+            } else {
+                System.out.println("Cập nhật thành công");
+            }
+        } catch (SQLException e) {
+            // Xử lý ngoại lệ
+            e.printStackTrace();
+        } finally {
+            // Đảm bảo đóng các tài nguyên khi không cần thiết nữa
+            if (statement != null) {
+                statement.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
     }
+
 
     public ArrayList<Ban> getAllBan_Sort() throws SQLException {
         ArrayList<Ban> dsBan = new ArrayList<>();

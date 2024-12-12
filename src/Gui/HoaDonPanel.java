@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class HoaDonPanel extends JPanel {
-    public HoaDonPanel(HoaDon hoaDon) {
+    public HoaDonPanel(HoaDon hoaDon, String ban) {
         // Thiết lập bố cục và màu sắc cho panel
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS)); // Bố cục dọc
         setBackground(Color.WHITE); // Màu nền trắng
@@ -42,7 +42,7 @@ public class HoaDonPanel extends JPanel {
         JLabel maHDLabel = new JLabel("Mã hóa đơn: " + hoaDon.getMaHD());
         JLabel ngayTaoLabel = new JLabel("Ngày tạo: " + ngayTao);
         JLabel gioTaoLabel = new JLabel("Giờ xuất: " + gioTao);
-        JLabel banLabel = new JLabel("Bàn: Bàn số 5"); // Giả định thông tin bàn
+        JLabel banLabel = new JLabel("Bàn:" + ban); // Giả định thông tin bàn
 
         // Cài đặt phông chữ
         Font infoFont = new Font("Arial", Font.PLAIN, 14);

@@ -10,7 +10,7 @@ import Entity.ChiTietHoaDon;
 
 public class HoaDonPDFExporter {
 
-    public void exportHoaDon(HoaDon hoaDon, String filePath) {
+    public void exportHoaDon(HoaDon hoaDon, String filePath, String ban) {
         try {
             // Tạo tài liệu PDF
             Document document = new Document(PageSize.A4);
@@ -42,7 +42,7 @@ public class HoaDonPDFExporter {
             Paragraph maHDLabel = new Paragraph("Mã hóa đơn: " + hoaDon.getMaHD(), font);
             Paragraph ngayTaoLabel = new Paragraph("Ngày tạo: " + ngayTao, font);
             Paragraph gioTaoLabel = new Paragraph("Giờ xuất: " + gioTao, font);
-            Paragraph banLabel = new Paragraph("Bàn: Bàn số 5", font); // Giả định thông tin bàn
+            Paragraph banLabel = new Paragraph("Bàn: " + ban, font); // Giả định thông tin bàn
 
             maHDLabel.setAlignment(Element.ALIGN_CENTER);
             ngayTaoLabel.setAlignment(Element.ALIGN_CENTER);
