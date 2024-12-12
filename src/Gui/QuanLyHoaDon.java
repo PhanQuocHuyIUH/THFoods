@@ -12,6 +12,7 @@ import Entity.MonAn;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
@@ -101,17 +102,32 @@ public class QuanLyHoaDon extends JPanel {
         hoaDonScrollPane.setBorder(new EmptyBorder(10, 0, 0, 0)); // Cách phần header ra một đoạn
 
         // Trang trí bảng hóa đơn
-        Font tableFont = new Font("Arial Unicode MS", Font.PLAIN, 14);
-        hoaDonTable.setFont(tableFont);
+        hoaDonTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         hoaDonTable.setRowHeight(30);
-        hoaDonTable.setBackground(Color.WHITE);
-        hoaDonTable.setForeground(new Color(50, 50, 50));
-        hoaDonTable.setSelectionBackground(new Color(0, 0, 255, 150));
-        hoaDonTable.setSelectionForeground(Color.WHITE);
-        hoaDonTable.setGridColor(new Color(50, 150, 200));
+        hoaDonTable.setBackground(AppColor.trang);
+        hoaDonTable.setForeground(AppColor.den);
+        hoaDonTable.setGridColor(AppColor.xanh);
+        hoaDonTable.setFillsViewportHeight(true);
+        hoaDonTable.setDefaultEditor(Object.class, null);
+        hoaDonTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if(isSelected){
+                    c.setBackground(AppColor.xanhNhat);
+                }
+                else if (row % 2 == 0) {
+                    c.setBackground(AppColor.xam);
+                } else {
+                    c.setBackground(AppColor.trang);
+                }
+                return c;
+            }
+        });
 
+        //đổi màu dòng khi có event click
         JTableHeader header = hoaDonTable.getTableHeader();
-        header.setBackground(new Color(105, 165, 225));
+        header.setBackground(AppColor.xanh);
         header.setForeground(Color.WHITE);
         header.setFont(new Font("Arial", Font.BOLD, 14));
 
@@ -129,17 +145,34 @@ public class QuanLyHoaDon extends JPanel {
         chiTietScrollPane.setPreferredSize(new Dimension(600, 150));
 
         // Trang trí bảng chi tiết hóa đơn
-        chiTietTable.setFont(tableFont);
+        chiTietTable.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         chiTietTable.setRowHeight(30);
-        chiTietTable.setBackground(Color.WHITE);
-        chiTietTable.setForeground(new Color(50, 50, 50));
-        chiTietTable.setSelectionBackground(new Color(0, 0, 255, 150));
-        chiTietTable.setSelectionForeground(Color.WHITE);
-        chiTietTable.setGridColor(new Color(50, 150, 200));
-        JTableHeader header1 = chiTietTable.getTableHeader();
-        header1.setBackground(new Color(105, 165, 225));
-        header1.setForeground(Color.WHITE);
-        header1.setFont(new Font("Arial", Font.BOLD, 14));
+        chiTietTable.setBackground(AppColor.trang);
+        chiTietTable.setForeground(AppColor.den);
+        chiTietTable.setGridColor(AppColor.xanh);
+        chiTietTable.setFillsViewportHeight(true);
+        chiTietTable.setDefaultEditor(Object.class, null);
+        chiTietTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if(isSelected){
+                    c.setBackground(AppColor.xanhNhat);
+                }
+                else if (row % 2 == 0) {
+                    c.setBackground(AppColor.xam);
+                } else {
+                    c.setBackground(AppColor.trang);
+                }
+                return c;
+            }
+        });
+
+        //đổi màu dòng khi có event click
+        JTableHeader headerDetail = chiTietTable.getTableHeader();
+        headerDetail.setBackground(AppColor.xanh);
+        headerDetail.setForeground(Color.WHITE);
+        headerDetail.setFont(new Font("Arial", Font.BOLD, 14));
 
         // Panel chứa 2 bảng, set màu nền trắng
         JPanel tablePanel = new JPanel();

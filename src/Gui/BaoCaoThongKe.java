@@ -14,6 +14,7 @@ import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
@@ -58,7 +59,7 @@ public class BaoCaoThongKe extends JPanel {
         ));
         reportTypeComboBox.setMaximumSize(new Dimension(400, 50)); // Tăng kích thước tối đa của ComboBox (độ cao 50 pixel)
         reportTypeComboBox.setPreferredSize(new Dimension(400, 50)); // Tăng kích thước ưu tiên của ComboBox (độ cao 50 pixel)
-        reportTypeComboBox.setBackground(new Color(230, 240, 255));
+        reportTypeComboBox.setBackground(AppColor.trang);
 
         // Bảng để hiển thị thông tin chi tiết
         tableModel = new DefaultTableModel();
@@ -131,7 +132,7 @@ public class BaoCaoThongKe extends JPanel {
         // Tùy chỉnh màu sắc biểu đồ cột
         CategoryPlot plot = barChart.getCategoryPlot();
         BarRenderer renderer = new BarRenderer();
-        renderer.setSeriesPaint(0, new Color(0, 102, 204));
+        renderer.setSeriesPaint(0, AppColor.xanhDam);
         plot.setRenderer(renderer);
 
         // Cập nhật bảng thông tin
@@ -169,7 +170,7 @@ public class BaoCaoThongKe extends JPanel {
         // Tùy chỉnh màu sắc biểu đồ cột
         CategoryPlot plot = barChart.getCategoryPlot();
         BarRenderer renderer = new BarRenderer();
-        renderer.setSeriesPaint(0, new Color(0, 102, 204));
+        renderer.setSeriesPaint(0, AppColor.xanhDam);
         plot.setRenderer(renderer);
 
         // Cập nhật bảng thông tin
@@ -206,7 +207,7 @@ public class BaoCaoThongKe extends JPanel {
         // Tùy chỉnh màu sắc biểu đồ đường
         CategoryPlot plot = lineChart.getCategoryPlot();
         LineAndShapeRenderer renderer = new LineAndShapeRenderer();
-        renderer.setSeriesPaint(0, new Color(0, 102, 204, 150));
+        renderer.setSeriesPaint(0, AppColor.xanhDam);
         plot.setRenderer(renderer);
 
         // Cập nhật bảng thông tin
@@ -244,7 +245,7 @@ public class BaoCaoThongKe extends JPanel {
         // Tùy chỉnh màu sắc biểu đồ cột
         CategoryPlot plot = barChart.getCategoryPlot();
         BarRenderer renderer = new BarRenderer();
-        renderer.setSeriesPaint(0, new Color(0, 102, 204));
+        renderer.setSeriesPaint(0, AppColor.xanhDam);
         plot.setRenderer(renderer);
 
         // Cập nhật bảng thông tin
@@ -269,16 +270,30 @@ public class BaoCaoThongKe extends JPanel {
     private void customizeOrderTable() {
         table.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         table.setRowHeight(30);
-        table.setBackground(new Color(230, 240, 255));
-        table.setForeground(new Color(50, 50, 50));
-        table.setSelectionBackground(new Color(0, 0, 255, 150));
-        table.setSelectionForeground(Color.WHITE);
-        table.setGridColor(new Color(50, 150, 200));
+        table.setBackground(AppColor.trang);
+        table.setForeground(AppColor.den);
+        table.setGridColor(AppColor.xanh);
+        table.setFillsViewportHeight(true);
         table.setDefaultEditor(Object.class, null);
+        table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if(isSelected){
+                    c.setBackground(AppColor.xanhNhat);
+                }
+                else if (row % 2 == 0) {
+                    c.setBackground(AppColor.xam);
+                } else {
+                    c.setBackground(AppColor.trang);
+                }
+                return c;
+            }
+        });
 
-
+        //đổi màu dòng khi có event click
         JTableHeader header = table.getTableHeader();
-        header.setBackground(new Color(105, 165, 225));
+        header.setBackground(AppColor.xanh);
         header.setForeground(Color.WHITE);
         header.setFont(new Font("Arial", Font.BOLD, 14));
     }
