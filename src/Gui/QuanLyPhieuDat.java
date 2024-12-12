@@ -319,7 +319,7 @@ public class QuanLyPhieuDat extends JPanel {
             frame.add(new HoaDonPanel(hoaDon));
             frame.setVisible(true);
 
-            JOptionPane.showMessageDialog(this, "Thanh toán thành công!");
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -510,6 +510,7 @@ public class DatMon extends JPanel {
             banDao.updateTrangThaiBan(banUpdate);
 
             JOptionPane.showMessageDialog(this, "Đặt món thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            //làm mới bottom panel
             resetOrder();
         } catch (Exception e) {
             e.printStackTrace();
@@ -523,6 +524,38 @@ public class DatMon extends JPanel {
         orderQuantity.clear(); // Xóa thông tin số lượng món
         totalPrice = 0.0;
         totalLabel.setText("0 VND");
+        noteField.setText("");
+        tableComboBox.setSelectedIndex(0);
+        //LOAD LẠI COMBOBOX
+        try {
+            Ban_Dao banDao = new Ban_Dao();
+            dsBan = banDao.getAllBan();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            Ban_Dao banDao = new Ban_Dao();
+            dsBan = banDao.getAllBan();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //sort theo mã bàn tăng dần (mã bàn có dạng Bxx) chỉ lấy 2 số cuối để sort
+        dsBan.sort((b1, b2) -> Integer.parseInt(b1.getMaBan().substring(1)) - Integer.parseInt(b2.getMaBan().substring(1)));
+        String[] tables = new String[dsBan.size()];
+        tables[0] = "Bàn ăn";
+        for (int i = 1; i < dsBan.size(); i++) {
+            if (dsBan.get(i-1).getTrangThai() == TrangThaiBan.DangDung) {
+                tables[i] = dsBan.get(i-1).getMaBan() + " - Đang dùng";
+                //màu xanh cho bàn đang dùng
+                tables[i] = "<html><font color='blue'>" + tables[i] + "</font></html>";
+            }
+            if (dsBan.get(i-1).getTrangThai() == TrangThaiBan.Trong) {
+                tables[i] = dsBan.get(i-1).getMaBan() + " - Trống";
+                //màu xanh cho bàn trống
+                tables[i] = "<html><font color='green'>" + tables[i] + "</font></html>";
+            }
+        }
+        tableComboBox.setModel(new DefaultComboBoxModel<>(tables));
     }
 
     private void cancelSelectedItem() {
