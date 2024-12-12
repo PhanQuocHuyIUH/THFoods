@@ -584,12 +584,13 @@ public class QuanLyDatBan extends JPanel {
             DonDatBan donDatBan = new DonDatBan(
                     maDonDat,
                     khachHang,
-                    soDienThoai,
+                    khachHang,
                     parsedNgayGioDat,
                     soNguoi,
                     ghiChu,
                     new Ban(maBan),
-                    tinhTrangDon
+                    tinhTrangDon,
+                    khachHang
             );
 
             // Add DonDatBan to the database
