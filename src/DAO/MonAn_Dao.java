@@ -96,7 +96,6 @@ public class MonAn_Dao {
 
             return new MonAn(maMon, tenMon, loaiMon, donGia, moTa);
         }
-        System.out.println("Không tìm thấy món ăn");
         return null;
     }
 

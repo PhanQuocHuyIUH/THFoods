@@ -52,8 +52,8 @@ public class QuanLyHoaDon extends JPanel {
         JPanel selectTablePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 15));
         selectTablePanel.setBackground(new Color(230, 240, 255));
 
-        tableComboBox = new JComboBox<>(new String[]{"Tất cả", "Bàn 1", "Bàn 2", "Bàn 3", "Bàn 4", "Bàn 5"});
-        JLabel ban = new JLabel("Chọn Bàn:");
+        tableComboBox = new JComboBox<>(new String[]{"Tất cả", "Hôm nay", "Tuần này", "Tháng này", "Tháng trước"});
+        JLabel ban = new JLabel("Lọc:");
         ban.setFont(new Font("Arial Unicode MS", Font.BOLD, 20));
         selectTablePanel.add(ban);
         selectTablePanel.add(tableComboBox);
@@ -201,6 +201,58 @@ public class QuanLyHoaDon extends JPanel {
 
         // Lấy dữ liệu ban đầu cho bảng hóa đơn
         refreshHoaDon();
+
+        // Them su kien de loc hoa don
+        tableComboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selected = (String) tableComboBox.getSelectedItem();
+                try {
+                    List<HoaDon> hoaDons = new ArrayList<>();
+                    switch (selected) {
+                        case "Hôm nay":
+                            hoaDons = hoaDon_dao.getHDByToday();
+                            break;
+                        case "Tuần này":
+                            hoaDons = hoaDon_dao.getHDByThisWeek();
+                            break;
+                        case "Tháng này":
+                            hoaDons = hoaDon_dao.getHDByThisMonth();
+                            break;
+                        case "Tháng trước":
+                            hoaDons = hoaDon_dao.getHDByLastMonth();
+                            break;
+                        default:
+                            hoaDons = hoaDon_dao.getAllHD();
+                            break;
+                    }
+
+                    DefaultTableModel hoaDonModel = (DefaultTableModel) hoaDonTable.getModel();
+                    hoaDonModel.setRowCount(0); // Xóa tất cả các dòng trong bảng
+
+                    // Sắp xếp các hóa đơn theo ngày tạo (mới nhất trước)
+                    hoaDons.sort((hd1, hd2) -> hd2.getNgayTao().compareTo(hd1.getNgayTao())); // Sắp xếp giảm dầ
+                    // Hiển thị hóa đơn vào bảng
+                    for (HoaDon hoaDon : hoaDons) {
+                        List<ChiTietHoaDon> chiTietHoaDons = chiTietHoaDon_dao.getCTHDByMaHD(hoaDon.getMaHD());
+                        int tongTien = 0;
+                        for (ChiTietHoaDon chiTietHoaDon : chiTietHoaDons) {
+                            tongTien += chiTietHoaDon.getSoLuong() * chiTietHoaDon.getDonGia();
+                        }
+                        String ngayTao = hoaDon.getNgayTao().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                        hoaDonModel.addRow(new Object[]{
+                                hoaDon.getMaHD(),
+                                chiTietHoaDons.size(),
+                                ngayTao,
+                                tongTien
+                        });
+                    }
+
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Lỗi khi lọc hóa đơn: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
     }
 
     private void refreshHoaDon() {

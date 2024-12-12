@@ -239,4 +239,108 @@ public class HoaDon_Dao
 
         return worst6SellingDishes;
     }
+
+    // viet ham de lay ra ds hoa don trong ngay hom nay
+    public List<HoaDon> getHDByToday() throws SQLException {
+        List<HoaDon> dsHD = new ArrayList<HoaDon>();
+        Database.getInstance().connect();
+        Connection con = Database.getConnection();
+        String sql = "select * from HoaDon";
+
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+
+        while (rs.next()) {
+            String maHD = rs.getString(1);
+
+            // Lấy giá trị ngày tạo và chuyển đổi sang LocalDateTime
+            Timestamp timestamp = rs.getTimestamp(2);
+            LocalDateTime ngayTao = timestamp.toLocalDateTime();
+
+            if (ngayTao.toLocalDate().isEqual(LocalDateTime.now().toLocalDate())) {
+                List<ChiTietHoaDon> dsCTHD = new ChiTietHoaDon_Dao().getCTHDByMaHD(maHD);
+                dsHD.add(new HoaDon(maHD, ngayTao, dsCTHD));
+            }
+        }
+
+        return dsHD;
+    }
+
+    // viet ham de lay ra ds hoa don trong ngay tuan nay
+    public List<HoaDon> getHDByThisWeek() throws SQLException {
+        List<HoaDon> dsHD = new ArrayList<HoaDon>();
+        Database.getInstance().connect();
+        Connection con = Database.getConnection();
+        String sql = "select * from HoaDon";
+
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+
+        while (rs.next()) {
+            String maHD = rs.getString(1);
+
+            // Lấy giá trị ngày tạo và chuyển đổi sang LocalDateTime
+            Timestamp timestamp = rs.getTimestamp(2);
+            LocalDateTime ngayTao = timestamp.toLocalDateTime();
+
+            if (ngayTao.toLocalDate().isAfter(LocalDateTime.now().minusDays(7).toLocalDate())) {
+                List<ChiTietHoaDon> dsCTHD = new ChiTietHoaDon_Dao().getCTHDByMaHD(maHD);
+                dsHD.add(new HoaDon(maHD, ngayTao, dsCTHD));
+            }
+        }
+
+        return dsHD;
+    }
+
+    // viet ham de lay ra ds hoa don trong thang nay
+    public List<HoaDon> getHDByThisMonth() throws SQLException {
+        List<HoaDon> dsHD = new ArrayList<HoaDon>();
+        Database.getInstance().connect();
+        Connection con = Database.getConnection();
+        String sql = "select * from HoaDon";
+
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+
+        while (rs.next()) {
+            String maHD = rs.getString(1);
+
+            // Lấy giá trị ngày tạo và chuyển đổi sang LocalDateTime
+            Timestamp timestamp = rs.getTimestamp(2);
+            LocalDateTime ngayTao = timestamp.toLocalDateTime();
+
+            if (ngayTao.toLocalDate().getMonthValue() == LocalDateTime.now().getMonthValue()) {
+                List<ChiTietHoaDon> dsCTHD = new ChiTietHoaDon_Dao().getCTHDByMaHD(maHD);
+                dsHD.add(new HoaDon(maHD, ngayTao, dsCTHD));
+            }
+        }
+
+        return dsHD;
+    }
+
+    // viet ham de lay ra ds hoa don trong thang truoc
+    public List<HoaDon> getHDByLastMonth() throws SQLException {
+        List<HoaDon> dsHD = new ArrayList<HoaDon>();
+        Database.getInstance().connect();
+        Connection con = Database.getConnection();
+        String sql = "select * from HoaDon";
+
+        Statement statement = con.createStatement();
+        ResultSet rs = statement.executeQuery(sql);
+
+        while (rs.next()) {
+            String maHD = rs.getString(1);
+
+            // Lấy giá trị ngày tạo và chuyển đổi sang LocalDateTime
+            Timestamp timestamp = rs.getTimestamp(2);
+            LocalDateTime ngayTao = timestamp.toLocalDateTime();
+
+            if (ngayTao.toLocalDate().getMonthValue() == LocalDateTime.now().minusMonths(1).getMonthValue()) {
+                List<ChiTietHoaDon> dsCTHD = new ChiTietHoaDon_Dao().getCTHDByMaHD(maHD);
+                dsHD.add(new HoaDon(maHD, ngayTao, dsCTHD));
+            }
+        }
+
+        return dsHD;
+    }
 }
