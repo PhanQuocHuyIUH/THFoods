@@ -9,6 +9,7 @@ import DAO.MonAn_Dao;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
@@ -102,14 +103,35 @@ public class QuanLyPhieuDat extends JPanel {
 
         tableChiTietPhieu.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         tableChiTietPhieu.setRowHeight(30);
-        tableChiTietPhieu.setBackground(new Color(230, 240, 255));
-        tableChiTietPhieu.setSelectionBackground(new Color(0, 0, 255, 150));
-        tableChiTietPhieu.setSelectionForeground(Color.WHITE);
+        tableChiTietPhieu.setBackground(AppColor.trang);
+        tableChiTietPhieu.setForeground(AppColor.den);
+        tableChiTietPhieu.setGridColor(AppColor.xanh);
+        //MÀU CỦA BẢNG KHI CHƯA CÓ CÁC DÒNG
+        tableChiTietPhieu.setFillsViewportHeight(true);
+        //set editable = false
+        tableChiTietPhieu.setDefaultEditor(Object.class, null);
+        tableChiTietPhieu.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if(isSelected){
+                    c.setBackground(AppColor.xanhNhat);
+                }
+                else if (row % 2 == 0) {
+                    c.setBackground(AppColor.xam);
+                } else {
+                    c.setBackground(AppColor.trang);
+                }
+                return c;
+            }
+        });
+        //đổi màu dòng khi có event click
 
         JTableHeader header = tableChiTietPhieu.getTableHeader();
-        header.setBackground(new Color(105, 165, 225));
+        header.setBackground(AppColor.xanh);
         header.setForeground(Color.WHITE);
         header.setFont(new Font("Arial", Font.BOLD, 14));
+
 
         // Ghi chú và tổng tiền
         JPanel panelThongTin = new JPanel(new GridLayout(5, 2));
@@ -165,6 +187,69 @@ public class QuanLyPhieuDat extends JPanel {
         rightPanel.add(panelButtons, BorderLayout.SOUTH);
 
         add(rightPanel, BorderLayout.CENTER);
+
+        txtTimKiemBan.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String keyword = txtTimKiemBan.getText();
+                if (keyword.isEmpty()) {
+                    loadBanFromDatabase();
+                } else {
+                    try {
+                        panelBan.removeAll();
+                        Ban ban1 = banDao.searchBan(keyword);
+                        if(ban1.getTrangThai().equals(TrangThaiBan.Trong)){
+                            JOptionPane.showMessageDialog(null, "Bàn chưa đặt món");
+                            return;
+                        }
+                        //chuyển bàn này về đầu danh sách bàn
+                        dsBan.remove(ban1);
+                        dsBan.add(0,ban1);
+                        for (Ban ban : dsBan) {
+                            if (ban.getTrangThai() != TrangThaiBan.DangDung) {
+                                continue;
+                            }
+                            JPanel panelItem = new JPanel(new BorderLayout());
+                            panelItem.setBorder(BorderFactory.createLineBorder(Color.BLUE, 2));
+                            panelItem.setBackground(new Color(255, 255, 255));
+
+                            JLabel lblImage = new JLabel(new ImageIcon("src/img/datban.jpg"));
+                            panelItem.add(lblImage, BorderLayout.CENTER);
+
+                            String trangThai = ban.getTrangThai().toString();
+                            // lấy so phieu theo mã bàn từ phương thức getSoPhieu() của Ban_Dao
+                            String soPhieu = banDao.getSoPhieu(ban.getMaBan());
+                            JLabel lblThongTin = new JLabel("<html>Mã bàn: " + ban.getMaBan() + "<br>Trạng thái: " + trangThai + "</html>");
+                            lblThongTin.setHorizontalAlignment(SwingConstants.CENTER);
+                            lblThongTin.setFont(new Font("Comic Sans MS", Font.PLAIN, 12));
+                            panelItem.add(lblThongTin, BorderLayout.SOUTH);
+
+                            panelItem.addMouseListener(new java.awt.event.MouseAdapter() {
+                                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                                    loadSampleDataForTable(ban.getMaBan());
+                                }
+                            });
+
+                            // add action để khi nhấn vào panelTiem sẽ highlight màu và viền còn lại sẽ mất highlight
+                            panelItem.addMouseListener(new java.awt.event.MouseAdapter() {
+                                public void mouseClicked(java.awt.event.MouseEvent evt) {
+                                    for (Component c : panelBan.getComponents()) {
+                                        c.setBackground(new Color(255, 255, 255));
+                                    }
+                                    panelItem.setBackground(new Color(255, 255, 224));
+                                }
+                            });
+
+                            panelBan.add(panelItem);
+                        }
+                        panelBan.revalidate();
+                        panelBan.repaint();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
 

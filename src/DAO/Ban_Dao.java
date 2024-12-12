@@ -286,4 +286,38 @@ public class Ban_Dao {
         }
         return dsBan;
     }
+
+    public Ban searchBan(String maBan) throws SQLException {
+        Ban dsBan = new Ban();
+        Database.getInstance();
+        Connection con = Database.getConnection();
+
+        // Sử dụng toán tử '=' thay vì 'LIKE'
+        String sql = "SELECT * FROM Ban WHERE MaBan = ?";
+
+        // Sử dụng PreparedStatement
+        PreparedStatement statement = con.prepareStatement(sql);
+        statement.setString(1, maBan); // Gán giá trị cho tham số '?'
+
+        // Thực hiện truy vấn
+        ResultSet rs = statement.executeQuery();
+
+        // Duyệt kết quả trả về
+        while (rs.next()) {
+            String maBan1 = rs.getString(1);
+            TrangThaiBan trangThai = TrangThaiBan.valueOf(rs.getString(2)); // Lấy trạng thái
+            int soCho = rs.getInt(3); // Lấy số chỗ
+
+            // Thêm vào danh sách bàn
+           dsBan = new Ban(maBan1, trangThai, soCho);
+        }
+
+        // Đóng ResultSet và Statement
+        rs.close();
+        statement.close();
+
+        return dsBan;
+    }
+
+
 }
