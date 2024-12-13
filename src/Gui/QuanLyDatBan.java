@@ -249,7 +249,7 @@ public class QuanLyDatBan extends JPanel {
         northPanel.add(notesTextField, gbc);
 
         // Thêm combobox để chọn bàn
-        JLabel lblSlectTable = new JLabel("\u25A4 Chọn bàn:");
+        JLabel lblSlectTable = new JLabel("\u25A4 Chọn loại bàn:");
         lblSlectTable.setFont(labelFont); // Cập nhật font cho JLabel
         gbc.gridx = 0;
         gbc.gridy = 6;

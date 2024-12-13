@@ -395,14 +395,7 @@ public class QuanLyPhieuDat extends JPanel {
             tableModel.setRowCount(0);
             loadBanFromDatabase();
 
-            // Xuất hóa đơn thành một frame mới
-            JFrame frame = new JFrame("Hóa đơn");
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            frame.setSize(400, 600);
-            frame.setLocationRelativeTo(null);
-            frame.setLayout(new BorderLayout());
-            frame.add(new HoaDonPanel(hoaDon,lblBan.getText()));
-            frame.setVisible(true);
+
 
             // Xuất hóa đơn ra file PDF
             JFileChooser fileChooser = new JFileChooser();
@@ -416,6 +409,14 @@ public class QuanLyPhieuDat extends JPanel {
                 pdfExporter.exportHoaDon(hoaDon, filePath, lblBan.getText());
                 JOptionPane.showMessageDialog(this, "Hóa đơn đã được lưu thành công tại: " + filePath, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             }
+            // Xuất hóa đơn thành một frame mới
+            JFrame frame = new JFrame("Hóa đơn");
+            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.setSize(400, 600);
+            frame.setLocationRelativeTo(null);
+            frame.setLayout(new BorderLayout());
+            frame.add(new HoaDonPanel(hoaDon,lblBan.getText()));
+            frame.setVisible(true);
 
         } catch (SQLException e) {
             e.printStackTrace();

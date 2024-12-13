@@ -261,7 +261,7 @@ public class DatMon extends JPanel {
         noteLabel.setFont(new Font("Chalkduster", Font.BOLD, 14));
         bottomPanel.add(noteLabel);
         noteField = new JTextField();
-        noteField.setFont(new Font("Comic Sans MS", Font.PLAIN, 14));
+        noteField.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         //màu cho border
         noteField.setBorder(BorderFactory.createLineBorder(AppColor.xanh));
         noteField.setBackground(AppColor.xam);
