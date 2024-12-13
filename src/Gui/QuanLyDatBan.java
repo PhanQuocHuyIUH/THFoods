@@ -4,27 +4,29 @@ import DAO.Ban_Dao;
 import DAO.DonDatBan_Dao;
 import DAO.KhachHang_Dao;
 import DB.Database;
-import Entity.Ban;
-import Entity.DonDatBan;
-import Entity.KhachHang;
-import Entity.TrangThaiDonDat;
+import Entity.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 
 public class QuanLyDatBan extends JPanel {
+    private Ban_Dao ds_Ban_dao;
     private JButton btn_XacNhanDon;
     private DefaultTableModel ds_DatBan_TableModel;
     private JTable ds_DatBan_TableList;
@@ -63,6 +65,7 @@ public class QuanLyDatBan extends JPanel {
         dsDatBan_mainPanel.setBorder(new EmptyBorder(15, 10, 0, 10)); // Thêm padding
 
         this.add(dsDatBan_mainPanel, BorderLayout.CENTER);
+
         dsDatBan_mainPanel.add(createTable(), BorderLayout.CENTER);
 
         JPanel dsDatBan_ButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -73,14 +76,64 @@ public class QuanLyDatBan extends JPanel {
         btn_XacNhanDon = createStyledButton("Xác nhận đơn đặt");
         dsDatBan_ButtonPanel.add(btn_XacNhanDon);
 
+        btn_XacNhanDon.addActionListener(e -> {
+            // Lấy chỉ số dòng được chọn trong bảng
+            int selectedRow = ds_DatBan_TableList.getSelectedRow();
+
+            // Kiểm tra nếu có dòng nào được chọn
+            if (selectedRow != -1) {
+                // Lấy mã đơn đặt bàn từ cột 0 (có thể thay đổi nếu maDDB nằm ở cột khác)
+                String maDDB = ds_DatBan_TableModel.getValueAt(selectedRow, 0).toString();
+
+                // Giả sử bạn muốn cập nhật trạng thái đơn đặt bàn thành "Đã Xác Nhận"
+                TrangThaiDonDat trangThaiMoi = TrangThaiDonDat.DaXacNhan; // Ví dụ trạng thái mới
+
+                // Gọi hàm cập nhật trạng thái cho đơn đặt bàn
+                try {
+                    boolean isUpdated = ds_DonDat_dao.updateTrangThaiBan(maDDB, trangThaiMoi);
+                    if (isUpdated) {
+                        // Thông báo cập nhật thành công
+                        String maBan = ds_DatBan_TableModel.getValueAt(selectedRow, 6).toString();
+                        ds_Ban_dao = new Ban_Dao();
+                        ds_Ban_dao.updateTrangThaiBan(maBan, "DangDung");
+
+                        // Cập nhật lại dữ liệu trong TableModel
+                        ds_DatBan_TableModel.setValueAt(trangThaiMoi.toString(), selectedRow, 7);// Cập nhật trạng thái đơn trong bảng
+                        load_dataTable();
+                        TableColumn statusColumn = ds_DatBan_TableList.getColumnModel().getColumn(6); // Cột thứ 7
+                        statusColumn.setCellRenderer(new StatusCellRenderer());
+                        // Hoặc nếu bạn muốn thay đổi nhiều cột, hãy sử dụng setValueAt cho từng cột cần cập nhật
+
+                        // Thông báo cho người dùng
+                        JOptionPane.showMessageDialog(null, "Đơn đặt bàn đã được xác nhận.");
+                    } else {
+                        // Thông báo nếu có lỗi khi cập nhật
+                        JOptionPane.showMessageDialog(null, "Cập nhật trạng thái thất bại.");
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    // Thông báo lỗi nếu có exception
+                    JOptionPane.showMessageDialog(null, "Đã xảy ra lỗi khi xác nhận đơn.");
+                }
+            } else {
+                // Thông báo nếu không có dòng nào được chọn
+                JOptionPane.showMessageDialog(null, "Vui lòng chọn một đơn đặt bàn để xác nhận.");
+            }
+
+            // Hủy chọn dòng trong JTable sau khi xử lý
+            ds_DatBan_TableList.clearSelection();
+            ds_DatBan_TableModel.fireTableDataChanged();
+            ds_DatBan_TableList.revalidate(); // Thực hiện revalidate bảng
+            ds_DatBan_TableList.repaint();    // Thực hiện repaint bảng
+        });
+
+
 
         // Phần tạo đơn đặt bàn
-
         JPanel panel_Bill = new JPanel(new BorderLayout());
         panel_Bill.setBorder(BorderFactory.createMatteBorder(0, 2, 0, 0, Color.BLACK));
         this.add(panel_Bill, BorderLayout.EAST);
         panel_Bill.add(panel_CreateBill());
-
 
     }
 
@@ -273,9 +326,16 @@ public class QuanLyDatBan extends JPanel {
         btn_DatBan = createStyledButton("Đặt bàn");
 
         btn_DatBan.addActionListener(e -> {
+            if ( validateInput() == false){
+                return;
+            }
+
             addRowToTable();
+
+            ds_DatBan_TableModel.fireTableDataChanged();
+            ds_DatBan_TableList.revalidate(); // Thực hiện revalidate bảng
+            ds_DatBan_TableList.repaint();
             resetFields();
-            resizeColumns();
             if (selectedButton[0] != null) {
                 // Đặt lại màu của nút đã chọn về màu gốc
                 selectedButton[0].setBackground(AppColor.xanh); // Màu gốc
@@ -331,6 +391,9 @@ public class QuanLyDatBan extends JPanel {
                 JOptionPane.showMessageDialog(null, "Vui lòng chọn một bàn trước khi hủy chọn!");
             }
         });
+        ds_KhachHang_dao = new KhachHang_Dao();
+        addFocusListenerToNameField();
+
         return panel_CreateBill;
     }
 
@@ -367,22 +430,67 @@ public class QuanLyDatBan extends JPanel {
             tableButton.setFocusPainted(false);
             tableButton.setBorderPainted(true);
 
+            // Lấy giờ đặt từ cơ sở dữ liệu
+            Timestamp gioDat = new DonDatBan_Dao().getGioDatByMaBan(ban.getMaBan());
+            Timestamp currentTime = null;
+            long fourHoursInMillis = 4 * 60 * 60 * 1000; // 4 giờ tính bằng mili giây
+
+            if (gioDat != null) {
+                // Lấy thời gian hiện tại
+                currentTime = new Timestamp(System.currentTimeMillis());
+
+                // Tính khoảng cách thời gian giữa giờ đặt và giờ hiện tại
+                long timeDiff = currentTime.getTime() - gioDat.getTime();
+
+                // Nếu chưa đủ 4 giờ từ giờ đặt, vô hiệu hóa nút
+                if (timeDiff < fourHoursInMillis) {
+                    tableButton.setEnabled(false); // Vô hiệu hóa nút
+                }
+            }
+
             // Thêm sự kiện click cho mỗi nút
             tableButton.addActionListener(e -> {
-                // Nếu có nút đã chọn trước đó, đặt lại màu gốc
-                if (selectedButton[0] != null) {
-                    selectedButton[0].setBackground(AppColor.xanh); // Đặt lại màu gốc
+                try {
+                    // Lấy mã bàn của nút hiện tại
+                    String maBan = tableButton.getText();
+
+                    // Lấy giờ đặt từ cơ sở dữ liệu
+                    Timestamp gioDatClick = new DonDatBan_Dao().getGioDatByMaBan(maBan);
+                    System.out.println(gioDatClick);
+                    System.out.println(maBan);
+
+                    Timestamp currentTimeClick = null;
+                    if (gioDatClick != null) {
+                        // Lấy thời gian hiện tại
+                        currentTimeClick = new Timestamp(System.currentTimeMillis());
+
+                        // Tính khoảng cách thời gian giữa giờ đặt và giờ hiện tại
+                        long timeDiffClick = currentTimeClick.getTime() - gioDatClick.getTime();
+                        if (timeDiffClick < fourHoursInMillis) {
+                            tableButton.setEnabled(false); // Vô hiệu hóa nút nếu chưa đủ 4 giờ
+                            JOptionPane.showMessageDialog(null, "Bàn này chưa đủ 4 giờ kể từ khi đặt. Vui lòng chờ thêm.");
+                            return; // Thoát khỏi sự kiện, không cho phép chọn bàn
+                        }
+                    }
+
+                    // Nếu có nút đã chọn trước đó, đặt lại màu gốc
+                    if (selectedButton[0] != null) {
+                        selectedButton[0].setBackground(AppColor.xanh); // Đặt lại màu gốc
+                    }
+
+                    // Đổi màu cho nút hiện tại
+                    tableButton.setBackground(AppColor.red); // Đổi màu nút được chọn
+                    btn_HuyChonBan.setEnabled(true); // Kích hoạt nút hủy chọn
+                    selectedButton[0] = tableButton; // Lưu nút đã chọn
+
+                    // Cập nhật mã bàn vào tableTextField
+                    tableTextField.setText(tableButton.getText());
+
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Lỗi khi kiểm tra thời gian đặt bàn.");
                 }
-
-                // Đổi màu cho nút hiện tại
-                tableButton.setBackground(AppColor.red); // Đổi màu nút được chọn
-                btn_HuyChonBan.setEnabled(true); // Kích hoạt nút hủy chọn
-                selectedButton[0] = tableButton; // Lưu nút đã chọn
-
-                // Cập nhật mã bàn vào tableTextField
-                tableTextField.setText(tableButton.getText());
             });
-
 
             // Vị trí của nút trên lưới
             gbc.gridx = i % columns; // Cột
@@ -390,20 +498,9 @@ public class QuanLyDatBan extends JPanel {
             mainPanel.add(tableButton, gbc);
         }
 
-        // Thêm các ô trống nếu cần thiết để giữ bố cục cố định
-        int totalCells = ((filteredBans.size() + columns - 1) / columns) * columns;
-        for (int i = filteredBans.size(); i < totalCells; i++) {
-            gbc.gridx = i % columns;
-            gbc.gridy = i / columns;
-            mainPanel.add(Box.createRigidArea(new Dimension(100, 100)), gbc); // Ô trống giữ chỗ
-        }
-
-        // Tạo panel bọc với FlowLayout để căn chỉnh mainPanel về góc trái trên
-        JPanel wrapperPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        wrapperPanel.add(mainPanel);
-
-        return wrapperPanel;
+        return mainPanel; // Trả về panel chính
     }
+
 
     private String[] generateHourOptions(boolean isToday) {
         int startHour;
@@ -492,31 +589,99 @@ public class QuanLyDatBan extends JPanel {
 
     // Khởi tạo bảng danh sách đon đặt bàn
     private JScrollPane createTable() {
-        String[] columnNames = {"Tên khách hàng", "SĐT", "Ngày đặt", "Số người", "Ghi chú",
-                "Mã Bàn", "Tình trạng đơn"};
+        String[] columnNames = {"  Mã đơn đã đặt  ", "Tên khách hàng", "  SĐT  ", "Ngày - gờ đặt", "Số ghế", "  Ghi chú   ", "Mã Bàn", "Tình trạng đơn"};
         ds_DatBan_TableModel = new DefaultTableModel(columnNames, 0);
         ds_DatBan_TableList = new JTable(ds_DatBan_TableModel);
-
-        // Cấu hình bảng để các cột không thể thay đổi vị trí hoặc kích thước
-        ds_DatBan_TableList.getTableHeader().setReorderingAllowed(false); // Ngừng cho phép di chuyển cột
-        ds_DatBan_TableList.getTableHeader().setResizingAllowed(false);   // Ngừng cho phép thay đổi kích thước cột
-
-        // Tùy chỉnh cuộn
-        JScrollPane scrollPane = new JScrollPane(ds_DatBan_TableList);
-        scrollPane.setWheelScrollingEnabled(true); // Kích hoạt cuộn mượt
-
-        // Tăng tốc độ cuộn
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16); // Tăng tốc cuộn dọc
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(16); // Tăng tốc cuộn ngang (nếu cần)
-
-        // Tự động điều chỉnh chiều rộng cột sau khi thêm dữ liệu
-        resizeColumns();
-
-        // Gọi hàm tùy chỉnh bảng (nếu cần thêm các tùy chỉnh)
         customizeTable();
+        resizeColumns();
+        // Cấu hình bảng để các cột không thể thay đổi vị trí hoặc kích thước
+        ds_DatBan_TableList.getTableHeader().setReorderingAllowed(false);
+        ds_DatBan_TableList.getTableHeader().setResizingAllowed(false);
+
+        // Ẩn cột 0 (cột "Mã đơn đã đặt")
+        TableColumn columnToHide = ds_DatBan_TableList.getColumnModel().getColumn(0);
+        ds_DatBan_TableList.removeColumn(columnToHide);
+        load_dataTable();
+        JScrollPane scrollPane = new JScrollPane(ds_DatBan_TableList);
+        scrollPane.setWheelScrollingEnabled(true);
 
         return scrollPane;
     }
+
+
+    private void load_dataTable() {
+        // Sắp xếp dữ liệu từ cơ sở dữ liệu
+        ds_DonDat_dao = new DonDatBan_Dao();
+        try {
+            ArrayList<DonDatBan> dsDonDatBan = ds_DonDat_dao.getAll_DonDatBan();
+            LocalDate today = LocalDate.now();
+            LocalTime now = LocalTime.now();
+
+            // Sắp xếp dữ liệu theo các tiêu chí
+            dsDonDatBan.sort((o1, o2) -> {
+                boolean isToday1 = o1.getNgayDat().toLocalDate().isEqual(today);
+                boolean isToday2 = o2.getNgayDat().toLocalDate().isEqual(today);
+                if (isToday1 && !isToday2) return -1;
+                if (!isToday1 && isToday2) return 1;
+
+                int statusComparison = getStatusPriority(o1.getTrangThaiDDB()) - getStatusPriority(o2.getTrangThaiDDB());
+                if (statusComparison != 0) return statusComparison;
+
+                long timeDiff1 = Math.abs(Duration.between(now, o1.getNgayDat().toLocalTime()).toMinutes());
+                long timeDiff2 = Math.abs(Duration.between(now, o2.getNgayDat().toLocalTime()).toMinutes());
+                return Long.compare(timeDiff1, timeDiff2);
+            });
+
+            // Xóa tất cả các dòng trong TableModel trước khi thêm dữ liệu mới
+            ds_DatBan_TableModel.setRowCount(0); // Xóa hết dữ liệu cũ
+
+            // Thêm dữ liệu mới vào TableModel
+            for (DonDatBan donDatBan : dsDonDatBan) {
+                ds_DatBan_TableModel.addRow(new Object[]{
+                        donDatBan.getMaDD(),
+                        donDatBan.getTenKH(),
+                        donDatBan.getsDT(),
+                        donDatBan.getNgayDat().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        donDatBan.getSoGhe(),
+                        donDatBan.getGhiChu(),
+                        donDatBan.getMaBan().getMaBan(),
+                        donDatBan.getTrangThaiDDB()
+                });
+            }
+
+            // Sau khi thêm hết dữ liệu vào TableModel, gọi fireTableDataChanged để cập nhật lại JTable
+            ds_DatBan_TableModel.fireTableDataChanged();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Lỗi khi lấy dữ liệu đơn đặt bàn từ cơ sở dữ liệu!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // Áp dụng renderer cho cột "Tình trạng đơn"
+        TableColumn statusColumn = ds_DatBan_TableList.getColumnModel().getColumn(6);
+        statusColumn.setCellRenderer(new StatusCellRenderer());
+
+        // Cập nhật lại giao diện
+        ds_DatBan_TableList.revalidate();
+        ds_DatBan_TableList.repaint();
+    }
+
+
+
+    // Hàm xác định độ ưu tiên của trạng thái
+    private int getStatusPriority(TrangThaiDonDat trangThai) {
+        switch (trangThai) {
+            case ChoXuLy:
+                return 1;
+            case DaXacNhan:
+                return 2;
+            case DaThanhToan:
+                return 3;
+            default:
+                return Integer.MAX_VALUE; // Đặt giá trị cao nhất cho các trạng thái khác nếu có
+        }
+    }
+
 
     private void resizeColumns() {
         // Tính chiều rộng tối đa cho mỗi cột dựa trên dữ liệu và tiêu đề
@@ -542,49 +707,81 @@ public class QuanLyDatBan extends JPanel {
     }
 
 
-
-
     private void addRowToTable() {
+        try {
+            Database.getInstance().connect();
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         ds_KhachHang_dao = new KhachHang_Dao();
         ds_DonDat_dao = new DonDatBan_Dao();
+
         try {
+            // Tạo mã đơn đặt bàn tự động
             String maDonDat = "MDD" + taoMaTuDong();
             if (maDonDat == null || maDonDat.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Mã đơn đặt không hợp lệ!", "Lỗi",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Mã đơn đặt không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Retrieve values from input fields
+            // Lấy giá trị từ các trường nhập liệu
             String tenKhachHang = nameTextField.getText();
             String soDienThoai = phoneTextField.getText();
             String ngayDat = dateComboBox.getSelectedItem().toString();
             String gioDat = timeComboBox.getSelectedItem().toString();
             String ngayGioDat = ngayDat + " " + gioDat;
-            int soNguoi = Integer.parseInt(soGheTextField.getText());
+
+            // Kiểm tra số người nhập vào hợp lệ
+            int soNguoi;
+            try {
+                soNguoi = Integer.parseInt(soGheTextField.getText());
+                if (soNguoi <= 0) {
+                    throw new NumberFormatException("Số người phải lớn hơn 0");
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Số người không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             String ghiChu = notesTextField.getText();
             String maBan = tableTextField.getText();
 
-            // Set default status to "Chờ xử lý"
+            // Xác định trạng thái đơn đặt là "Chờ xử lý"
             TrangThaiDonDat tinhTrangDon = TrangThaiDonDat.ChoXuLy;
 
-            // Check if customer exists in the database
+            // Kiểm tra khách hàng có tồn tại trong cơ sở dữ liệu không
             KhachHang khachHang = ds_KhachHang_dao.getKhachHangBySoDienThoai(soDienThoai);
             boolean isNewCustomer = false;
 
             if (khachHang == null) {
-                // Customer does not exist, create a new one
+                // Nếu khách hàng không tồn tại, tạo mới khách hàng và thêm vào cơ sở dữ liệu
                 String maKhachHang = "KH" + taoMaTuDong();
                 khachHang = new KhachHang(maKhachHang, tenKhachHang, soDienThoai);
-                isNewCustomer = true; // Mark as new customer
+                isNewCustomer = true; // Đánh dấu là khách hàng mới
+
+                // Thêm khách hàng vào cơ sở dữ liệu
+                boolean addedCustomer = ds_KhachHang_dao.addKhachHang(khachHang);
+                if (!addedCustomer) {
+                    JOptionPane.showMessageDialog(null, "Thêm khách hàng thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
             }
 
-            // Create a new DonDatBan object
-            LocalDateTime parsedNgayGioDat = LocalDateTime.parse(ngayGioDat, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+            // Chuyển đổi ngày giờ từ chuỗi
+            LocalDateTime parsedNgayGioDat;
+            try {
+                parsedNgayGioDat = LocalDateTime.parse(ngayGioDat, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+            } catch (DateTimeParseException e) {
+                JOptionPane.showMessageDialog(null, "Ngày giờ đặt không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Tạo đối tượng đơn đặt bàn
             DonDatBan donDatBan = new DonDatBan(
                     maDonDat,
-                    khachHang,
-                    khachHang,
+                    khachHang.getTenKH(),
+                    khachHang.getSdt(),
                     parsedNgayGioDat,
                     soNguoi,
                     ghiChu,
@@ -593,24 +790,16 @@ public class QuanLyDatBan extends JPanel {
                     khachHang
             );
 
-            // Add DonDatBan to the database
+            // Thêm đơn đặt bàn vào cơ sở dữ liệu
             boolean addedOrder = ds_DonDat_dao.addDonDatBan(donDatBan);
             if (!addedOrder) {
                 JOptionPane.showMessageDialog(null, "Thêm đơn đặt bàn thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // If the customer is new and the order was added successfully, add the customer
-            if (isNewCustomer) {
-                boolean addedCustomer = ds_KhachHang_dao.addKhachHang(khachHang);
-                if (!addedCustomer) {
-                    JOptionPane.showMessageDialog(null, "Thêm khách hàng thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-            }
-
-            // Add row to the table on the UI
+            // Thêm dòng vào bảng UI
             ds_DatBan_TableModel.addRow(new Object[]{
+                    maDonDat,
                     tenKhachHang,
                     soDienThoai,
                     ngayGioDat,
@@ -619,6 +808,7 @@ public class QuanLyDatBan extends JPanel {
                     maBan,
                     tinhTrangDon
             });
+            load_dataTable();
 
             JOptionPane.showMessageDialog(null, "Thêm đơn đặt bàn thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
 
@@ -626,8 +816,11 @@ public class QuanLyDatBan extends JPanel {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Có lỗi xảy ra: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
-
+        ds_DatBan_TableModel.fireTableDataChanged();
+        ds_DatBan_TableList.revalidate(); // Thực hiện revalidate bảng
+        ds_DatBan_TableList.repaint();
     }
+
 
     private void customizeTable() {
         ds_DatBan_TableList.setFont(new Font("Segoe UI", Font.PLAIN, 18));
@@ -674,6 +867,119 @@ public class QuanLyDatBan extends JPanel {
         String maTuDong = formattedDateTime;
 
         return maTuDong;
+    }
+
+
+    // Lớp Renderer tùy chỉnh
+    class StatusCellRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+            if (value instanceof TrangThaiDonDat) {
+                TrangThaiDonDat status = (TrangThaiDonDat) value;
+                if (status == TrangThaiDonDat.ChoXuLy) {
+                    cell.setBackground(Color.LIGHT_GRAY); // Màu nền xám
+                } else if (status == TrangThaiDonDat.DaThanhToan) {
+                    cell.setBackground(new Color(70,182,100));
+                } else {
+                    cell.setBackground(new Color(52,150,226));
+                }
+            }
+
+            if (isSelected) {
+                cell.setBackground(table.getSelectionBackground());
+            }
+
+            return cell;
+        }
+    }
+
+    public void addFocusListenerToNameField() {
+        // Thêm FocusListener vào nameTextField
+        nameTextField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                // Kiểm tra xem số điện thoại đã được nhập chưa
+                String phone = phoneTextField.getText().trim();
+                if (!phone.isEmpty() && phone.matches("^0\\d{9}$")) {
+                    // Nếu số điện thoại hợp lệ, lấy tên khách hàng và điền vào nameTextField
+                    try {
+                        String tenKhachHang = ds_KhachHang_dao.getNameKhachHang(phone);
+                        if (tenKhachHang != null) {
+                            nameTextField.setText(tenKhachHang);  // Điền tên vào trường tên
+                        } else {
+                            nameTextField.setText("");  // Nếu không tìm thấy khách hàng, xóa tên
+                        }
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();  // Xử lý lỗi kết nối cơ sở dữ liệu
+                        showError(phoneTextField, "Lỗi kết nối cơ sở dữ liệu.");
+                    }
+                }
+            }
+        });
+    }
+
+    public boolean validateInput() {
+        String name = nameTextField.getText().trim();
+        String phone = phoneTextField.getText().trim();
+        String soGhe = soGheTextField.getText().trim();
+        String table = tableTextField.getText().trim();
+
+        // Kiểm tra trường số điện thoại
+        if (phone.isEmpty()) {
+            showError(phoneTextField, "Số điện thoại không được để trống.");
+            return false; // Dừng lại khi có lỗi
+        } else if (!phone.matches("^0\\d{9}$")) {
+            showError(phoneTextField, "Số điện thoại phải là 10 chữ số và bắt đầu bằng 0.");
+            return false; // Dừng lại khi có lỗi
+        }
+
+        // Kiểm tra trường tên
+        if (name.isEmpty()) {
+            showError(nameTextField, "Tên không được để trống.");
+            return false; // Dừng lại khi có lỗi
+        } else if (!name.matches("^[a-zA-Z\\s]+$")) {
+            showError(nameTextField, "Tên chỉ được chứa ký tự chữ.");
+            return false; // Dừng lại khi có lỗi
+        }
+
+        // Kiểm tra trường số ghế
+        if (soGhe.isEmpty()) {
+            showError(soGheTextField, "Số ghế không được để trống.");
+            return false; // Dừng lại khi có lỗi
+        } else {
+            try {
+                int value = Integer.parseInt(soGhe);
+                if (value <= 0) {
+                    showError(soGheTextField, "Số ghế phải lớn hơn 0.");
+                    return false; // Dừng lại khi có lỗi
+                }
+            } catch (NumberFormatException ex) {
+                showError(soGheTextField, "Số ghế chỉ được nhập số.");
+                return false; // Dừng lại khi có lỗi
+            }
+        }
+
+        // Kiểm tra trường tableTextField (không được để trống)
+        if (table.isEmpty()) {
+            showError(tableTextField, "Vui lòng điền thông tin bàn.");
+            return false; // Dừng lại khi có lỗi
+        }
+
+        // Nếu tất cả kiểm tra đều hợp lệ
+        return true;
+    }
+
+    // Helper method để hiển thị thông báo lỗi và yêu cầu focus vào trường bị lỗi
+    private static void showError(JTextField field, String message) {
+        JOptionPane.showMessageDialog(null, message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+        field.requestFocus();  // Đặt focus lại vào trường nhập liệu bị lỗi
+    }
+
+    public void refreshFrame() {
+        this.revalidate();  // Để bố trí lại các thành phần
+        this.repaint();     // Vẽ lại giao diện
     }
 
 }
