@@ -2,6 +2,6 @@ package Entity;
 
 public enum TrangThaiDonDat {
     ChoXuLy,
-    Huy,
+    DaThanhToan,
     DaXacNhan
 }
